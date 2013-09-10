@@ -1,0 +1,14 @@
+\begin {longtable}{@{}ll>{\hsize =.5\hsize }X>{\hsize =1.5\hsize }X@{}}
+\textbf {\vhversionname }
+ & \textbf {\vhdatename }
+ & \textbf {\vhauthorname }
+ & \textbf {\vhchangename }\\[1ex]
+0.1
+ & August 13, 2013
+ & \listset {Eric Dubuis}
+ & Initial draft.\\
+0.2
+ & \today 
+ & \listset {Eric Dubuis}
+ & Introduced chain of components.\\
+\end {longtable}

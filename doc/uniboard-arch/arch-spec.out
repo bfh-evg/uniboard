@@ -1,0 +1,17 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [0][-]{chapter.2}{Component Composition}{}% 2
+\BOOKMARK [1][-]{section.2.1}{Chain of Components}{chapter.2}% 3
+\BOOKMARK [1][-]{section.2.2}{Service Request Delegation}{chapter.2}% 4
+\BOOKMARK [1][-]{section.2.3}{Handling Service Requests}{chapter.2}% 5
+\BOOKMARK [0][-]{chapter.3}{Specific Services}{}% 6
+\BOOKMARK [1][-]{section.3.1}{A Service Implementing a Property}{chapter.3}% 7
+\BOOKMARK [1][-]{section.3.2}{The Authorization Service}{chapter.3}% 8
+\BOOKMARK [0][-]{chapter.4}{Distributed Bulletin Board}{}% 9
+\BOOKMARK [1][-]{section.4.1}{BFT Client Component}{chapter.4}% 10
+\BOOKMARK [1][-]{section.4.2}{BFT Replica Component}{chapter.4}% 11
+\BOOKMARK [1][-]{section.4.3}{Deployment View of the Replicated Board}{chapter.4}% 12
+\BOOKMARK [0][-]{chapter.5}{Implementation Hints}{}% 13
+\BOOKMARK [1][-]{section.5.1}{Namespaces, Names}{chapter.5}% 14
+\BOOKMARK [1][-]{section.5.2}{Access to the Downstream Component}{chapter.5}% 15
+\BOOKMARK [1][-]{section.5.3}{Skeleton for a Concrete Component}{chapter.5}% 16
+\BOOKMARK [1][-]{section.5.4}{A Simple Scheme for Data Containers}{chapter.5}% 17
