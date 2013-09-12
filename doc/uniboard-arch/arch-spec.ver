@@ -8,7 +8,11 @@
  & \listset {Eric Dubuis}
  & Initial draft.\\
 0.2
- & \today 
+ & September 10, 2013
  & \listset {Eric Dubuis}
  & Introduced chain of components.\\
+0.3
+ & \today 
+ & \listset {Eric Dubuis}
+ & ..., removed typos.\\
 \end {longtable}

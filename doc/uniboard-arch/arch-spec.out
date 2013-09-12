@@ -5,7 +5,7 @@
 \BOOKMARK [1][-]{section.2.3}{Handling Service Requests}{chapter.2}% 5
 \BOOKMARK [0][-]{chapter.3}{Specific Services}{}% 6
 \BOOKMARK [1][-]{section.3.1}{A Service Implementing a Property}{chapter.3}% 7
-\BOOKMARK [1][-]{section.3.2}{The Authorization Service}{chapter.3}% 8
+\BOOKMARK [1][-]{section.3.2}{The Persistence Service}{chapter.3}% 8
 \BOOKMARK [0][-]{chapter.4}{Distributed Bulletin Board}{}% 9
 \BOOKMARK [1][-]{section.4.1}{BFT Client Component}{chapter.4}% 10
 \BOOKMARK [1][-]{section.4.2}{BFT Replica Component}{chapter.4}% 11

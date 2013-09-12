@@ -2,7 +2,7 @@
 % UNIVOTE LATEX TEMPLATE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[bibtotoc,halfparskip,oneside]{scrreprt}
+\documentclass[oneside]{scrreprt}
 
 \usepackage{listings}
 \usepackage{import}
@@ -27,12 +27,13 @@
   numbers=right
 }
 
-\title{UniVote System Specification}
+\title{UniBoard Architecture Specification}
 \maketitle
 
 \begin{versionhistory}
 	\vhEntry{0.1}{August 13, 2013}{Eric Dubuis}{Initial draft.}
-	\vhEntry{0.2}{\today}{Eric Dubuis}{Introduced chain of components.}
+	\vhEntry{0.2}{September 10, 2013}{Eric Dubuis}{Introduced chain of components.}
+	\vhEntry{0.3}{\today}{Eric Dubuis}{..., removed typos.}
 \end{versionhistory}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,9 +88,7 @@ a set of nodes (for the distributed variant). For the
 distributed variant, a specific component is inserted
 into the chain of components. That component implements
 the respective agreement protocol by communicating with
-peer nodes. If and only if an agreement takes place then
-that component passes the service request to the next
-downstream component.
+peer nodes.
 
 Each component implements the same generic service interface.
 This allows the desired chain of components. (Of
@@ -115,7 +114,7 @@ Only the last component in the chain, the persistence service, is not
 linked anymore to another component. \fig{fig:chain-of-components}
 shows the static structure.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centerline{
 \includegraphics[width=1.0\textwidth]{figs/chain-of-components}}
 \caption{UML class diagram defining the interface and linking
@@ -198,11 +197,11 @@ of concrete components arranged in a chain of component
 instances. To service an application, the first
 component receives a service request and then passes
 it to the next component. It may also process the
-the service request before passing it to the next
+service request before passing it to the next
 component. Consequently, it may also process the
 response before returning it to the application.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centerline{
 \includegraphics[width=1.0\textwidth]{figs/service-request-delegation}}
 \caption{UML sequence diagram illustrating the dynamics of the
@@ -213,7 +212,7 @@ the next downstream component. The response of the downstream
 component is processed at first by the self-delegated
 method \emph{afterPost()}, and then returned to the calling
 component (or the application).}
-\label{fig:chain-of-components}
+\label{fig:service-request-delegation}
 \end{figure}
 
 The above described behavioral pattern is repeated with
@@ -343,7 +342,7 @@ code is inherited from the subclass \emph{Component}.
 \fig{fig:authorization-service} shows the structure of
 the authorization service.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centerline{
 \includegraphics[width=1.0\textwidth]{figs/authorization-service}}
 \caption{UML class diagram for the illustration of the
@@ -352,7 +351,9 @@ from the \emph{Component} class which implies that there
 is a downstream component link to this component.}
 \label{fig:authorization-service}
 \end{figure}
-\section{The Authorization Service}
+
+
+\section{The Persistence Service}
 
 The persistence service provides operations to store and
 retrieve data. It is a component in the sense that it
@@ -363,7 +364,7 @@ derived from the \emph{Component} abstraction.
 \fig{fig:persistence-service} shows the structure of the persistence service
 component.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centerline{
 \includegraphics[width=1.0\textwidth]{figs/persistence-service}}
 \caption{UML class diagram for the illustration of the
@@ -405,7 +406,7 @@ components of sort \emph{BFTReplica}. \fig{fig:byzantine-client}
 shows the static structure of the Byzantine fault tolerant client
 component.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centerline{
 \includegraphics[width=1.0\textwidth]{figs/byzantine-client}}
 \caption{UML class diagram illustrating the client side
@@ -427,7 +428,7 @@ the static structure of the Byzantine fault tolerant replica
 component.
 
 
-\begin{figure}[h]
+\begin{figure}[ht<]
 \centerline{
 \includegraphics[width=1.0\textwidth]{figs/byzantine-replica}}
 \caption{UML class diagram illustrating the replication side
@@ -483,10 +484,10 @@ public abstract class Result ...
 \end{lstlisting}
 
 Implementations will use additional namespaces such as
-\emph{lu.unilu.uniboard.component\_j},
-\emph{lu.unilu.uniboard.application\_k},
-\emph{ch.bfh.uniboard.application\_m}, or
-\emph{ch.bfh.uniboard.component\_n}.
+\emph{lu.unilu.uniboard.component1},
+\emph{lu.unilu.uniboard.application1},
+\emph{ch.bfh.uniboard.application2}, or
+\emph{ch.bfh.uniboard.component2}.
 
 Class names can also be concretized by following respective
 technology conventions. When using EJB, the convention for
