@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A data container for arbitray key/value pairs. Keys are strings, values
+ * A data container for arbitrary key/value pairs. Keys are strings, values
  * can be anything. Values should be immutable.
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;

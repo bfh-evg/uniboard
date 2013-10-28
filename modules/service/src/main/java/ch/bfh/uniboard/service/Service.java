@@ -39,7 +39,7 @@ public interface Service {
     /**
      * Queries the bulletin board asking a component
      * implementing this interface.
-     * @param query a query containing all requiered information elements
+     * @param query a query containing all required information elements
      * @return a result
      * @throws UniBoardException if the service request cannot be
      *      fulfilled (for example, if required data is missing)
