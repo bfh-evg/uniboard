@@ -12,12 +12,13 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 
 /**
  * A data container for arbitray key/value pairs. Keys are strings, values
- * can be anything. Values should be immutable.
+ * can be anything. Values should be immutable. Map entries are sorted by
+ * key values.
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
@@ -27,13 +28,13 @@ public class Result implements Serializable {
     /**
      * Holder of key/value pairs.
      */
-    private Map<String, Object> map;
+    private final SortedMap<String, Object> map;
 
     /**
      * Initializes the data container
      * @param map a map initialized with key/value pairs; values should be immutable
      */
-    public Result(Map<String, Object> map) {
+    public Result(SortedMap<String, Object> map) {
         this.map = map;
     }
 

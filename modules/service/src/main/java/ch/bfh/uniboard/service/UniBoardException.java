@@ -9,7 +9,6 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-
 package ch.bfh.uniboard.service;
 
 /**

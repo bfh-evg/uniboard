@@ -9,7 +9,6 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-
 package ch.bfh.uniboard.z.demo.access;
 
 import ch.bfh.uniboard.service.Service;
