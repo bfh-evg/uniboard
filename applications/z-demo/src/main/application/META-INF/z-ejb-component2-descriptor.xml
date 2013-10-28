@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2013 Berner Fachhochschule, Switzerland.
+Bern University of Applied Sciences, Engineering and Information Technology,
+Research Institute for Security in the Information Society, E-Voting Group,
+Biel, Switzerland.
+
+Project UniVote.
+
+Distributable under GPL license.
+See terms of license at gnu.org.
+-->
+<ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
+         version = "3.1"
+         xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+    <enterprise-beans>
+        <session>
+            <ejb-name>Component2Bean</ejb-name>
+            <ejb-local-ref>
+                <ejb-ref-name>ch.bfh.uniboard.z.ejb.component2.Component2Bean/successor</ejb-ref-name>
+                <local>ch.bfh.uniboard.service.Service</local>
+                <ejb-link>ComponentFinalBean</ejb-link>
+            </ejb-local-ref>
+        </session>
+    </enterprise-beans>
+</ejb-jar>

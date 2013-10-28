@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC
+    "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN"
+    "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+	<jdbc-resource pool-name="BoardPool" jndi-name="jdbc/board" />
+	<jdbc-connection-pool is-isolation-level-guaranteed="false"
+                          name="BoardPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource"
+                          res-type="javax.sql.DataSource">
+		<property value="memory:test" name="DatabaseName" />
+		<property value=";create=true" name="connectionAttributes" />
+	</jdbc-connection-pool>
+</resources>

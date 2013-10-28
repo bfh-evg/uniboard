@@ -4,23 +4,45 @@
  * Research Institute for Security in the Information Society, E-Voting Group,
  * Biel, Switzerland.
  *
- * Project Univote.
+ * Project UniVote.
  *
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.core;
-
-import javax.ejb.Local;
+package ch.bfh.uniboard.service;
 
 /**
+ * Generic interface for a component of the bulletin board. It exposes
+ * two generic methods to clients. Clients are assumed to provide all
+ * the necessary data in the arguments of the methods.
+ * <p>
+ * Calls to these methods are blocking. That is, client calls block
+ * until the taks of the method is completed.
+ * <p>
+ * TODO: Asynchnonous (non-blocking) calls to be provided.
  *
- * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
-@Local
 public interface Service {
 
-	public Response post(Request request);
+    /**
+     * Posts a message to the bulletin board by posting it to a component
+     * implementing this interface.
+     *
+     * @param message a message containing all required information elements
+     * @return a response
+     * @throws UniBoardException if the service request cannot be
+     *      fulfilled (for example, if required data is missing)
+     */
+	public Response post(Message message) throws UniBoardException;
 
-	public Result get(Query query);
+    /**
+     * Queries the bulletin board asking a component
+     * implementing this interface.
+     * @param query a query containing all requiered information elements
+     * @return a result
+     * @throws UniBoardException if the service request cannot be
+     *      fulfilled (for example, if required data is missing)
+     */
+	public Result get(Query query) throws UniBoardException;
 }
