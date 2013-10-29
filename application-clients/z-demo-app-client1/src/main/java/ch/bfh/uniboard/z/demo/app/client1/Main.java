@@ -1,6 +1,6 @@
 package ch.bfh.uniboard.z.demo.app.client1;
 
-import ch.bfh.uniboard.service.Service;
+import ch.bfh.z.demo.access.DemoAccessRemote;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
@@ -9,21 +9,21 @@ import javax.naming.InitialContext;
  *
  */
 public class Main {
-    //@EJB
-    //private static Service access;
+	//@EJB
+	//private static Service access;
 
-    public static void main( String[] args ) throws Exception {
-        System.out.println( "Starting Z Demo Application Client 1..." );
+	public static void main(String[] args) throws Exception {
+		System.out.println("Starting Z Demo Application Client 1...");
 
-        Service svc = lookupService();
-        //access.post(null);
+		DemoAccessRemote svc = lookupService();
+		//access.post(null);
 
-        System.out.println( "Z Demo Application Client 1 finished." );
-    }
+		System.out.println("Z Demo Application Client 1 finished.");
+	}
 
-    private static Service lookupService() throws Exception {
-        Context ctx = new InitialContext();
-        Service svc = (Service) ctx.lookup("java:global/z-demo/z-demo-access-1.0-SNAPSHOT/DemoAccessBean");
-        return svc;
-    }
+	private static DemoAccessRemote lookupService() throws Exception {
+		Context ctx = new InitialContext();
+		DemoAccessRemote svc = (DemoAccessRemote) ctx.lookup("java:global/z-demo/z-demo-access-1.0-SNAPSHOT/DemoAccessBean");
+		return svc;
+	}
 }

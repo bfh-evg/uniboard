@@ -30,35 +30,35 @@ import javax.ejb.Stateless;
 @Local(value = Service.class)
 public class Component1Bean extends Component implements Service {
 
-    @EJB(beanName = "TerminatingComponentBean")
-    private Service successor;
+	@EJB(beanName = "TerminatingComponentBean")
+	private Service successor;
 
-    @Override
-    protected Service getSuccessor() {
-        return this.successor;
-    }
+	@Override
+	protected Service getSuccessor() {
+		return this.successor;
+	}
 
-    @Override
-    protected Result afterGet(Result result) throws UniBoardException {
-        System.out.println("afterGet() called.");
-        return result;
-    }
+	@Override
+	protected Result afterGet(Result result) throws UniBoardException {
+		System.out.println("afterGet() called.");
+		return result;
+	}
 
-    @Override
-    protected Query beforeGet(Query query) throws UniBoardException {
-        System.out.println("beforeGet() called.");
-        return super.beforeGet(query);
-    }
+	@Override
+	protected Query beforeGet(Query query) throws UniBoardException {
+		System.out.println("beforeGet() called.");
+		return super.beforeGet(query);
+	}
 
-    @Override
-    protected Response afterPost(Response response) throws UniBoardException {
-        System.out.println("afterPost() called.");
-        return super.afterPost(response);
-    }
+	@Override
+	protected Response afterPost(Response response) throws UniBoardException {
+		System.out.println("afterPost() called.");
+		return super.afterPost(response);
+	}
 
-    @Override
-    protected Message beforePost(Message message) throws UniBoardException {
-        System.out.println("beforePost() called.");
-        return super.beforePost(message);
-    }
+	@Override
+	protected Message beforePost(Message message) throws UniBoardException {
+		System.out.println("beforePost() called.");
+		return super.beforePost(message);
+	}
 }

@@ -9,10 +9,11 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.z.demo.access;
+package ch.bfh.uniboard.z.demo.access.impl;
 
 import ch.bfh.uniboard.service.Component;
 import ch.bfh.uniboard.service.Service;
+import ch.bfh.z.demo.access.DemoAccessRemote;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -23,11 +24,11 @@ import javax.ejb.Stateless;
 @Stateless()
 public class DemoAccessBean extends Component implements Service, DemoAccessRemote {
 
-    @EJB//(beanName = "TerminatingComponentBean")
-    private Service successor;
+	@EJB//(beanName = "TerminatingComponentBean")
+	private Service successor;
 
-    @Override
-    protected Service getSuccessor() {
-        return this.successor;
-    }
+	@Override
+	protected Service getSuccessor() {
+		return this.successor;
+	}
 }
