@@ -18,7 +18,7 @@ See terms of license at gnu.org.
         <session>
             <ejb-name>DemoAccessBean</ejb-name>
             <ejb-local-ref>
-                <ejb-ref-name>ch.bfh.uniboard.z.demo.access.DemoAccessBean/successor</ejb-ref-name>
+                <ejb-ref-name>ch.bfh.uniboard.z.demo.access.impl.DemoAccessBean/successor</ejb-ref-name>
                 <local>ch.bfh.uniboard.service.Service</local>
                 <ejb-link>Component1Bean</ejb-link>
             </ejb-local-ref>
