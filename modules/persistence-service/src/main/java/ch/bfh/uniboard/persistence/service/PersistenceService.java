@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.persistence.service;
 
-import ch.bfh.uniboard.core.Service;
+import ch.bfh.uniboard.service.Service;
 import javax.ejb.Local;
 
 /**

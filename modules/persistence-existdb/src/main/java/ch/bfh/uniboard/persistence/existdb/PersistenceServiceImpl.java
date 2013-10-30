@@ -11,11 +11,12 @@
  */
 package ch.bfh.uniboard.persistence.existdb;
 
-import ch.bfh.uniboard.core.Query;
-import ch.bfh.uniboard.core.Request;
-import ch.bfh.uniboard.core.Response;
-import ch.bfh.uniboard.core.Result;
 import ch.bfh.uniboard.persistence.service.PersistenceService;
+import ch.bfh.uniboard.service.Message;
+import ch.bfh.uniboard.service.Query;
+import ch.bfh.uniboard.service.Response;
+import ch.bfh.uniboard.service.Result;
+import ch.bfh.uniboard.service.UniBoardException;
 import javax.ejb.Stateless;
 
 /**
@@ -26,12 +27,12 @@ import javax.ejb.Stateless;
 public class PersistenceServiceImpl implements PersistenceService {
 
 	@Override
-	public Response post(Request request) {
+	public Response post(Message message) throws UniBoardException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public Result get(Query query) {
+	public Result get(Query query) throws UniBoardException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
