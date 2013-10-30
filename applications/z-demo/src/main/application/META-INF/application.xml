@@ -2,9 +2,6 @@
 <application version="6" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd">
     <display-name>EAR Application Descriptor</display-name>
     <module>
-        <java>z-demo-app-client1-1.0-SNAPSHOT.jar</java>
-    </module>
-    <module>
         <ejb>z-demo-access-1.0-SNAPSHOT.jar</ejb>
         <alt-dd>META-INF/z-demo-access-descriptor.xml</alt-dd>
     </module>

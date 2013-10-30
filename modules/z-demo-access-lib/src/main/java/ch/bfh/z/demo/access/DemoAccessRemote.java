@@ -1,3 +1,5 @@
+package ch.bfh.z.demo.access;
+
 /*
  * Copyright (c) 2013 Berner Fachhochschule, Switzerland.
  * Bern University of Applied Sciences, Engineering and Information Technology,
@@ -9,7 +11,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.z.demo.access;
+
 
 import ch.bfh.uniboard.service.Service;
 import javax.ejb.Remote;
