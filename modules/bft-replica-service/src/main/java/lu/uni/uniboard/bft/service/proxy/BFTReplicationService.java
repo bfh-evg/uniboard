@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org. 
  */
-package lu.uni.uniboard.bft.service;
+package lu.uni.uniboard.bft.service.proxy;
 
 import java.io.Serializable;
 
@@ -18,7 +18,7 @@ import java.io.Serializable;
  * 
  * @author Rui Joaquim
  */
-public interface BFTReplicationClientService {
+public interface BFTReplicationService {
   
    /**
     * This method is invoked by the application client to send a request to the 

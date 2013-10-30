@@ -9,9 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package lu.uni.uniboard.bft.client;
+package lu.uni.uniboard.bft.proxy.test;
 
-import lu.uni.uniboard.bft.proxy.BFTClientProxyBean;
+import lu.uni.uniboard.bft.proxy.BFTUniboardClientProxyBean;
 import ch.bfh.uniboard.service.Message;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.Response;
@@ -32,17 +32,17 @@ import org.junit.runner.RunWith;
  * @author Rui Joaquim
  */
 @RunWith(Arquillian.class)
-public class BFTClientBeanTest {
+public class BFTUniboardClientBeanTest {
 
     @Deployment
     public static JavaArchive createDeployment() {
         JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
-            .addClass(BFTClientProxyBean.class)
+            .addClass(BFTUniboardClientProxyBean.class)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
         return ja;
     }
 
-    @EJB(beanName = "BFTClientProxyBean")
+    @EJB(beanName = "BFTUniboardClientProxyBean")
     private Service bean;
 
     @Test

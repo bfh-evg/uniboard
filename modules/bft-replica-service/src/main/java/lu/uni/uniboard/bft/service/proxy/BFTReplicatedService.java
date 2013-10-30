@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org. 
  */
-package lu.uni.uniboard.bft.service;
+package lu.uni.uniboard.bft.service.proxy;
 
 import java.io.Serializable;
 

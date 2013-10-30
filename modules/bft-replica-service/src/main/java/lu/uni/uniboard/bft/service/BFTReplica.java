@@ -16,7 +16,7 @@ package lu.uni.uniboard.bft.service;
  * 
  * @author Rui Joaquim
  */
-public interface BFTReplicaService {
+public interface BFTReplica {
     /**
      * Method to send a BFT protocol message to a replica. 
      * @param bftMessage the message to be processed by the BFT replica.

@@ -1,3 +1,7 @@
+package lu.uni.uniboard.bft.service;
+
+import lu.uni.uniboard.bft.service.BFTServiceMessage;
+
 /*
  * Copyright (c) 2013 Berner Fachhochschule, Switzerland.
  * Bern University of Applied Sciences, Engineering and Information Technology,
@@ -9,14 +13,14 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org. 
  */
-package lu.uni.uniboard.bft.service;
+
 
 /**
  * This interface defines the entry point of a BFT client.
  * 
  * @author Rui Joaquim
  */
-public interface BFTClientService {
+public interface BFTClient {
     /**
      * Method to send a BFT protocol message to a client.
      * @param bftMessage
