@@ -9,12 +9,12 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package lu.uni.uniboard.bft.replica;
+package lu.uni.uniboard.bft.client;
 
-import lu.uni.uniboard.bft.replica.BFTReplicaServiceBean;
-
+import java.io.Serializable;
 import javax.ejb.EJB;
-import lu.uni.uniboard.bft.service.BFTReplicaService;
+import lu.uni.uniboard.bft.service.BFTReplicationClientService;
+import lu.uni.uniboard.bft.service.BFTServiceMessage;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -29,24 +29,24 @@ import org.junit.runner.RunWith;
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
 @RunWith(Arquillian.class)
-public class BFTReplicaBeanTest {
+public class BFTReplicationClientServiceBeanTest {
 
     @Deployment
     public static JavaArchive createDeployment() {
         JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
-            .addClass(BFTReplicaServiceBean.class)
+            .addClass(BFTReplicationClientServiceBean.class)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
         return ja;
     }
 
-    @EJB(beanName = "BFTReplicaServiceBean")
-    private BFTReplicaService bean;
+    @EJB(beanName = "BFTClientBean")
+    private BFTReplicationClientService bean;
 
     @Test
-    public void testProcessMessage() throws Exception {
+    public void testProcessRequest() throws Exception {
         try{
             //BFTServiceMessage m = new BFTServiceMessage();
-            bean.processMessage(null);
+            bean.processRequest(null);
         } catch (UnsupportedOperationException e){
             return;
         }

@@ -43,7 +43,7 @@ public class BFTServiceMessage implements Serializable{
     
     /**
      * Returns the signature of message sender on [message type|payload].
-     * @TODO specify the signature format 
+     * @TODO  specify the signature format 
      * @return a signature in binary format. 
      */
     public byte[] getSignature(){return this.signature;}

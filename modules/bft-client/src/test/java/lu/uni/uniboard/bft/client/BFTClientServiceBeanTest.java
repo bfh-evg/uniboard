@@ -11,11 +11,9 @@
  */
 package lu.uni.uniboard.bft.client;
 
-import lu.uni.uniboard.bft.client.BFTClientBean;
-import ch.bfh.uniboard.service.Message;
-import ch.bfh.uniboard.service.Response;
-import ch.bfh.uniboard.service.Service;
 import javax.ejb.EJB;
+import lu.uni.uniboard.bft.service.BFTClientService;
+import lu.uni.uniboard.bft.service.BFTServiceMessage;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -30,23 +28,27 @@ import org.junit.runner.RunWith;
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
 @RunWith(Arquillian.class)
-public class BFTClientBeanTest {
+public class BFTClientServiceBeanTest {
 
     @Deployment
     public static JavaArchive createDeployment() {
         JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
-            .addClass(BFTClientBean.class)
+            .addClass(BFTClientServiceBean.class)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
         return ja;
     }
 
-    @EJB(beanName = "BFTClientBean")
-    private Service bean;
+    @EJB(beanName = "BFTClientServiceBean")
+    private BFTClientService bean;
 
     @Test
-    public void testPost() throws Exception {
-        Message m = new Message(null);
-        Response r = bean.post(m);
-        Assert.assertNotNull(r);
+    public void testProcessMessage() throws Exception {
+        try{
+            //BFTServiceMessage m = new BFTServiceMessage();
+            bean.processMessage(null);
+        } catch (UnsupportedOperationException e){
+            return;
+        }
+        Assert.fail();
     }
 }

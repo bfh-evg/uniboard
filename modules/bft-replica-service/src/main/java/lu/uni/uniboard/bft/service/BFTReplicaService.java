@@ -11,10 +11,15 @@
  */
 package lu.uni.uniboard.bft.service;
 
-
-public interface BFTComponentService {
+/**
+ * This interface defines the entry point of a BFT replica.
+ * 
+ * @author Rui Joaquim
+ */
+public interface BFTReplicaService {
     /**
-     * @param bftMessage
+     * Method to send a BFT protocol message to a replica. 
+     * @param bftMessage the message to be processed by the BFT replica.
      */
-   public void process (BFTServiceMessage bftMessage);
+   public void processMessage (BFTServiceMessage bftMessage);
 }

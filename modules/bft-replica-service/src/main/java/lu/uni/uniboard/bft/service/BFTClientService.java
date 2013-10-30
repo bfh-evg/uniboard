@@ -11,10 +11,15 @@
  */
 package lu.uni.uniboard.bft.service;
 
-import java.io.Serializable;
-
-
+/**
+ * This interface defines the entry point of a BFT client.
+ * 
+ * @author Rui Joaquim
+ */
 public interface BFTClientService {
-  
-   public Serializable processREquest (Serializable request);
+    /**
+     * Method to send a BFT protocol message to a client.
+     * @param bftMessage
+     */
+   public void processMessage (BFTServiceMessage bftMessage);
 }

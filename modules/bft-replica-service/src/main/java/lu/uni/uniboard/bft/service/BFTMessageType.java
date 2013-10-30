@@ -9,8 +9,10 @@ package lu.uni.uniboard.bft.service;
 import java.io.Serializable;
 
 /**
- *
- * @author rui.joaquim
+ * This class defines the constants used to identify the message type in a 
+ * BFT protocol message (BFTServiceMessage). 
+ * 
+ * @author Rui Joaquim
  */
 public class BFTMessageType implements Serializable{
     private static final long serialVersionUID = 1L;

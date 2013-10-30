@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package lu.uni.uniboard.bft.client;
+package lu.uni.uniboard.bft.proxy;
 
 import ch.bfh.uniboard.service.Component;
 import ch.bfh.uniboard.service.Message;
@@ -28,7 +28,7 @@ import javax.ejb.Stateless;
  */
 @Stateless
 @Local(value = Service.class)
-public class BFTClientBean implements Service {
+public class BFTClientProxyBean implements Service {
 
     @Override
     public Response post(Message message) throws UniBoardException {

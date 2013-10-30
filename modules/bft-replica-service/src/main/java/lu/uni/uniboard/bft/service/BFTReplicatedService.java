@@ -28,8 +28,8 @@ public interface BFTReplicatedService {
     * method must implement the Serializable interface because they are used 
     * directly in the messages send between the BFT service components.
     * 
-    * @param request The request to process.
-    * @return The result of the requested operation.
+    * @param request the request to process.
+    * @return the result of the requested operation.
     */ 
    public Serializable processRequest (Serializable request);
 }

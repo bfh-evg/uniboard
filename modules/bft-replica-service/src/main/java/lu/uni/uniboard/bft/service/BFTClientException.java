@@ -7,7 +7,7 @@
 package lu.uni.uniboard.bft.service;
 
 /**
- * @TODO
+ * @TODO check if it is necessary
  * @author rui.joaquim
  */
 public class BFTClientException extends Exception {

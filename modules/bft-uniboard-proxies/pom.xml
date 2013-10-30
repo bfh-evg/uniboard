@@ -9,11 +9,11 @@
 	</parent>
 
     <groupId>ch.bfh.uniboard</groupId>
-    <artifactId>bft-client</artifactId>
+    <artifactId>bft-uniboard-proxies</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>ejb</packaging>
 
-    <name>bft-client</name>
+    <name>bft-uniboard-proxies</name>
 
     <description>
         Todo.
@@ -23,6 +23,19 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ch.bfh.uniboard</groupId>
+            <artifactId>service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>bft-replica-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -73,11 +86,4 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>bft-replica-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>
