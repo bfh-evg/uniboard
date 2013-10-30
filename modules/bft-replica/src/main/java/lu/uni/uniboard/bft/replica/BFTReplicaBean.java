@@ -13,21 +13,19 @@ package lu.uni.uniboard.bft.replica;
 
 
 import javax.ejb.Stateless;
-import lu.uni.bft.replica.service.BFTReplicaException;
-import lu.uni.bft.replica.service.BFTReplicaService;
+import lu.uni.uniboard.bft.service.BFTComponentService;
+import lu.uni.uniboard.bft.service.BFTServiceMessage;
 
 /**
  *
- * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Rui Joaquim
  */
 @Stateless
-public class BFTReplicaBean implements BFTReplicaService {
+public class BFTReplicaBean implements BFTComponentService {
 
     @Override
-    public Object submit(Object o) throws BFTReplicaException {
+    public void process(BFTServiceMessage bftMessage) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return null;
     }
-
     
 }

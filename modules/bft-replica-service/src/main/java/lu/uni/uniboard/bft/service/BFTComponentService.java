@@ -7,12 +7,14 @@
  * Project UniVote.
  *
  * Distributable under GPL license.
- * See terms of license at gnu.org.
+ * See terms of license at gnu.org. 
  */
-package lu.uni.bft.replica.service;
+package lu.uni.uniboard.bft.service;
 
 
-public interface BFTReplicaService {
-
-   public Object submit (Object o) throws BFTReplicaException;
+public interface BFTComponentService {
+    /**
+     * @param bftMessage
+     */
+   public void process (BFTServiceMessage bftMessage);
 }

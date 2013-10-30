@@ -14,7 +14,7 @@ package lu.uni.uniboard.bft.replica;
 import lu.uni.uniboard.bft.replica.BFTReplicaBean;
 
 import javax.ejb.EJB;
-import lu.uni.bft.replica.service.BFTReplicaService;
+import lu.uni.uniboard.bft.service.BFTComponentService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -40,11 +40,11 @@ public class BFTReplicaBeanTest {
     }
 
     @EJB(beanName = "BFTReplicaBean")
-    private BFTReplicaService bean;
+    private BFTComponentService bean;
 
     @Test
     public void testPost() throws Exception {
-        Object r = bean.submit(null);
-        Assert.assertNull(r);
+        bean.process(null);
+        //Assert..assertNull(r);
     }
 }
