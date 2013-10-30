@@ -23,7 +23,7 @@ import lu.uni.uniboard.bft.service.BFTReplicatedService;
 
 /**
  *
- * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Rui Joaquim
  */
 @Stateless
 @Local(value = BFTReplicatedService.class)

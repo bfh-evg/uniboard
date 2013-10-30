@@ -24,7 +24,7 @@ import javax.ejb.Stateless;
 
 /**
  *
- * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Rui Joaquim
  */
 @Stateless
 @Local(value = Service.class)

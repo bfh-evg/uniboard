@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 
 /**
  *
- * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Rui Joaquim
  */
 @RunWith(Arquillian.class)
 public class BFTReplicaBeanTest {

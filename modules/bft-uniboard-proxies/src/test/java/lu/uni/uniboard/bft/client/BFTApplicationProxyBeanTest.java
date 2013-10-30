@@ -15,7 +15,6 @@ package lu.uni.uniboard.bft.client;
 
 import javax.ejb.EJB;
 import lu.uni.uniboard.bft.proxy.BFTApplicationProxyBean;
-import lu.uni.uniboard.bft.service.BFTReplicaService;
 import lu.uni.uniboard.bft.service.BFTReplicatedService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -28,7 +27,7 @@ import org.junit.runner.RunWith;
 
 /**
  *
- * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Rui Joaquim
  */
 @RunWith(Arquillian.class)
 public class BFTApplicationProxyBeanTest {
