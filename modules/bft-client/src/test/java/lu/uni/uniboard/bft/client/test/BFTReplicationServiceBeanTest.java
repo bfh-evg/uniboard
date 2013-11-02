@@ -9,13 +9,12 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package lu.uni.uniboard.bft.client;
+package lu.uni.uniboard.bft.client.test;
 
-import lu.uni.uniboard.bft.client.BFTClientBean;
-import ch.bfh.uniboard.service.Message;
-import ch.bfh.uniboard.service.Response;
-import ch.bfh.uniboard.service.Service;
+import java.io.Serializable;
 import javax.ejb.EJB;
+import lu.uni.uniboard.bft.client.BFTReplicationServiceBean;
+import lu.uni.uniboard.bft.service.proxy.BFTReplicationService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -27,26 +26,25 @@ import org.junit.runner.RunWith;
 
 /**
  *
- * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Rui Joaquim
  */
 @RunWith(Arquillian.class)
-public class BFTClientBeanTest {
+public class BFTReplicationServiceBeanTest {
 
     @Deployment
     public static JavaArchive createDeployment() {
         JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
-            .addClass(BFTClientBean.class)
+            .addClass(BFTReplicationServiceBean.class)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
         return ja;
     }
 
-    @EJB(beanName = "BFTClientBean")
-    private Service bean;
+    @EJB(beanName = "BFTReplicationServiceBean")
+    private BFTReplicationService bean;
 
     @Test
-    public void testPost() throws Exception {
-        Message m = new Message(null);
-        Response r = bean.post(m);
-        Assert.assertNotNull(r);
+    public void testProcessRequest() throws Exception {
+        Serializable r = bean.processRequest(null);
+        Assert.assertNull(r);
     }
 }

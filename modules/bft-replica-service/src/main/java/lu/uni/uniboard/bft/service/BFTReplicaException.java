@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package lu.uni.bft.replica.service;
+package lu.uni.uniboard.bft.service;
 
 /**
- *
+ * @TODO check if it is necessary
  * @author rui.joaquim
  */
 public class BFTReplicaException extends Exception {
