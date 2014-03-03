@@ -4,7 +4,7 @@
  * Research Institute for Security in the Information Society, E-Voting Group,
  * Biel, Switzerland.
  *
- * Project Univote.
+ * Project UniVote.
  *
  * Distributable under GPL license.
  * See terms of license at gnu.org.

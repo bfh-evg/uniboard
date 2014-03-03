@@ -34,6 +34,10 @@ public class ConcreteComponentTest {
     @Deployment
     public static JavaArchive createDeployment() {
         JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
+            .addClass(WorkerBean1.class)
+            .addClass(WorkerBean2.class)
+            .addClass(WorkerBean3.class)
+            .addClass(WorkerBean4.class)
             .addClass(Component1Bean.class)
             .addClass(TerminatingComponentBean.class)
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
