@@ -37,33 +37,36 @@
 \@writefile{toc}{\contentsline {section}{\numberline {2.2}Service Request Delegation}{6}{section.2.2}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces UML sequence diagram illustrating the dynamics of the delegation of a service request. Each \emph  {post()} request received at a component is processed at first internally by the self-delegated method \emph  {beforePost()}, and then passed to the next downstream component. The response of the downstream component is processed at first by the self-delegated method \emph  {afterPost()}, and then returned to the calling component (or the application).}}{7}{figure.2.2}}
 \newlabel{fig:service-request-delegation}{{2.2}{7}{UML sequence diagram illustrating the dynamics of the delegation of a service request. Each \emph {post()} request received at a component is processed at first internally by the self-delegated method \emph {beforePost()}, and then passed to the next downstream component. The response of the downstream component is processed at first by the self-delegated method \emph {afterPost()}, and then returned to the calling component (or the application)}{figure.2.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}Handling Service Requests}{8}{section.2.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Handling Service Requests}{7}{section.2.3}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Specific Services}{9}{chapter.3}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}A Service Implementing a Property}{9}{section.3.1}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}The Persistence Service}{9}{section.3.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}The Access Service}{9}{section.3.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}A Service Implementing a Property}{9}{section.3.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}The Fault Tolerance Service}{9}{section.3.3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces UML class diagram for the illustration of the authorization service component. Notice that it is derived from the \emph  {Component} class which implies that there is a downstream component link to this component.}}{10}{figure.3.1}}
 \newlabel{fig:authorization-service}{{3.1}{10}{UML class diagram for the illustration of the authorization service component. Notice that it is derived from the \emph {Component} class which implies that there is a downstream component link to this component}{figure.3.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces UML class diagram for the illustration of the persistence service component. Notice that it merely implements the \emph  {Service} interface, and that it is not derived from the \emph  {Component} class.}}{10}{figure.3.2}}
-\newlabel{fig:persistence-service}{{3.2}{10}{UML class diagram for the illustration of the persistence service component. Notice that it merely implements the \emph {Service} interface, and that it is not derived from the \emph {Component} class}{figure.3.2}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Distributed Bulletin Board}{11}{chapter.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}The Persistence Service}{10}{section.3.4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces UML class diagram for the illustration of the persistence service component. Notice that it merely implements the \emph  {Service} interface, and that it is not derived from the \emph  {Component} class.}}{11}{figure.3.2}}
+\newlabel{fig:persistence-service}{{3.2}{11}{UML class diagram for the illustration of the persistence service component. Notice that it merely implements the \emph {Service} interface, and that it is not derived from the \emph {Component} class}{figure.3.2}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Distributed Bulletin Board}{12}{chapter.4}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}BFT Client Component}{11}{section.4.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces UML class diagram illustrating the client side of the replication component. Class \emph  {BFTClient} extends the \emph  {Component} class. In addition, it uses the remote service accessible via the \emph  {BFTReplica} interface.}}{11}{figure.4.1}}
-\newlabel{fig:byzantine-client}{{4.1}{11}{UML class diagram illustrating the client side of the replication component. Class \emph {BFTClient} extends the \emph {Component} class. In addition, it uses the remote service accessible via the \emph {BFTReplica} interface}{figure.4.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}BFT Replica Component}{12}{section.4.2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces UML class diagram illustrating the replication side of the replica component. Class \emph  {BFTReplicaComponent} extends the \emph  {Component} class (and, thus, is a \emph  {Service}). In addition, it implements the \emph  {BFTReplica} interface providing specific services to peer replica clients.}}{12}{figure.4.2}}
-\newlabel{fig:byzantine-replica}{{4.2}{12}{UML class diagram illustrating the replication side of the replica component. Class \emph {BFTReplicaComponent} extends the \emph {Component} class (and, thus, is a \emph {Service}). In addition, it implements the \emph {BFTReplica} interface providing specific services to peer replica clients}{figure.4.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Deployment View of the Replicated Board}{12}{section.4.3}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Implementation Hints}{13}{chapter.5}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}BFT Client Component}{12}{section.4.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces UML class diagram illustrating the client side of the replication component. Class \emph  {BFTClient} extends the \emph  {Component} class. In addition, it uses the remote service accessible via the \emph  {BFTReplica} interface.}}{12}{figure.4.1}}
+\newlabel{fig:byzantine-client}{{4.1}{12}{UML class diagram illustrating the client side of the replication component. Class \emph {BFTClient} extends the \emph {Component} class. In addition, it uses the remote service accessible via the \emph {BFTReplica} interface}{figure.4.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}BFT Replica Component}{13}{section.4.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces UML class diagram illustrating the replication side of the replica component. Class \emph  {BFTReplicaComponent} extends the \emph  {Component} class (and, thus, is a \emph  {Service}). In addition, it implements the \emph  {BFTReplica} interface providing specific services to peer replica clients.}}{13}{figure.4.2}}
+\newlabel{fig:byzantine-replica}{{4.2}{13}{UML class diagram illustrating the replication side of the replica component. Class \emph {BFTReplicaComponent} extends the \emph {Component} class (and, thus, is a \emph {Service}). In addition, it implements the \emph {BFTReplica} interface providing specific services to peer replica clients}{figure.4.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Deployment View of the Replicated Board}{13}{section.4.3}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Implementation Hints}{14}{chapter.5}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Namespaces, Names}{13}{section.5.1}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Access to the Downstream Component}{13}{section.5.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.3}Skeleton for a Concrete Component}{14}{section.5.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.4}A Simple Scheme for Data Containers}{14}{section.5.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Namespaces, Names}{14}{section.5.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Access to the Downstream Component}{14}{section.5.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}Skeleton for a Concrete Component}{15}{section.5.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}A Simple Scheme for Data Containers}{15}{section.5.4}}
+\newlabel{sec:data-container}{{5.4}{15}{A Simple Scheme for Data Containers\relax }{section.5.4}{}}
