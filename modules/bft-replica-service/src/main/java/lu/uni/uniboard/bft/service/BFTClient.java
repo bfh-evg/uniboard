@@ -1,23 +1,20 @@
-package lu.uni.uniboard.bft.service;
-
-import lu.uni.uniboard.bft.service.BFTServiceMessage;
-
 /*
- * Copyright (c) 2013 Berner Fachhochschule, Switzerland.
- * Bern University of Applied Sciences, Engineering and Information Technology,
- * Research Institute for Security in the Information Society, E-Voting Group,
- * Biel, Switzerland.
+ * Copyright (c) 2014 ... Rui?
  *
- * Project UniVote.
+ * Project VIVO.
  *
  * Distributable under GPL license.
- * See terms of license at gnu.org. 
+ * See terms of license at gnu.org.
  */
+package lu.uni.uniboard.bft.service;
+
 
 
 /**
  * This interface defines the entry point of a BFT client.
- * 
+ * <p>
+ * TODO: Envision to eleminate this interface. See also "ch.bfh.uniboard.service.Service".
+ *
  * @author Rui Joaquim
  */
 public interface BFTClient {
