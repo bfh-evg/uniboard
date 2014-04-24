@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2013 Berner Fachhochschule, Switzerland.
+ * Copyright (c) 2014 Berner Fachhochschule, Switzerland.
  * Bern University of Applied Sciences, Engineering and Information Technology,
  * Research Institute for Security in the Information Society, E-Voting Group,
  * Biel, Switzerland.
  *
- * Project UniVote.
+ * Project UniBoard.
  *
  * Distributable under GPL license.
  * See terms of license at gnu.org.
@@ -34,7 +34,8 @@ public interface Service {
      * @throws UniBoardException if the service request cannot be
      *      fulfilled (for example, if required data is missing)
      */
-	public Response post(Message message) throws UniBoardException;
+        public Attributes post(String application, Message message, Attributes alpha, Attributes beta) throws UniBoardException;
+
 
     /**
      * Queries the bulletin board asking a component
@@ -44,5 +45,5 @@ public interface Service {
      * @throws UniBoardException if the service request cannot be
      *      fulfilled (for example, if required data is missing)
      */
-	public Result get(Query query) throws UniBoardException;
+	public ResultContainer get(String application, Query query) throws UniBoardException;
 }
