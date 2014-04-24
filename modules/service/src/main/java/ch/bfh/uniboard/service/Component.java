@@ -54,7 +54,6 @@ public abstract class Component implements Service {
      */
     protected Attributes beforePost(String application, Message message, Attributes alpha, Attributes beta) throws UniBoardException {
         // default implementation
-        beta.
         return beta;
     }
 
