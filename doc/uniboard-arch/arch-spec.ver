@@ -12,7 +12,11 @@
  & \listset {Eric Dubuis}
  & Introduced chain of components.\\
 0.3
- & \today 
+ & February 17, 2014
  & \listset {Eric Dubuis}
  & ..., removed typos.\\
+0.4
+ & April 24, 2014
+ & \listset {Severin Hauser}
+ & Made changes so that it corresponds to the formal spec.\\
 \end {longtable}

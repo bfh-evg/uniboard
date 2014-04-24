@@ -33,7 +33,8 @@
 \begin{versionhistory}
 	\vhEntry{0.1}{August 13, 2013}{Eric Dubuis}{Initial draft.}
 	\vhEntry{0.2}{September 10, 2013}{Eric Dubuis}{Introduced chain of components.}
-	\vhEntry{0.3}{\today}{Eric Dubuis}{..., removed typos.}
+	\vhEntry{0.3}{February 17, 2014}{Eric Dubuis}{..., removed typos.}
+	\vhEntry{0.4}{April 24, 2014}{Severin Hauser}{Made changes so that it corresponds to the formal spec.}
 \end{versionhistory}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,18 +129,18 @@ Component class.}
 The \emph{Service} interface consists of two
 general-purpose methods, \emph{post} and \emph{get}:
 
-\begin{lstlisting}
-package org.uniboard.core;
+\begin{lstlisting}[style=javastyle]
+package ch.bfh.uniboard;
 
 public interface Service {
-    public Response post(Message message) throws UniBoardException;
-    public Result get(Query query) throws UniBoardException;
+    public Attributes post(String application, Message message, Attributes alpha, Attributes beta);
+    public ResultContainer get(String application, Query query);
 }
 \end{lstlisting}
 
 Not only the interface is rather generic, but also the provided
-and returned data containers \emph{Message}, \emph{Response},
-\emph{Query}, and \emph{Result}. The introduction of generic
+and returned data containers \emph{Message}, \emph{Attributes},
+\emph{Query}, and \emph{ResultContainer}. The introduction of generic
 data containers minimizes the coupling: Components depend on
 the core classes only, but not on specific classes of other
 components. See (TODO: Provide Ref.\ to be provided) for
@@ -148,45 +149,17 @@ a more detailed elaboration on this topic.
 The meaning of the data abstractions can be summarized as follows:
 
 \begin{itemize}
-	\item \emph{Message:} Data that originates from a previous
-		component or, ultimately, from an application
+	\item \emph{Message:} Data that originates from an author
 		for a \emph{post} operation, which is passed
 		to the next component. Each receiving component
-		inspects the data
-		and, if data is according to the expected format and
-		content, processes it and ultimately passes it to the
+		processes it and passes it to the
 		next component (except for the final component,
-		the persistence store), perhaps by
-		adding additional information.
-	\item \emph{Response:} Data that is computed
-		by the component or the downstream component
-		and given back to the calling component or, ultimately,
-		to the application. Each receiving component
-		(or the application)
-		inspects the data and, if data is according to the expected
-		format and content, processes it and ultimately returns
-		it to the calling component or the application,
-		perhaps by adding additional
-		information (except the application).
-	\item \emph{Query:} Data that originates from a previous
-		component or, ultimately, from an application
-		for a \emph{get} operation. Each receiving component
-		inspects the data
-		and, if data is according to the expected format and
-		content, processes it and ultimately passes it to the
-		next component (except for the final component,
-		the persistence store), perhaps by adding
-		additional information.
-	\item \emph{Result:} Data that is computed
-		by the component or the downstream component
-		and given back to the calling component or, ultimately,
-		to the application. Each receiving component
-		(or the application)
-		inspects the data and, if data is according to the expected
-		format and content, processes it and ultimately returns
-		it to the calling component or the application,
-		perhaps by adding additional
-		information (except the application).
+		the persistence store).
+	\item \emph{Attributes:} List of attributes, where each attribute is computed
+		by the author or a component. These attributes belong either to a \emph{Message} or \emph{Result}.
+	\item \emph{Query:} Data that originates from an author
+		for a \emph{get} operation. The \emph{Query} defines the set of posts that are returned in the \emph{Result}.
+	\item \emph{ResultContainer:} Consists of two parts. First there is the \emph{Result}, which is a set of posts that satisfies the \emph{Query}, and there are \emph{Attributes} for this \emph{Result}. Every component may add an attribute. The \emph{Result} is set by the final component, the persistence store.
 \end{itemize}
 
 
