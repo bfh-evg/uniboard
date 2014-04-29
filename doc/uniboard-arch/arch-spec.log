@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2011.8.15)  24 APR 2014 14:18
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2011.8.15)  29 APR 2014 18:28
 entering extended mode
 **arch-spec.tex
 (C:\Users\hss3\Documents\Git\Uniboard\doc\uniboard-arch\arch-spec.tex
@@ -969,7 +969,7 @@ File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 ) [5
 
 ]
-<figs/service-request-delegation.jpg, id=133, 897.3525pt x 771.88374pt>
+<figs/service-request-delegation.jpg, id=133, 927.465pt x 771.88374pt>
 File: figs/service-request-delegation.jpg Graphic file (type jpg)
 
 <use figs/service-request-delegation.jpg> [6 <C:/Users/hss3/Documents/Git/Unibo
@@ -1029,10 +1029,10 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 13491 strings out of 494053
- 195113 string characters out of 3148606
- 466860 words of memory out of 3000000
- 16294 multiletter control sequences out of 15000+200000
+ 13490 strings out of 494053
+ 195097 string characters out of 3148606
+ 461860 words of memory out of 3000000
+ 16293 multiletter control sequences out of 15000+200000
  23809 words of font info for 61 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
  53i,8n,69p,870b,1867s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1054,7 +1054,7 @@ k\ljfour\jknappen\ec\dpi600\ecsx2074.pk> <C:\Users\hss3\AppData\Local\MiKTeX\2.
 9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1095.pk><C:/Program Files/MiKTeX 2.9/f
 onts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
 e1/public/amsfonts/cm/cmsy9.pfb>
-Output written on arch-spec.pdf (15 pages, 551405 bytes).
+Output written on arch-spec.pdf (15 pages, 551935 bytes).
 PDF statistics:
  850 PDF objects out of 1000 (max. 8388607)
  174 named destinations out of 1000 (max. 500000)

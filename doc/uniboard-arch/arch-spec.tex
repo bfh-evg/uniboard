@@ -133,8 +133,8 @@ general-purpose methods, \emph{post} and \emph{get}:
 package ch.bfh.uniboard;
 
 public interface Service {
-    public Attributes post(String application, Message message, Attributes alpha, Attributes beta);
-    public ResultContainer get(String application, Query query);
+    public Attributes post(Message message, Attributes alpha, Attributes beta);
+    public ResultContainer get(Query query);
 }
 \end{lstlisting}
 
