@@ -19,12 +19,13 @@ public abstract class Component implements Service {
 
     @Override
     public final Attributes post(String application, Message message, Attributes alpha, Attributes beta) throws UniBoardException {
-        //Do some preprocessing actions
+        //do some preprocessing actions
         Attributes beforePost = beforePost(application, message, alpha, beta);
         //pass the processed content to the successor
         Attributes betaReceived = getSuccessor().post(application, message, alpha, beforePost);
-        
+        //do some actions with content returned by successor
         Attributes afterPost = afterPost(application, message, alpha, betaReceived);
+        //return the processed content
         return afterPost ;
     }
 
@@ -44,19 +45,28 @@ public abstract class Component implements Service {
 
     
     /**
-     * Actions done on the query before passing it to the successor.
-     * @param application
-     * @param message
-     * @param alpha
-     * @param beta
+     * Actions done on the post before passing it to the successor.
+     * @param application the application identifier
+     * @param message the message being posted
+     * @param alpha the attributes of the messages being posted
+     * @param beta the attributes to be added to the post
      * @return the processed attributes
-     * @throws UniBoardException 
+     * @throws UniBoardException an exception if an error occured
      */
     protected Attributes beforePost(String application, Message message, Attributes alpha, Attributes beta) throws UniBoardException {
         // default implementation
         return beta;
     }
 
+    /**
+     * Actions done on the post after receiving it back from the successor
+     * @param application the application identifier
+     * @param message the message posted
+     * @param alpha the attributes of the messages posted
+     * @param beta the attributes added to the post
+     * @return the attributes to return processed
+     * @throws UniBoardException 
+     */
     protected Attributes afterPost(String application, Message message, Attributes alpha, Attributes beta) throws UniBoardException {
         // default implementation
         return beta;
@@ -87,5 +97,9 @@ public abstract class Component implements Service {
         return resultContainer.getGamma();
     }
 
+    /**
+     * Returns the successor layer in the layer stack
+     * @return the service coming after this layer
+     */
     protected abstract Service getSuccessor();
 }
