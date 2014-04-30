@@ -1,0 +1,17 @@
+/maven-ejb-config/target/
+/modules/core/target/
+/modules/persistence-service/target/
+/modules/persistence-existdb/target/
+/applications/singleinstance/target/
+/modules/service/target/
+/modules/ejb-base-component/target/
+/modules/z-ejb-component1/target/
+/modules/z-ejb-component2/target/
+/applications/z-demo/target/
+/modules/z-ejb-component-final/target/
+/modules/z-demo-access/target/
+/application-clients/z-demo-app-client1/target/
+/modules/bft-replica-service/target/
+/modules/bft-client/target/
+/modules/z-demo-access-lib/target/
+/application-clients/z-demo-app-client2/target/

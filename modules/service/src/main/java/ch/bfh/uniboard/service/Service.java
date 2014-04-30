@@ -12,12 +12,10 @@
 package ch.bfh.uniboard.service;
 
 /**
- * Generic interface for a component of the bulletin board. It exposes
- * two generic methods to clients. Clients are assumed to provide all
- * the necessary data in the arguments of the methods.
+ * Generic interface for a component of the bulletin board. It exposes two generic methods to clients. Clients are
+ * assumed to provide all the necessary data in the arguments of the methods.
  * <p>
- * Calls to these methods are blocking. That is, client calls block
- * until the taks of the method is completed.
+ * Calls to these methods are blocking. That is, client calls block until the taks of the method is completed.
  * <p>
  * TODO: Asynchnonous (non-blocking) calls to be provided.
  *
@@ -25,25 +23,21 @@ package ch.bfh.uniboard.service;
  */
 public interface Service {
 
-    /**
-     * Posts a message to the bulletin board by posting it to a component
-     * implementing this interface.
-     *
-     * @param message a message containing all required information elements
-     * @return a response
-     * @throws UniBoardException if the service request cannot be
-     *      fulfilled (for example, if required data is missing)
-     */
-        public Attributes post(String application, Message message, Attributes alpha, Attributes beta) throws UniBoardException;
+	/**
+	 * Posts a message to the bulletin board by posting it to a component implementing this interface.
+	 *
+	 * @param message a message containing all required information elements
+	 * @param alpha Atrributes added by the author of the message.
+	 * @param beta Attributes added by upper services.
+	 * @return a response
+	 */
+	public Attributes post(Message message, Attributes alpha, Attributes beta);
 
-
-    /**
-     * Queries the bulletin board asking a component
-     * implementing this interface.
-     * @param query a query containing all required information elements
-     * @return a result
-     * @throws UniBoardException if the service request cannot be
-     *      fulfilled (for example, if required data is missing)
-     */
-	public ResultContainer get(String application, Query query) throws UniBoardException;
+	/**
+	 * Queries the bulletin board asking a component implementing this interface.
+	 *
+	 * @param query a query containing all required information elements
+	 * @return a result
+	 */
+	public ResultContainer get(Query query);
 }
