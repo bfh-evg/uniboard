@@ -16,60 +16,59 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 /**
- * A data container for arbitray key/value pairs. Keys are strings, values
- * can be anything. Values should be immutable. Map entries are ordered.
+ * A data container for arbitray key/value pairs. Keys are strings, values can be anything. Values should be immutable.
+ * Map entries are ordered.
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class Attributes implements Serializable {
-    private static final long serialVersionUID = 1L;
 
-    /**
-     * Holder of key/value pairs.
-     */
-    private final LinkedHashMap<String, Object> map;
+	private static final long serialVersionUID = 1L;
 
-    public Attributes() {
-        map = new LinkedHashMap<String, Object>();
-    }
+	/**
+	 * Holder of key/value pairs.
+	 */
+	private final LinkedHashMap<String, Object> map;
 
-    
-    /**
-     * Initializes the data container
-     * @param map a map initialized with key/value pairs; values should be immutable
-     */
-    public Attributes(LinkedHashMap<String, Object> map) {
-        this.map = map;
-    }
+	public Attributes() {
+		map = new LinkedHashMap<>();
+	}
 
-    /**
-     * Returns the value associated with given key, or null, if
-     * key is not in the map.
-     *
-     * @param key a key
-     * @return assoiciated value, or null
-     */
-    public Object getValue(String key) {
-        return this.map.get(key);
-    }
+	/**
+	 * Initializes the data container
+	 *
+	 * @param map a map initialized with key/value pairs; values should be immutable
+	 */
+	public Attributes(LinkedHashMap<String, Object> map) {
+		this.map = map;
+	}
 
-    /**
-     * Returns all keys in the map.
-     *
-     * @return a set of keys
-     */
-    public Set<String> getKeys() {
-        return this.map.keySet();
-    }
+	/**
+	 * Returns the value associated with given key, or null, if key is not in the map.
+	 *
+	 * @param key a key
+	 * @return assoiciated value, or null
+	 */
+	public Object getValue(String key) {
+		return this.map.get(key);
+	}
 
-    /**
-     * Adds an attribute at the end of the map
-     * @param key a key
-     * @param value assoiciated value, or null
-     */
-    public void add(String key, Object value){
-        this.map.put(key, value);
-    }
-    
-    // TODO Add other methods if necessary
+	/**
+	 * Returns all keys in the map.
+	 *
+	 * @return a set of keys
+	 */
+	public Set<String> getKeys() {
+		return this.map.keySet();
+	}
+
+	/**
+	 * Adds an attribute at the end of the map
+	 *
+	 * @param key a key
+	 * @param value assoiciated value, or null
+	 */
+	public void add(String key, Object value) {
+		this.map.put(key, value);
+	}
 }

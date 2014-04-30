@@ -17,7 +17,7 @@ package ch.bfh.uniboard.service;
  * <p>
  * Calls to these methods are blocking. That is, client calls block until the taks of the method is completed.
  * <p>
- * TODO: Asynchnonous (non-blocking) calls to be provided.
+ * TODO: Add @Local Annotation
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
