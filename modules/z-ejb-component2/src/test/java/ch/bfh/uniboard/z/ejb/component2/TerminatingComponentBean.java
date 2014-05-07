@@ -11,12 +11,10 @@
  */
 package ch.bfh.uniboard.z.ejb.component2;
 
-import ch.bfh.uniboard.service.Message;
+import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.Response;
-import ch.bfh.uniboard.service.Result;
+import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.Service;
-import ch.bfh.uniboard.service.UniBoardException;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 
@@ -28,17 +26,16 @@ import javax.ejb.Stateless;
 @Local(value = Service.class)
 public class TerminatingComponentBean implements Service {
 
-    @Override
-    public Response post(Message message) throws UniBoardException {
-        System.out.println("post() called.");
-        Response r = new Response(null);
-        return r;
-    }
+	@Override
+	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
+		System.out.println("post() called.");
+		return beta;
+	}
 
-    @Override
-    public Result get(Query query) throws UniBoardException {
-        System.out.println("get() called.");
-        Result r = new Result(null);
-        return r;
-    }
+	@Override
+	public ResultContainer get(Query query) {
+		System.out.println("get() called.");
+		ResultContainer r = new ResultContainer(null, null);
+		return r;
+	}
 }

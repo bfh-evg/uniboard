@@ -14,19 +14,32 @@ package ch.bfh.uniboard.service;
 /**
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 public abstract class Component implements Service {
 
 	@Override
-	public final Attributes post(Message message, Attributes alpha, Attributes beta) {
+	public final Attributes post(byte[] message, Attributes alpha, Attributes beta) {
 		//do some preprocessing actions
 		Attributes beforePost = this.beforePost(message, alpha, beta);
-		//pass the processed content to the successor
-		Attributes betaReceived = this.getSuccessor().post(message, alpha, beforePost);
-		//do some actions with content returned by successor
-		Attributes afterPost = this.afterPost(message, alpha, betaReceived);
-		//return the processed content
-		return afterPost;
+		//Check if the preprocessing created an error
+		if (beforePost.getKeys().contains(Attributes.ERROR)) {
+			Attributes errorBeta = new Attributes();
+			errorBeta.add(Attributes.ERROR, beforePost.getValue(Attributes.ERROR));
+			return errorBeta;
+		} //Check if the preprocessing created an rejected the message
+		else if (beforePost.getKeys().contains(Attributes.REJECTED)) {
+			Attributes rejectBeta = new Attributes();
+			rejectBeta.add(Attributes.REJECTED, beforePost.getValue(Attributes.REJECTED));
+			return rejectBeta;
+		} else {
+			//pass the processed content to the successor
+			Attributes betaReceived = this.getSuccessor().post(message, alpha, beforePost);
+			//do some actions with content returned by successor
+			this.afterPost(message, alpha, betaReceived);
+			//return the processed content
+			return betaReceived;
+		}
 	}
 
 	@Override
@@ -51,7 +64,7 @@ public abstract class Component implements Service {
 	 * @param beta the attributes to be added to the post
 	 * @return the processed attributes
 	 */
-	protected Attributes beforePost(Message message, Attributes alpha, Attributes beta) {
+	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
 		// default implementation
 		return beta;
 	}
@@ -62,11 +75,9 @@ public abstract class Component implements Service {
 	 * @param message the message posted
 	 * @param alpha the attributes of the messages posted
 	 * @param beta the attributes added to the post
-	 * @return the attributes to return processed
 	 */
-	protected Attributes afterPost(Message message, Attributes alpha, Attributes beta) {
+	protected void afterPost(byte[] message, Attributes alpha, Attributes beta) {
 		// default implementation
-		return beta;
 	}
 
 	/**

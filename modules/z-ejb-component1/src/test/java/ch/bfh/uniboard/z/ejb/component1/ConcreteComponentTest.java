@@ -11,8 +11,7 @@
  */
 package ch.bfh.uniboard.z.ejb.component1;
 
-import ch.bfh.uniboard.service.Message;
-import ch.bfh.uniboard.service.Response;
+import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Service;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -31,26 +30,26 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class ConcreteComponentTest {
 
-    @Deployment
-    public static JavaArchive createDeployment() {
-        JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
-            .addClass(WorkerBean1.class)
-            .addClass(WorkerBean2.class)
-            .addClass(WorkerBean3.class)
-            .addClass(WorkerBean4.class)
-            .addClass(Component1Bean.class)
-            .addClass(TerminatingComponentBean.class)
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-        return ja;
-    }
+	@Deployment
+	public static JavaArchive createDeployment() {
+		JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
+				.addClass(WorkerBean1.class)
+				.addClass(WorkerBean2.class)
+				.addClass(WorkerBean3.class)
+				.addClass(WorkerBean4.class)
+				.addClass(Component1Bean.class)
+				.addClass(TerminatingComponentBean.class)
+				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+		return ja;
+	}
 
-    @EJB(beanName = "Component1Bean")
-    private Service bean;
+	@EJB(beanName = "Component1Bean")
+	private Service bean;
 
-    @Test
-    public void testPost() throws Exception {
-        Message m = new Message(null);
-        Response r = bean.post(m);
-        Assert.assertNotNull(r);
-    }
+	@Test
+	public void testPost() throws Exception {
+		byte[] m = new byte[1];
+		Attributes beta = bean.post(m, null, null);
+		Assert.assertNull(beta);
+	}
 }

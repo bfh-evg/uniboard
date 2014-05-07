@@ -11,12 +11,10 @@
  */
 package ch.bfh.uniboard.z.ejb.compfinal;
 
-import ch.bfh.uniboard.service.Message;
+import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.Response;
-import ch.bfh.uniboard.service.Result;
+import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.Service;
-import ch.bfh.uniboard.service.UniBoardException;
 import java.util.logging.Logger;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -28,17 +26,18 @@ import javax.ejb.Stateless;
 @Stateless
 @Local(value = Service.class)
 public class ComponentFinalBean implements Service {
-    private static final Logger logger = Logger.getLogger(ComponentFinalBean.class.getName());
 
-    @Override
-    public Response post(Message message) throws UniBoardException {
-        logger.fine("***** post(Message) called *****");
-        return new Response(null);
-    }
+	private static final Logger logger = Logger.getLogger(ComponentFinalBean.class.getName());
 
-    @Override
-    public Result get(Query query) throws UniBoardException {
-        logger.fine("***** get(Query) called *****");
-        return new Result(null);
-    }
+	@Override
+	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
+		logger.fine("***** post(Message) called *****");
+		return beta;
+	}
+
+	@Override
+	public ResultContainer get(Query query) {
+		logger.fine("***** get(Query) called *****");
+		return new ResultContainer(null, null);
+	}
 }

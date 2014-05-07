@@ -11,14 +11,14 @@
  */
 package ch.bfh.uniboard.z.ejb.component1;
 
-import ch.bfh.uniboard.service.Message;
+import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.Response;
-import ch.bfh.uniboard.service.Result;
+import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.Service;
-import ch.bfh.uniboard.service.UniBoardException;
+import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import org.junit.Assert;
 
 /**
  *
@@ -28,17 +28,22 @@ import javax.ejb.Stateless;
 @Local(value = Service.class)
 public class TerminatingComponentBean implements Service {
 
-    @Override
-    public Response post(Message message) throws UniBoardException {
-        System.out.println("post() called.");
-        Response r = new Response(null);
-        return r;
-    }
+	@EJB
+	private Service bean;
 
-    @Override
-    public Result get(Query query) throws UniBoardException {
-        System.out.println("get() called.");
-        Result r = new Result(null);
-        return r;
-    }
+	@Override
+	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
+		System.out.println("post() called.");
+		Attributes r = new Attributes();
+		return r;
+	}
+
+	@Override
+	public ResultContainer get(Query query) {
+		byte[] m = new byte[1];
+		Attributes beta = bean.post(m, null, null);
+		Assert.assertNull(beta);
+		ResultContainer r = new ResultContainer(null, beta);
+		return r;
+	}
 }

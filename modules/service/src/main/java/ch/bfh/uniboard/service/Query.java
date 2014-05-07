@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 /**
- * A data container for arbitray key/value pairs. Keys are strings, values can be anything. Values should be immutable.
+ * A data container for arbitrary key/value pairs. Keys are strings, values can be anything. Values should be immutable.
  * Map entries are sorted by key values.
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;

@@ -11,16 +11,19 @@
  */
 package ch.bfh.uniboard.service;
 
+import javax.ejb.Local;
+
 /**
  * Generic interface for a component of the bulletin board. It exposes two generic methods to clients. Clients are
  * assumed to provide all the necessary data in the arguments of the methods.
  * <p>
- * Calls to these methods are blocking. That is, client calls block until the taks of the method is completed.
+ * Calls to these methods are blocking. That is, client calls block until the task of the method is completed.
  * <p>
- * TODO: Add @Local Annotation
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@Local
 public interface Service {
 
 	/**
@@ -31,7 +34,7 @@ public interface Service {
 	 * @param beta Attributes added by upper services.
 	 * @return a response
 	 */
-	public Attributes post(Message message, Attributes alpha, Attributes beta);
+	public Attributes post(byte[] message, Attributes alpha, Attributes beta);
 
 	/**
 	 * Queries the bulletin board asking a component implementing this interface.

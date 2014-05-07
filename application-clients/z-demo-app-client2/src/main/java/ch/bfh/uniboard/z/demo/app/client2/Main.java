@@ -15,7 +15,7 @@ public class Main {
 		System.out.println("Starting Z Demo Application Client 1...");
 
 		DemoAccessRemote svc = lookupService();
-		svc.post(null);
+		svc.post(new byte[1], null, null);
 
 		System.out.println("Z Demo Application Client 1 finished.");
 	}

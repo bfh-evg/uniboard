@@ -20,4 +20,12 @@
 		for the components of the bulletin board. Interfaces
 		are provided only (in a technology-agnostic way).
 	</description>
+	<dependencies>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>
