@@ -68,15 +68,14 @@ To achieve this, the following architectural goals have been in mind:
 		to the distributed one, and vice versa.
 \end{itemize}
 
-Note that the desired properties of \uniboard\ have been specified
-elsewhere (Ref.\ to be provided).
+Note that the supported properties of \uniboard\ depend of the combination of components used.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Component Composition}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In (Ref.\ to be provided), several properties of a public bulletin
+In (Ref.\ to be provided), several properties and the basic operations of a public bulletin
 board have been identified. We present in this document the
 specification of a software architecture allowing to implement
 these properties by \emph{composition} of respective building
@@ -97,7 +96,7 @@ course, not every arbitrary combination of components results
 in a useful configuration.) The final component in this chain
 is a persistence service allowing to store information, and
 to retrieve it later. In fact, our architecture follows the
-\emph{chain of responsibility pattern}. (TODO Ref.\ to be provided.)
+\emph{chain of responsibility pattern} \cite{Gamma:1995:DPE:186897}.
 
 
 \section{Chain of Components}
@@ -106,14 +105,14 @@ In order to achieve upmost flexibility, all components of
 \uniboard\ implement the very same \emph{generic} service
 interface, simply called \emph{Service} (namespaces in text
 omitted for brevity). That is, each component (indirectly)
-implements this interface. Furthermore, applications will
-use the same service interface, too.
+implements this interface. This interface is deduced from the 
+basic operations of a bulletin board.
 
 The chain of components is achieved by linking a component
 to the next one, which in turn is linked to another component.
-Only the last component in the chain, the persistence service, is not
+Only the last component in the chain, the \emph{PersistenceService}, is not
 linked anymore to another component. \fig{fig:chain-of-components}
-shows the static structure.
+shows the static structure. This chain is 
 
 \begin{figure}[ht]
 \centerline{
@@ -133,13 +132,13 @@ general-purpose methods, \emph{post} and \emph{get}:
 package ch.bfh.uniboard;
 
 public interface Service {
-    public Attributes post(Message message, Attributes alpha, Attributes beta);
+    public Attributes post(byte[] message, Attributes alpha, Attributes beta);
     public ResultContainer get(Query query);
 }
 \end{lstlisting}
 
 Not only the interface is rather generic, but also the provided
-and returned data containers \emph{Message}, \emph{Attributes},
+and returned data containers \emph{Attributes},
 \emph{Query}, and \emph{ResultContainer}. The introduction of generic
 data containers minimizes the coupling: Components depend on
 the core classes only, but not on specific classes of other
@@ -149,17 +148,11 @@ a more detailed elaboration on this topic.
 The meaning of the data abstractions can be summarized as follows:
 
 \begin{itemize}
-	\item \emph{Message:} Data that originates from an author
-		for a \emph{post} operation, which is passed
-		to the next component. Each receiving component
-		processes it and passes it to the
-		next component (except for the final component,
-		the persistence store).
 	\item \emph{Attributes:} List of attributes, where each attribute is computed
-		by the author or a component. These attributes belong either to a \emph{Message} or \emph{Result}.
+		by the author or a component. These attributes belong either to a message or result.
 	\item \emph{Query:} Data that originates from an author
-		for a \emph{get} operation. The \emph{Query} defines the set of posts that are returned in the \emph{Result}.
-	\item \emph{ResultContainer:} Consists of two parts. First there is the \emph{Result}, which is a set of posts that satisfies the \emph{Query}, and there are \emph{Attributes} for this \emph{Result}. Every component may add an attribute. The \emph{Result} is set by the final component, the persistence store.
+		for a \emph{get} operation. The \emph{Query} defines the set of posts that are returned as the result.
+	\item \emph{ResultContainer:} Consists of two parts. First there is a set of posts that satisfies the \emph{Query}, and there are \emph{Attributes} for this result. Every component may add an attribute. The result is set by the final component, the persistence store.
 \end{itemize}
 
 
@@ -167,12 +160,12 @@ The meaning of the data abstractions can be summarized as follows:
 
 At start-up time, a board is configured by a number
 of concrete components arranged in a chain of component
-instances. To service an application, the first
-component receives a service request and then passes
-it to the next component. It may also process the
+instances. To service a client, there is at first a \emph{BulletinBoardService}. This service
+provides the interface for the client.  It forwards the request to the first
+component, which passes it to the next component. It may also process the
 service request before passing it to the next
 component. Consequently, it may also process the
-response before returning it to the application.
+response before returning it to the \emph{BulletinBoardService}.
 
 \begin{figure}[ht]
 \centerline{
@@ -191,17 +184,13 @@ component (or the application).}
 The above described behavioral pattern is repeated with
 every intermediate component. Notice that \emph{synchronous} calls
 are used between the components.
-However, asynchronous processing may occur \emph{within}
+However, asynchronous processing may occur within
 a component, which will likely be the case for the
 distributed variant of the board.
 
-TODO: Asynchronous calls
-(and corresponding extensions to the Service interface).
-
-
 \section{Handling Service Requests}
 
-An application or a component requests a service provided by
+A \emph{BulletinBoardService} or a component requests a service provided by
 the downstream component. Basically, the following three
 processing actions will occur in the downstream component:
 
@@ -215,30 +204,29 @@ processing actions will occur in the downstream component:
 \end{enumerate}
 
 The comments of \fig{fig:chain-of-components} sketch
-the above described processing actions. The template
-of this behavior (TODO Ref.\ template pattern, GoF)
-is predefined in the abstract class Component:
+the above described processing actions. The template \cite{Gamma:1995:DPE:186897}
+of this behavior is predefined in the abstract class Component:
 
-\begin{lstlisting}
-package uniboard.core;
+\begin{lstlisting}[style=javastyle]
+package ch.bfh.uniboard.service;
 
 public abstract class Component implements Service {
     private Service successor;
 
-    public final Response post(Message message) ... {
-        Message beforePost = beforePost(message);
-        Response response = successor.post(beforePost);
-        Response afterPost = afterPost(response);
-        return afterPost;
-    }
-    public final Result get(Query query) ... {
+	public final Attributes post(byte[] message, Attributes alpha, Attributes beta) {
+		Attributes beforePost = this.beforePost(message, alpha, beta);
+		...
+		Attributes betaReceived = this.getSuccessor().post(message, alpha, beforePost);
+		this.afterPost(message, alpha, betaReceived);
+		return betaReceived;
+	}
+    public finalResultContainer get(Query query) {
         // analogous to method post() above
     }
-    protected Message beforePost(Message message) ... {
-        return message;
+    protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
+        return beta;
     }
-    protected Response afterPost(Response response) ... {
-        return result;
+    protected void afterPost(byte[] message, Attributes alpha, Attributes beta) {
     }
     // analogous for methods beforeGet() and afterGet()
 }
@@ -248,18 +236,17 @@ Subclasses needing to process a message before passing it
 to the downstream component merely overwrite method
 \emph{beforePost()}:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=javastyle]
 package lu.unilu.uniboard.component_x;
 
-import org.uniboard.core.*;
+import ch.bfh.uniboard.service.*;
 
 public class Component_X extends Component {
     ...
-    protected Message beforePost(Message message) ... {
-        // process given message, make new message object
-        // (or pass back modified message object, not shown)
-        Message processedMessage = ...;
-        return processedMessage;
+    protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
+        // process given message and attributes
+        // (or pass back modified attributes object, not shown)
+        return beta;
     }
 }
 \end{lstlisting}
@@ -273,20 +260,16 @@ the desired behavior.
 \chapter{Specific Services}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In order to implement the desired properties of the (distributed)
-public bulletin board, a number of concrete services are required:
+In order to implement the desired properties of the public bulletin board,
+ a number of concrete services are required:
 
 \begin{itemize}
-	\item \emph{Bulletin Board Service} This is an abstract view
+	\item \emph{BulletinBoardService} This is an abstract view
 		of \uniboard. Different type of technologies may be used
 		for implementing this service in order to access
 		\uniboard. However, web service
 		technology (WSDL, SOAP) will be the primary choice.
-	\item \emph{Fault Tolerance Service} This service provides
-		fault tolerance. It may or
-		may not include \emph{Byzantine} fault tolerance.
-	\item \emph{Property Service} This service provides additional
-		properties required by the bulletin board. Its
+	\item \emph{Property Service} This service provides properties required by the bulletin board. Its
 		realization is composed of a series of property
 		implementation, all adhering to the very same
 		\emph{Service} interface, exploiting the pluggable
@@ -602,7 +585,7 @@ can be used, and that applications or components must agree on
 the types of values (here \emph{String} or \emph{byte[]}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\bibliographystyle{plain} \bibliography{bibtex/library}
+\bibliographystyle{plain} \bibliography{arch-spec}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}

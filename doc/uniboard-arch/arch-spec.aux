@@ -27,6 +27,7 @@
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{lol}{\addvspace {10\p@ }}
+\citation{Gamma:1995:DPE:186897}
 \@writefile{toc}{\contentsline {chapter}{\numberline {2}Component Composition}{5}{chapter.2}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -35,9 +36,10 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces UML class diagram defining the interface and linking of the components. Each component implements the same generic interface. The Component class, as shown, is abstract. That implies that concrete components subclass the abstract Component class.}}{6}{figure.2.1}}
 \newlabel{fig:chain-of-components}{{2.1}{6}{UML class diagram defining the interface and linking of the components. Each component implements the same generic interface. The Component class, as shown, is abstract. That implies that concrete components subclass the abstract Component class}{figure.2.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2.2}Service Request Delegation}{6}{section.2.2}}
+\citation{Gamma:1995:DPE:186897}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces UML sequence diagram illustrating the dynamics of the delegation of a service request. Each \emph  {post()} request received at a component is processed at first internally by the self-delegated method \emph  {beforePost()}, and then passed to the next downstream component. The response of the downstream component is processed at first by the self-delegated method \emph  {afterPost()}, and then returned to the calling component (or the application).}}{7}{figure.2.2}}
+\newlabel{fig:service-request-delegation}{{2.2}{7}{UML sequence diagram illustrating the dynamics of the delegation of a service request. Each \emph {post()} request received at a component is processed at first internally by the self-delegated method \emph {beforePost()}, and then passed to the next downstream component. The response of the downstream component is processed at first by the self-delegated method \emph {afterPost()}, and then returned to the calling component (or the application)}{figure.2.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2.3}Handling Service Requests}{7}{section.2.3}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces UML sequence diagram illustrating the dynamics of the delegation of a service request. Each \emph  {post()} request received at a component is processed at first internally by the self-delegated method \emph  {beforePost()}, and then passed to the next downstream component. The response of the downstream component is processed at first by the self-delegated method \emph  {afterPost()}, and then returned to the calling component (or the application).}}{8}{figure.2.2}}
-\newlabel{fig:service-request-delegation}{{2.2}{8}{UML sequence diagram illustrating the dynamics of the delegation of a service request. Each \emph {post()} request received at a component is processed at first internally by the self-delegated method \emph {beforePost()}, and then passed to the next downstream component. The response of the downstream component is processed at first by the self-delegated method \emph {afterPost()}, and then returned to the calling component (or the application)}{figure.2.2}{}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Specific Services}{9}{chapter.3}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -67,3 +69,7 @@
 \@writefile{toc}{\contentsline {section}{\numberline {5.2}Access to the Downstream Component}{13}{section.5.2}}
 \@writefile{toc}{\contentsline {section}{\numberline {5.3}Skeleton for a Concrete Component}{14}{section.5.3}}
 \@writefile{toc}{\contentsline {section}{\numberline {5.4}A Simple Scheme for Data Containers}{14}{section.5.4}}
+\bibstyle{plain}
+\bibdata{arch-spec}
+\bibcite{Gamma:1995:DPE:186897}{{1}{}{{}}{{}}}
+\providecommand\NAT@force@numbers{}\NAT@force@numbers
