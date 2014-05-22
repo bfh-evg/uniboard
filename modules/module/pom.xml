@@ -9,16 +9,16 @@
 	</parent>
 
 	<groupId>ch.bfh.uniboard</groupId>
-	<artifactId>persistence-existdb</artifactId>
+	<artifactId>XXXNameXXX</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>ejb</packaging>
 
-	<name>persistence-existdb</name>
+	<name>XXXNameXXX</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>persistence-service</artifactId>
+			<artifactId>service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

@@ -76,7 +76,7 @@ public class Component1Bean extends Component implements Service {
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
 		System.out.println("beforePost() called.");
 
-        // Simulating the parallel processing of four activities...
+		// Simulating the parallel processing of four activities...
 		// Call each worker in turn and memorize the Future object.
 		futures.add(worker1.doWork("Starting w1..."));
 		futures.add(worker2.doWork("Starting w2..."));
@@ -95,7 +95,7 @@ public class Component1Bean extends Component implements Service {
 					String w = f.get(remainingMilliSecondsToWait, TimeUnit.MILLISECONDS);
 					Logger.getLogger(Component1Bean.class.getName()).log(Level.INFO,
 							"Got answer in get(TIME), worker: {0}", i);
-                    // Do something with answer 'w'. Then adjust 'remainingMilliSecondsToWait'
+					// Do something with answer 'w'. Then adjust 'remainingMilliSecondsToWait'
 					// and wait for remaining workers.
 					long timeNow = new Date().getTime();
 					remainingMilliSecondsToWait = expectedMaxDuration - (timeNow - timeAtBeginning);

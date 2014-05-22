@@ -49,7 +49,7 @@ public class ConcreteComponentTest {
 	@Test
 	public void testPost() throws Exception {
 		byte[] m = new byte[1];
-		Attributes beta = bean.post(m, null, null);
-		Assert.assertNull(beta);
+		Attributes beta = bean.post(m, new Attributes(), new Attributes());
+		Assert.assertNotNull(beta);
 	}
 }

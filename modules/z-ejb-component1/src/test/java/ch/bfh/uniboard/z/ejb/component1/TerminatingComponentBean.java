@@ -15,10 +15,8 @@ import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.Service;
-import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
-import org.junit.Assert;
 
 /**
  *
@@ -28,22 +26,16 @@ import org.junit.Assert;
 @Local(value = Service.class)
 public class TerminatingComponentBean implements Service {
 
-	@EJB
-	private Service bean;
-
 	@Override
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
 		System.out.println("post() called.");
-		Attributes r = new Attributes();
-		return r;
+		return beta;
 	}
 
 	@Override
 	public ResultContainer get(Query query) {
-		byte[] m = new byte[1];
-		Attributes beta = bean.post(m, null, null);
-		Assert.assertNull(beta);
-		ResultContainer r = new ResultContainer(null, beta);
+		System.out.println("get() called.");
+		ResultContainer r = new ResultContainer(null, null);
 		return r;
 	}
 }

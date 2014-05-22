@@ -15,3 +15,5 @@
 /modules/bft-client/target/
 /modules/z-demo-access-lib/target/
 /application-clients/z-demo-app-client2/target/
+/modules/bfh-persistence-mongodb/target/
+/modules/bfh-webservice/target/

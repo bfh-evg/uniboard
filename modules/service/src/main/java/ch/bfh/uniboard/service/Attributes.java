@@ -50,7 +50,7 @@ public class Attributes implements Serializable {
 	 * Returns the value associated with given key, or null, if key is not in the map.
 	 *
 	 * @param key a key
-	 * @return assoiciated value, or null
+	 * @return associated value, or null
 	 */
 	public Object getValue(String key) {
 		return this.map.get(key);
@@ -69,7 +69,7 @@ public class Attributes implements Serializable {
 	 * Adds an attribute at the end of the map
 	 *
 	 * @param key a key
-	 * @param value assoiciated value, or null
+	 * @param value associated value, or null
 	 */
 	public void add(String key, Object value) {
 		this.map.put(key, value);

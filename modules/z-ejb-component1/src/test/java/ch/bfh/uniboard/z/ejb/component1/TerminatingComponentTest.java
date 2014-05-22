@@ -38,13 +38,13 @@ public class TerminatingComponentTest {
 		return ja;
 	}
 
-	@EJB
+	@EJB(beanName = "TerminatingComponentBean")
 	private Service bean;
 
 	@Test
 	public void testPost() throws Exception {
 		byte[] m = new byte[1];
-		Attributes beta = bean.post(m, null, null);
+		Attributes beta = bean.post(m, new Attributes(), new Attributes());
 		Assert.assertNotNull(beta);
 	}
 }

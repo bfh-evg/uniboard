@@ -11,26 +11,25 @@ Distributable under GPL license.
 See terms of license at gnu.org.
 -->
 <ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
-         version = "3.1"
-         xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
-    <tagggg></tagggg>
+		 version = "3.1"
+		 xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
 	<enterprise-beans>
 		<session>
 			<ejb-name>ConcreteComponentBean</ejb-name>
-            <ejb-class>ch.bfh.uniboard.ejb.base.ConcreteComponentBean</ejb-class>
+			<ejb-class>ch.bfh.uniboard.ejb.base.ConcreteComponentBean</ejb-class>
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.ejb.base.ConcreteComponentBean/successor</ejb-ref-name>
-                <local>ch.bfh.uniboard.ejb.base.Service</local>
+				<local>ch.bfh.uniboard.ejb.base.Service</local>
 				<ejb-link>FinalComponentBean</ejb-link>
 			</ejb-local-ref>
 		</session>
 		<session>
 			<ejb-name>FinalComponentBean</ejb-name>
-            <!--
-            <local>ch.bfh.uniboard.ejb.base.Service</local>
-            -->
-            <ejb-class>ch.bfh.uniboard.ejb.base.FinalComponentBean</ejb-class>
+			<!--
+			<local>ch.bfh.uniboard.ejb.base.Service</local>
+			-->
+			<ejb-class>ch.bfh.uniboard.ejb.base.FinalComponentBean</ejb-class>
 		</session>
 	</enterprise-beans>
 </ejb-jar>
