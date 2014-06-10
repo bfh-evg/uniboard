@@ -13,6 +13,7 @@ package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -63,6 +64,14 @@ public class Attributes implements Serializable {
 	 */
 	public Set<String> getKeys() {
 		return this.map.keySet();
+	}
+
+	/**
+	 *
+	 * @return the set of entries
+	 */
+	public Set<Map.Entry<String, Object>> getEntries() {
+		return this.map.entrySet();
 	}
 
 	/**

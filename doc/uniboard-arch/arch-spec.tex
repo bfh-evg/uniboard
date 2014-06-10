@@ -70,7 +70,6 @@ To achieve this, the following architectural goals have been in mind:
 
 Note that the supported properties of \uniboard\ depend of the combination of components used.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Component Composition}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -256,6 +255,15 @@ Similarly, subclasses overwrite methods \emph{afterPost()},
 the desired behavior.
 
 
+\section{Generic Data Container}
+The generic data containers are not only used to transmit data from component to component, but also for the communication with the users of UniBoard.
+
+\subsection{Attributes}
+Attributes is basically 
+\subsection{Query}
+
+\subsection{ResultContainer}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Specific Services}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -264,11 +272,7 @@ In order to implement the desired properties of the public bulletin board,
  a number of concrete services are required:
 
 \begin{itemize}
-	\item \emph{BulletinBoardService} This is an abstract view
-		of \uniboard. Different type of technologies may be used
-		for implementing this service in order to access
-		\uniboard. However, web service
-		technology (WSDL, SOAP) will be the primary choice.
+	\item \emph{bfh-webservice} Provides an interface to UniBoard over WebServices.
 	\item \emph{Property Service} This service provides properties required by the bulletin board. Its
 		realization is composed of a series of property
 		implementation, all adhering to the very same
@@ -285,50 +289,56 @@ and the \emph{persistence service} are given in the next sections.
 
 TODO: Provide details on accessing the bulletin board.
 
+\section{bfh-webservice}
+The module bfh-webservice offers the basic operations introduced in (do Ref) as a webservice.
+\begin{itemize}
+	\item $\mathrm{Post}(m,\alpha):\beta$
+	\item $\mathrm{Get}(Q):R, \gamma$
+\end{itemize}
 
-\section{A Service Implementing a Property}
-
-The public bulletin board requires a number of properties. Our
-architecture implies that each property is realized within
-one component. Since a component requires the service of
-the downstream component, a downstream component is
-linked with the component automatically; the necessary
-code is inherited from the subclass \emph{Component}.
-
-\fig{fig:authorization-service} shows the structure of
-the authorization service.
-
-\begin{figure}[ht]
-\centerline{
-\includegraphics[width=1.0\textwidth]{figs/authorization-service}}
-\caption{UML class diagram for the illustration of the
-authorization service component. Notice that it is derived
-from the \emph{Component} class which implies that there
-is a downstream component link to this component.}
-\label{fig:authorization-service}
-\end{figure}
-
-
-\section{The Persistence Service}
-
-The persistence service provides operations to store and
-retrieve data. It is a component in the sense that it
-implements the \emph{Service} interface. However, it
-does not any downstream component and, thus, cannot be
-derived from the \emph{Component} abstraction.
-
-\fig{fig:persistence-service} shows the structure of the persistence service
-component.
-
-\begin{figure}[ht]
-\centerline{
-\includegraphics[width=1.0\textwidth]{figs/persistence-service}}
-\caption{UML class diagram for the illustration of the
-persistence service component. Notice that it merely implements
-the \emph{Service} interface, and that it is not derived
-from the \emph{Component} class.}
-\label{fig:persistence-service}
-\end{figure}
+%\section{A Service Implementing a Property}
+%
+%The public bulletin board requires a number of properties. Our
+%architecture implies that each property is realized within
+%one component. Since a component requires the service of
+%the downstream component, a downstream component is
+%linked with the component automatically; the necessary
+%code is inherited from the subclass \emph{Component}.
+%
+%\fig{fig:authorization-service} shows the structure of
+%the authorization service.
+%
+%\begin{figure}[ht]
+%\centerline{
+%\includegraphics[width=1.0\textwidth]{figs/authorization-service}}
+%\caption{UML class diagram for the illustration of the
+%authorization service component. Notice that it is derived
+%from the \emph{Component} class which implies that there
+%is a downstream component link to this component.}
+%\label{fig:authorization-service}
+%\end{figure}
+%
+%
+%\section{The Persistence Service}
+%
+%The persistence service provides operations to store and
+%retrieve data. It is a component in the sense that it
+%implements the \emph{Service} interface. However, it
+%does not any downstream component and, thus, cannot be
+%derived from the \emph{Component} abstraction.
+%
+%\fig{fig:persistence-service} shows the structure of the persistence service
+%component.
+%
+%\begin{figure}[ht]
+%\centerline{
+%\includegraphics[width=1.0\textwidth]{figs/persistence-service}}
+%\caption{UML class diagram for the illustration of the
+%persistence service component. Notice that it merely implements
+%the \emph{Service} interface, and that it is not derived
+%from the \emph{Component} class.}
+%\label{fig:persistence-service}
+%\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

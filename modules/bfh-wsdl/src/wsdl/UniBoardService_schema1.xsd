@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://webservice.uniboard.bfh.ch/" xmlns:ns1="http://data.webservice.uniboard.bfh.ch" xmlns:tns="http://webservice.uniboard.bfh.ch/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:import namespace="http://data.webservice.uniboard.bfh.ch" schemaLocation="UniBoardService_schema2.xsd"/>
+
+  <xs:element name="constraint" type="ns1:constraint"/>
+
+  <xs:element name="get" type="tns:get"/>
+
+  <xs:element name="getResponse" type="tns:getResponse"/>
+
+  <xs:element name="post" type="tns:post"/>
+
+  <xs:element name="postResponse" type="tns:postResponse"/>
+
+  <xs:complexType name="post">
+    <xs:sequence>
+      <xs:element name="message" type="xs:base64Binary" nillable="true" minOccurs="0"/>
+      <xs:element name="alpha" type="ns1:attributes" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="postResponse">
+    <xs:sequence>
+      <xs:element name="beta" type="ns1:attributes" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="get">
+    <xs:sequence>
+      <xs:element name="query" type="ns1:query" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="getResponse">
+    <xs:sequence>
+      <xs:element name="resultContainer" type="ns1:resultContainer" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

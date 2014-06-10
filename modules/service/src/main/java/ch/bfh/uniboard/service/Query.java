@@ -12,8 +12,7 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.List;
 
 /**
  * A data container for arbitrary key/value pairs. Keys are strings, values can be anything. Values should be immutable.
@@ -25,36 +24,15 @@ public class Query implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Holder of key/value pairs.
-	 */
-	private final SortedMap<String, Object> map;
+	private final List<Constraint> constraints;
 
 	/**
 	 * Initializes the data container
 	 *
-	 * @param map a map initialized with key/value pairs; values should be immutable
+	 * @param constraints
 	 */
-	public Query(SortedMap<String, Object> map) {
-		this.map = map;
+	public Query(List<Constraint> constraints) {
+		this.constraints = constraints;
 	}
 
-	/**
-	 * Returns the value associated with given key, or null, if key is not in the map.
-	 *
-	 * @param key a key
-	 * @return assoiciated value, or null
-	 */
-	public Object getValue(String key) {
-		return this.map.get(key);
-	}
-
-	/**
-	 * Returns all keys in the map.
-	 *
-	 * @return a set of keys
-	 */
-	public Set<String> getKeys() {
-		return this.map.keySet();
-	}
 }

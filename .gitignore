@@ -17,3 +17,4 @@
 /application-clients/z-demo-app-client2/target/
 /modules/bfh-persistence-mongodb/target/
 /modules/bfh-webservice/target/
+/modules/bfh-wsdl/target/
