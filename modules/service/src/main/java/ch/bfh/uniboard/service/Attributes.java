@@ -84,7 +84,7 @@ public class Attributes implements Serializable {
 		this.map.put(key, value);
 	}
         
-        public Map<String, Object> getAllAttributes(){
+        public Map<String, String> getAllAttributes(){
             return this.map;
         }
 }
