@@ -12,6 +12,7 @@
 package ch.bfh.uniboard.webservice;
 
 import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.Service;
 import ch.bfh.uniboard.webservice.data.Attributes.Entry;
 import java.util.Map;
@@ -28,6 +29,9 @@ public class UniBoardServiceImpl implements UniBoardService {
 
 	@Override
 	public ch.bfh.uniboard.webservice.data.ResultContainer get(ch.bfh.uniboard.webservice.data.Query query) {
+
+		Query q = new Query(null);
+
 		this.successor.get(null);
 
 		return null;
