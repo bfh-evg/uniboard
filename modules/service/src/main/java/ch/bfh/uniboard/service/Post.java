@@ -20,21 +20,35 @@ import java.io.Serializable;
  */
 public class Post implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private byte[] message;
-	private Attributes alpha;
-	private Attributes beta;
+    protected byte[] message;
+    protected Attributes alpha;
+    protected Attributes beta;
 
-	public byte[] getMessage() {
-		return message;
-	}
+    public byte[] getMessage() {
+    	return message;
+    }
 
-	public Attributes getAlpha() {
-		return alpha;
-	}
+    public Attributes getAlpha() {
+    	return alpha;
+    }
 
-	public Attributes getBeta() {
-		return beta;
-	}
+    public Attributes getBeta() {
+    	return beta;
+    }
+
+    public void setMessage(byte[] message) {
+        this.message = message;
+    }
+
+    public void setAlpha(Attributes alpha) {
+        this.alpha = alpha;
+    }
+
+    public void setBeta(Attributes beta) {
+        this.beta = beta;
+    }
+        
+        
 }
