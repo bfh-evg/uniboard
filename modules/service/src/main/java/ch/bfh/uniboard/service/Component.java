@@ -16,7 +16,7 @@ package ch.bfh.uniboard.service;
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public abstract class Component implements Service {
+public abstract class Component implements PostService, GetService {
 
 	@Override
 	public final Attributes post(byte[] message, Attributes alpha, Attributes beta) {
@@ -34,7 +34,7 @@ public abstract class Component implements Service {
 			return rejectBeta;
 		} else {
 			//pass the processed content to the successor
-			Attributes betaReceived = this.getSuccessor().post(message, alpha, beforePost);
+			Attributes betaReceived = this.getPostSuccessor().post(message, alpha, beforePost);
 			//do some actions with content returned by successor
 			this.afterPost(message, alpha, betaReceived);
 			//return the processed content
@@ -47,7 +47,7 @@ public abstract class Component implements Service {
 		//do some verification actions
 		beforeGet(query);
 		//pass content received to the successor
-		ResultContainer resultContainer = this.getSuccessor().get(query);
+		ResultContainer resultContainer = this.getGetSuccessor().get(query);
 		//do some actions with content returned by successor
 		Attributes newGamma = this.afterGet(query, resultContainer);
 		//put the attributes processed in the previously received resultContainer
@@ -103,9 +103,16 @@ public abstract class Component implements Service {
 	}
 
 	/**
-	 * Returns the successor layer in the layer stack
+	 * Returns the post successor layer in the layer stack
 	 *
-	 * @return the service coming after this layer
+	 * @return the post service coming after this layer
 	 */
-	protected abstract Service getSuccessor();
+	protected abstract PostService getPostSuccessor();
+
+	/**
+	 * Returns the get successor layer in the layer stack
+	 *
+	 * @return the get service coming after this layer
+	 */
+	protected abstract GetService getGetSuccessor();
 }

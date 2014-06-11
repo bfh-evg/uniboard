@@ -15,7 +15,7 @@ package ch.bfh.uniboard.service;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class LesserEquals extends Constraint {
+public class Less extends Constraint {
 
 	private Object value;
 

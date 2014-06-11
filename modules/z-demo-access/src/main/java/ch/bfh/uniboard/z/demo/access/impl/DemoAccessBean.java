@@ -28,7 +28,7 @@ public class DemoAccessBean extends Component implements Service, DemoAccessRemo
 	private Service successor;
 
 	@Override
-	protected Service getSuccessor() {
+	protected Service getPostSuccessor() {
 		return this.successor;
 	}
 }

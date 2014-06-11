@@ -54,7 +54,7 @@ public class Component1Bean extends Component implements Service {
 	private final List<Future<String>> futures = new ArrayList<>();
 
 	@Override
-	protected Service getSuccessor() {
+	protected Service getPostSuccessor() {
 		return this.successor;
 	}
 
