@@ -20,7 +20,7 @@ import java.util.SortedSet;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public interface Get {
+public interface InternalGet {
 
 	/**
 	 * Queries the bulletin board asking a component implementing this interface.

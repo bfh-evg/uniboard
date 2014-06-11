@@ -11,19 +11,31 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.util.List;
+
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 public abstract class Constraint {
 
-	private String identifier;
+	private List<String> keys;
+	private PostElement postElement;
 
-	public String getIdentifier() {
-		return identifier;
+	public List<String> getKeys() {
+		return keys;
 	}
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
+	public void setKeys(List<String> keys) {
+		this.keys = keys;
 	}
+
+	public PostElement getPostElement() {
+		return postElement;
+	}
+
+	public void setPostElement(PostElement postElement) {
+		this.postElement = postElement;
+	}
+
 }

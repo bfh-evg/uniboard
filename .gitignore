@@ -18,3 +18,11 @@
 /modules/bfh-persistence-mongodb/target/
 /modules/bfh-webservice/target/
 /modules/bfh-wsdl/target/
+/doc/uniboard-arch/*.aux
+/doc/uniboard-arch/*.out
+/doc/uniboard-arch/*.pdf
+/doc/uniboard-arch/*.gz
+/doc/uniboard-arch/*.log
+/doc/uniboard-arch/*.toc
+/doc/uniboard-arch/*.hst
+/doc/uniboard-arch/*.ver

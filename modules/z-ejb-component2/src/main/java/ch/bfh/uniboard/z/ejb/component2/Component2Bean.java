@@ -32,7 +32,7 @@ public class Component2Bean extends Component implements Service {
 	private Service successor;
 
 	@Override
-	protected Service getSuccessor() {
+	protected Service getPostSuccessor() {
 		return this.successor;
 	}
 

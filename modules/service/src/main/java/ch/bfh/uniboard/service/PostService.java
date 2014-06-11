@@ -24,23 +24,16 @@ import javax.ejb.Local;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @Local
-public interface Service {
+public interface PostService {
 
 	/**
 	 * Posts a message to the bulletin board by posting it to a component implementing this interface.
 	 *
 	 * @param message a message containing all required information elements
-	 * @param alpha Atrributes added by the author of the message.
+	 * @param alpha Attributes added by the author of the message.
 	 * @param beta Attributes added by upper services.
 	 * @return a response
 	 */
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta);
 
-	/**
-	 * Queries the bulletin board asking a component implementing this interface.
-	 *
-	 * @param query a query containing all required information elements
-	 * @return a result
-	 */
-	public ResultContainer get(Query query);
 }

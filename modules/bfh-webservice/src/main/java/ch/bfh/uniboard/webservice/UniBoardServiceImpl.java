@@ -4,7 +4,7 @@
  * Research Institute for Security in the Information Society, E-Voting Group,
  * Biel, Switzerland.
  *
- * Project Univote.
+ * Project UniBoard.
  *
  * Distributable under GPL license.
  * See terms of license at gnu.org.
@@ -12,8 +12,13 @@
 package ch.bfh.uniboard.webservice;
 
 import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.Service;
-import ch.bfh.uniboard.webservice.data.Attributes.Entry;
+import ch.bfh.uniboard.service.GetService;
+import ch.bfh.uniboard.service.PostService;
+import ch.bfh.uniboard.service.Query;
+import ch.bfh.uniboard.webservice.data.AttributesDTO;
+import ch.bfh.uniboard.webservice.data.AttributesDTO.EntryDTO;
+import ch.bfh.uniboard.webservice.data.QueryDTO;
+import ch.bfh.uniboard.webservice.data.ResultContainerDTO;
 import java.util.Map;
 import javax.ejb.EJB;
 
@@ -24,30 +29,35 @@ import javax.ejb.EJB;
 public class UniBoardServiceImpl implements UniBoardService {
 
 	@EJB
-	private Service successor;
+	private PostService postSuccessor;
+	@EJB
+	private GetService getSuccessor;
 
 	@Override
-	public ch.bfh.uniboard.webservice.data.ResultContainer get(ch.bfh.uniboard.webservice.data.Query query) {
-		this.successor.get(null);
+	public ResultContainerDTO get(QueryDTO query) {
+
+		Query q = new Query(null);
+
+		this.getSuccessor.get(null);
 
 		return null;
 	}
 
 	@Override
-	public ch.bfh.uniboard.webservice.data.Attributes post(byte[] message, ch.bfh.uniboard.webservice.data.Attributes alpha) {
+	public AttributesDTO post(byte[] message, AttributesDTO alpha) {
 
 		Attributes alphaIntern = new Attributes();
-		for (Entry e : alpha.getEntry()) {
+		for (EntryDTO e : alpha.getEntry()) {
 			alphaIntern.add(e.getKey(), e.getValue());
 		}
 
 		Attributes betaIntern = new Attributes();
 
-		betaIntern = this.successor.post(message, alphaIntern, betaIntern);
+		betaIntern = this.postSuccessor.post(message, alphaIntern, betaIntern);
 
-		ch.bfh.uniboard.webservice.data.Attributes beta = new ch.bfh.uniboard.webservice.data.Attributes();
-		for (Map.Entry<String, Object> e : betaIntern.getEntries()) {
-			Entry ent = new Entry();
+		AttributesDTO beta = new AttributesDTO();
+		for (Map.Entry<String, String> e : betaIntern.getEntries()) {
+			EntryDTO ent = new EntryDTO();
 			ent.setKey(e.getKey());
 			ent.setValue(e.getValue());
 			beta.getEntry().add(ent);

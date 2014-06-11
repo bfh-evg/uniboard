@@ -7,7 +7,7 @@
         <xs:complexType>
           <xs:sequence>
             <xs:element name="key" type="xs:string"/>
-            <xs:element name="value" type="xs:anyType"/>
+            <xs:element name="value" type="xs:string"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -19,8 +19,8 @@
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="between" type="tns:between"/>
         <xs:element name="in" type="tns:in"/>
-        <xs:element name="lesser" type="tns:lesser"/>
-        <xs:element name="lesserequals" type="tns:lesserEquals"/>
+        <xs:element name="less" type="tns:less"/>
+        <xs:element name="lessequals" type="tns:lessEquals"/>
         <xs:element name="greater" type="tns:greater"/>
         <xs:element name="greaterequals" type="tns:greaterEquals"/>
         <xs:element name="equals" type="tns:equals"/>
@@ -41,7 +41,8 @@
 
   <xs:complexType name="constraint" abstract="true">
     <xs:sequence>
-      <xs:element name="identifier" type="xs:string" minOccurs="0"/>
+      <xs:element name="keys" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="postElement" type="tns:postElement" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -55,7 +56,7 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="lesser">
+  <xs:complexType name="less">
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
@@ -65,7 +66,7 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="lesserEquals">
+  <xs:complexType name="lessEquals">
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
@@ -125,5 +126,13 @@
       <xs:element name="beta" type="tns:attributes"/>
     </xs:sequence>
   </xs:complexType>
+
+  <xs:simpleType name="postElement">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MESSAGE"/>
+      <xs:enumeration value="ALPHA"/>
+      <xs:enumeration value="BETA"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>
 
