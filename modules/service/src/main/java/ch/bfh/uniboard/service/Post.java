@@ -20,7 +20,7 @@ import java.util.Objects;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class Post implements Serializable {
+public class Post implements Serializable, Comparable {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,15 +29,15 @@ public class Post implements Serializable {
     protected Attributes beta;
 
     public byte[] getMessage() {
-    	return message;
+        return message;
     }
 
     public Attributes getAlpha() {
-    	return alpha;
+        return alpha;
     }
 
     public Attributes getBeta() {
-    	return beta;
+        return beta;
     }
 
     public void setMessage(byte[] message) {
@@ -81,10 +81,45 @@ public class Post implements Serializable {
         }
         return true;
     }
-        
+
     @Override
     public String toString() {
         return "Post{" + "message=" + message + ", alpha=" + alpha + ", beta=" + beta + '}';
     }
-    
+
+    @Override
+    public int compareTo(Object aThat) {
+        final int BEFORE = -1;
+        final int EQUAL = 0;
+        final int AFTER = 1;
+        
+        final String key = "n";
+
+        if (this == aThat) {
+            return EQUAL;
+        }
+        
+        final Post that = (Post) aThat;
+        
+        if(this.beta.getAllAttributes().containsKey(key)){
+            if(that.beta.getAllAttributes().containsKey(key)){
+                if(Integer.parseInt(this.beta.getAllAttributes().get(key)) < Integer.parseInt(that.beta.getAllAttributes().get(key))){
+                    return BEFORE;
+                } else if (Integer.parseInt(this.beta.getAllAttributes().get(key)) > Integer.parseInt(that.beta.getAllAttributes().get(key))){
+                    return AFTER;
+                } else {
+                    return EQUAL;
+                }
+            } else {
+                return BEFORE;
+            }
+        } else {
+            if(that.beta.getAllAttributes().containsKey(key)){
+                return AFTER;
+            } else {
+                return EQUAL;
+            }
+        }
+    }
+
 }
