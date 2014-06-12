@@ -17,11 +17,11 @@ import java.util.List;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class Equals extends Constraint {
+public class NotEquals extends Constraint {
 
     private Object value;
 
-    public Equals(Object value, List<String> keys, PostElement postElement) {
+    public NotEquals(Object value, List<String> keys, PostElement postElement) {
         super(keys, postElement);
         this.value = value;
     }

@@ -19,23 +19,28 @@ import java.util.List;
  */
 public abstract class Constraint {
 
-	private List<String> keys;
-	private PostElement postElement;
+    private List<String> keys;
+    private PostElement postElement;
 
-	public List<String> getKeys() {
-		return keys;
-	}
+    public Constraint(List<String> keys, PostElement postElement) {
+        this.keys = keys;
+        this.postElement = postElement;
+    }
 
-	public void setKeys(List<String> keys) {
-		this.keys = keys;
-	}
+    public List<String> getKeys() {
+        return keys;
+    }
 
-	public PostElement getPostElement() {
-		return postElement;
-	}
+    public void setKeys(List<String> keys) {
+        this.keys = keys;
+    }
 
-	public void setPostElement(PostElement postElement) {
-		this.postElement = postElement;
-	}
+    public PostElement getPostElement() {
+        return postElement;
+    }
+
+    public void setPostElement(PostElement postElement) {
+        this.postElement = postElement;
+    }
 
 }

@@ -19,13 +19,18 @@ import java.util.List;
  */
 public class In extends Constraint {
 
-	private List<Object> element;
+    private List<Object> element;
 
-	public List<Object> getSet() {
-		return element;
-	}
+    public In(List<Object> element, List<String> keys, PostElement postElement) {
+        super(keys, postElement);
+        this.element = element;
+    }
 
-	public void setSet(List<Object> set) {
-		this.element = set;
-	}
+    public List<Object> getSet() {
+        return element;
+    }
+
+    public void setSet(List<Object> set) {
+        this.element = set;
+    }
 }

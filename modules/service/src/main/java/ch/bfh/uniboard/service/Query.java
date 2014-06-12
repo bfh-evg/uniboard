@@ -35,4 +35,10 @@ public class Query implements Serializable {
 		this.constraints = constraints;
 	}
 
+    public List<Constraint> getConstraints() {
+        return constraints;
+    }
+        
+        
+
 }

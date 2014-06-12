@@ -12,6 +12,8 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A post represents a posted message and all belonging attributes.
@@ -49,6 +51,40 @@ public class Post implements Serializable {
     public void setBeta(Attributes beta) {
         this.beta = beta;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 11 * hash + Arrays.hashCode(this.message);
+        hash = 11 * hash + Objects.hashCode(this.alpha);
+        hash = 11 * hash + Objects.hashCode(this.beta);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Post other = (Post) obj;
+        if (!Arrays.equals(this.message, other.message)) {
+            return false;
+        }
+        if (!Objects.equals(this.alpha, other.alpha)) {
+            return false;
+        }
+        if (!Objects.equals(this.beta, other.beta)) {
+            return false;
+        }
+        return true;
+    }
         
-        
+    @Override
+    public String toString() {
+        return "Post{" + "message=" + message + ", alpha=" + alpha + ", beta=" + beta + '}';
+    }
+    
 }
