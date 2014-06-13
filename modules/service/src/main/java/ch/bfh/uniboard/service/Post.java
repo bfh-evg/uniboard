@@ -12,8 +12,11 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A post represents a posted message and all belonging attributes.
@@ -71,12 +74,15 @@ public class Post implements Serializable, Comparable {
         }
         final Post other = (Post) obj;
         if (!Arrays.equals(this.message, other.message)) {
+            Logger.getLogger(Post.class.getName()).log(Level.INFO, "messages are not equal: "+ Arrays.toString(this.message)+ " " + Arrays.toString(other.message));
             return false;
         }
         if (!Objects.equals(this.alpha, other.alpha)) {
+            Logger.getLogger(Post.class.getName()).log(Level.INFO, "alphas are not equal");
             return false;
         }
         if (!Objects.equals(this.beta, other.beta)) {
+            Logger.getLogger(Post.class.getName()).log(Level.INFO, "betas are not equal");
             return false;
         }
         return true;
@@ -101,25 +107,36 @@ public class Post implements Serializable, Comparable {
         
         final Post that = (Post) aThat;
         
-        if(this.beta.getAllAttributes().containsKey(key)){
-            if(that.beta.getAllAttributes().containsKey(key)){
-                if(Integer.parseInt(this.beta.getAllAttributes().get(key)) < Integer.parseInt(that.beta.getAllAttributes().get(key))){
-                    return BEFORE;
-                } else if (Integer.parseInt(this.beta.getAllAttributes().get(key)) > Integer.parseInt(that.beta.getAllAttributes().get(key))){
-                    return AFTER;
-                } else {
-                    return EQUAL;
-                }
-            } else {
-                return BEFORE;
-            }
-        } else {
-            if(that.beta.getAllAttributes().containsKey(key)){
-                return AFTER;
-            } else {
-                return EQUAL;
-            }
+//        if(this.beta.getAllAttributes().containsKey(key)){
+//            if(that.beta.getAllAttributes().containsKey(key)){
+//                if(Integer.parseInt(this.beta.getAllAttributes().get(key)) < Integer.parseInt(that.beta.getAllAttributes().get(key))){
+//                    return BEFORE;
+//                } else if (Integer.parseInt(this.beta.getAllAttributes().get(key)) > Integer.parseInt(that.beta.getAllAttributes().get(key))){
+//                    return AFTER;
+//                } else {
+//                    return EQUAL;
+//                }
+//            } else {
+//                return BEFORE;
+//            }
+//        } else {
+//            if(that.beta.getAllAttributes().containsKey(key)){
+//                return AFTER;
+//            } else {
+//                return EQUAL;
+//            }
+//        }
+        try {
+            String myS = new String(message, "UTF-8");
+            String yourS = new String(that.getMessage(), "UTF-8");
+            if(myS.compareTo(yourS)<0) return BEFORE;
+            else if( myS.compareTo(yourS)>0) return AFTER;
+            else return EQUAL;
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Post.class.getName()).log(Level.SEVERE, null, ex);
+            return EQUAL;
         }
+        
     }
 
 }
