@@ -26,68 +26,64 @@ import java.util.Set;
  */
 public class Attributes implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	public static final String ERROR = "error";
-	public static final String REJECTED = "rejected";
+    private static final long serialVersionUID = 1L;
+    public static final String ERROR = "error";
+    public static final String REJECTED = "rejected";
 
-	/**
-	 * Holder of key/value pairs.
-	 */
-	private final LinkedHashMap<String, String> map;
+    /**
+     * Holder of key/value pairs.
+     */
+    private final LinkedHashMap<String, String> map;
 
-	public Attributes() {
-		map = new LinkedHashMap<>();
-	}
+    public Attributes() {
+        map = new LinkedHashMap<>();
+    }
 
-	/**
-	 * Initializes the data container
-	 *
-	 * @param map a map initialized with key/value pairs; values should be immutable
-	 */
-	public Attributes(LinkedHashMap<String, String> map) {
-		this.map = map;
-	}
+    /**
+     * Initializes the data container
+     *
+     * @param map a map initialized with key/value pairs; values should be immutable
+     */
+    public Attributes(LinkedHashMap<String, String> map) {
+        this.map = map;
+    }
 
-	/**
-	 * Returns the value associated with given key, or null, if key is not in the map.
-	 *
-	 * @param key a key
-	 * @return associated value, or null
-	 */
-	public String getValue(String key) {
-		return this.map.get(key);
-	}
+    /**
+     * Returns the value associated with given key, or null, if key is not in the map.
+     *
+     * @param key a key
+     * @return associated value, or null
+     */
+    public String getValue(String key) {
+        return this.map.get(key);
+    }
 
-	/**
-	 * Returns all keys in the map.
-	 *
-	 * @return a set of keys
-	 */
-	public Set<String> getKeys() {
-		return this.map.keySet();
-	}
+    /**
+     * Returns all keys in the map.
+     *
+     * @return a set of keys
+     */
+    public Set<String> getKeys() {
+        return this.map.keySet();
+    }
 
-	/**
-	 *
-	 * @return the set of entries
-	 */
-	public Set<Map.Entry<String, String>> getEntries() {
-		return this.map.entrySet();
-	}
+    /**
+     *
+     * @return the set of entries
+     */
+    public Set<Map.Entry<String, String>> getEntries() {
+        return this.map.entrySet();
+    }
 
-	/**
-	 * Adds an attribute at the end of the map
-	 *
-	 * @param key a key
-	 * @param value associated value, or null
-	 */
-	public void add(String key, String value) {
-		this.map.put(key, value);
-	}
-        
-        public Map<String, String> getAllAttributes(){
-            return this.map;
-        }
+    /**
+     * Adds an attribute at the end of the map
+     *
+     * @param key a key
+     * @param value associated value, or null
+     */
+    public void add(String key, String value) {
+        this.map.put(key, value);
+    }
 
     @Override
     public int hashCode() {
@@ -115,6 +111,5 @@ public class Attributes implements Serializable {
     public String toString() {
         return "Attributes{" + "map=" + map + '}';
     }
-        
-        
+
 }

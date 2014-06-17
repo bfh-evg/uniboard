@@ -31,6 +31,9 @@ public class Post implements Serializable, Comparable {
     protected Attributes alpha;
     protected Attributes beta;
 
+    public Post() {
+    }
+
     public byte[] getMessage() {
         return message;
     }
@@ -74,7 +77,8 @@ public class Post implements Serializable, Comparable {
         }
         final Post other = (Post) obj;
         if (!Arrays.equals(this.message, other.message)) {
-            Logger.getLogger(Post.class.getName()).log(Level.INFO, "messages are not equal: "+ Arrays.toString(this.message)+ " " + Arrays.toString(other.message));
+            Logger.getLogger(Post.class.getName()).log(Level.INFO, "messages are not equal: {0} {1}", 
+                    new Object[]{Arrays.toString(this.message), Arrays.toString(other.message)});
             return false;
         }
         if (!Objects.equals(this.alpha, other.alpha)) {
@@ -90,7 +94,7 @@ public class Post implements Serializable, Comparable {
 
     @Override
     public String toString() {
-        return "Post{" + "message=" + message + ", alpha=" + alpha + ", beta=" + beta + '}';
+        return "Post{" + "message=" + Arrays.toString(message) + ", alpha=" + alpha + ", beta=" + beta + '}';
     }
 
     @Override
