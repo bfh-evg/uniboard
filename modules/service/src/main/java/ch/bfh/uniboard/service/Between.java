@@ -11,29 +11,37 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.util.List;
+
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 public class Between extends Constraint {
 
-	private Object start;
-	private Object end;
+    private Object start;
+    private Object end;
 
-	public Object getStart() {
-		return start;
-	}
+    public Between(Object start, Object end, List<String> keys, PostElement postElement) {
+        super(keys, postElement);
+        this.start = start;
+        this.end = end;
+    }
 
-	public void setStart(Object start) {
-		this.start = start;
-	}
+    public Object getStart() {
+        return start;
+    }
 
-	public Object getEnd() {
-		return end;
-	}
+    public void setStart(Object start) {
+        this.start = start;
+    }
 
-	public void setEnd(Object end) {
-		this.end = end;
-	}
+    public Object getEnd() {
+        return end;
+    }
+
+    public void setEnd(Object end) {
+        this.end = end;
+    }
 
 }

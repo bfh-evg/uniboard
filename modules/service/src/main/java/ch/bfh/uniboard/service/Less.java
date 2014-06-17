@@ -11,19 +11,26 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.util.List;
+
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 public class Less extends Constraint {
 
-	private Object value;
+    private Object value;
 
-	public Object getValue() {
-		return value;
-	}
+    public Less(Object value, List<String> keys, PostElement postElement) {
+        super(keys, postElement);
+        this.value = value;
+    }
 
-	public void setValue(Object value) {
-		this.value = value;
-	}
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
 }

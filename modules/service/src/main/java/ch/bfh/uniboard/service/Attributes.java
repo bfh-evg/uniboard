@@ -14,6 +14,7 @@ package ch.bfh.uniboard.service;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -83,4 +84,37 @@ public class Attributes implements Serializable {
 	public void add(String key, String value) {
 		this.map.put(key, value);
 	}
+        
+        public Map<String, String> getAllAttributes(){
+            return this.map;
+        }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + Objects.hashCode(this.map);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Attributes other = (Attributes) obj;
+        if (!Objects.equals(this.map, other.map)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Attributes{" + "map=" + map + '}';
+    }
+        
+        
 }
