@@ -19,18 +19,18 @@ import java.util.List;
  */
 public class LessEquals extends Constraint {
 
-    private Object value;
+    private Value value;
 
-    public LessEquals(Object value, List<String> keys, PostElement postElement) {
+    public LessEquals(Value value, List<String> keys, PostElement postElement) {
         super(keys, postElement);
         this.value = value;
     }
 
-    public Object getValue() {
+    public Value getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(Value value) {
         this.value = value;
     }
 }

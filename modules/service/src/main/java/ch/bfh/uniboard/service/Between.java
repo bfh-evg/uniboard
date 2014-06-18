@@ -19,28 +19,28 @@ import java.util.List;
  */
 public class Between extends Constraint {
 
-    private Object start;
-    private Object end;
+    private Value start;
+    private Value end;
 
-    public Between(Object start, Object end, List<String> keys, PostElement postElement) {
+    public Between(Value start, Value end, List<String> keys, PostElement postElement) {
         super(keys, postElement);
         this.start = start;
         this.end = end;
     }
 
-    public Object getStart() {
+    public Value getStart() {
         return start;
     }
 
-    public void setStart(Object start) {
+    public void setStart(Value start) {
         this.start = start;
     }
 
-    public Object getEnd() {
+    public Value getEnd() {
         return end;
     }
 
-    public void setEnd(Object end) {
+    public void setEnd(Value end) {
         this.end = end;
     }
 

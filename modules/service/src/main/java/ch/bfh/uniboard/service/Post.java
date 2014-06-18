@@ -93,6 +93,8 @@ public class Post implements Serializable, Comparable {
         return "Post{" + "message=" + message + ", alpha=" + alpha + ", beta=" + beta + '}';
     }
 
+    //TODO this is needed for the ordered set of the result container
+    //adapt it
     @Override
     public int compareTo(Object aThat) {
         final int BEFORE = -1;
