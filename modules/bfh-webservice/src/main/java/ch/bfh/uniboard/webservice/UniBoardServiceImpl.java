@@ -43,120 +43,107 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@Stateless
 public class UniBoardServiceImpl implements UniBoardService {
 
-	@EJB
-	private PostService postSuccessor;
-	@EJB
-	private GetService getSuccessor;
+    @EJB
+    private PostService postSuccessor;
+    @EJB
+    private GetService getSuccessor;
 
-	@Override
-	public ResultContainerDTO get(QueryDTO query) {
+    @Override
+    public ResultContainerDTO get(QueryDTO query) {
 
-		List<Constraint> constraints = new ArrayList<>();
-		for (ConstraintDTO cDTO : query.getBetweenOrInOrLess()) {
-			if (cDTO instanceof BetweenDTO) {
-				BetweenDTO cTmp = (BetweenDTO) cDTO;
-				Between cNew = new Between();
-				cNew.setKeys(cTmp.getKeys());
-				cNew.setPostElement(PostElement.valueOf(cTmp.getPostElement().value()));
-				cNew.setStart(cTmp.getStart());
-				cNew.setEnd(cTmp.getEnd());
-				constraints.add(cNew);
-			} else if (cDTO instanceof EqualsDTO) {
-				EqualsDTO cTmp = (EqualsDTO) cDTO;
-				Equals cNew = new Equals();
-				cNew.setKeys(cTmp.getKeys());
-				cNew.setPostElement(PostElement.valueOf(cTmp.getPostElement().value()));
-				cNew.setValue(cTmp.getValue());
-				constraints.add(cNew);
-			} else if (cDTO instanceof GreaterDTO) {
-				GreaterDTO cTmp = (GreaterDTO) cDTO;
-				Greater cNew = new Greater();
-				cNew.setKeys(cTmp.getKeys());
-				cNew.setPostElement(PostElement.valueOf(cTmp.getPostElement().value()));
-				cNew.setValue(cTmp.getValue());
-				constraints.add(cNew);
-			} else if (cDTO instanceof GreaterEqualsDTO) {
-				GreaterEqualsDTO cTmp = (GreaterEqualsDTO) cDTO;
-				GreaterEquals cNew = new GreaterEquals();
-				cNew.setKeys(cTmp.getKeys());
-				cNew.setPostElement(PostElement.valueOf(cTmp.getPostElement().value()));
-				cNew.setValue(cTmp.getValue());
-				constraints.add(cNew);
-			} else if (cDTO instanceof InDTO) {
-				InDTO cTmp = (InDTO) cDTO;
-				In cNew = new In();
-				cNew.setKeys(cTmp.getKeys());
-				cNew.setPostElement(PostElement.valueOf(cTmp.getPostElement().value()));
-				cNew.setSet(cTmp.getSet());
-				constraints.add(cNew);
-			} else if (cDTO instanceof LessDTO) {
-				LessDTO cTmp = (LessDTO) cDTO;
-				Less cNew = new Less();
-				cNew.setKeys(cTmp.getKeys());
-				cNew.setPostElement(PostElement.valueOf(cTmp.getPostElement().value()));
-				cNew.setValue(cTmp.getValue());
-				constraints.add(cNew);
-			} else if (cDTO instanceof LessEqualsDTO) {
-				LessEqualsDTO cTmp = (LessEqualsDTO) cDTO;
-				LessEquals cNew = new LessEquals();
-				cNew.setKeys(cTmp.getKeys());
-				cNew.setPostElement(PostElement.valueOf(cTmp.getPostElement().value()));
-				cNew.setValue(cTmp.getValue());
-				constraints.add(cNew);
-			}
-		}
-		Query q = new Query(constraints);
+        List<Constraint> constraints = new ArrayList<>();
+        for (ConstraintDTO cDTO : query.getBetweenOrInOrLess()) {
+            if (cDTO instanceof BetweenDTO) {
+                BetweenDTO cTmp = (BetweenDTO) cDTO;
+                Between cNew = new Between(cTmp.getStart(), cTmp.getEnd(), cTmp.getKeys(),
+                        PostElement.valueOf(cTmp.getPostElement().value()));
+                constraints.add(cNew);
+            } else if (cDTO instanceof EqualsDTO) {
+                EqualsDTO cTmp = (EqualsDTO) cDTO;
+                Equals cNew = new Equals(cTmp.getValue(), cTmp.getKeys(),
+                        PostElement.valueOf(cTmp.getPostElement().value()));
+                constraints.add(cNew);
+            } else if (cDTO instanceof GreaterDTO) {
+                GreaterDTO cTmp = (GreaterDTO) cDTO;
+                Greater cNew = new Greater(cTmp.getValue(), cTmp.getKeys(),
+                        PostElement.valueOf(cTmp.getPostElement().value()));
+                constraints.add(cNew);
+            } else if (cDTO instanceof GreaterEqualsDTO) {
+                GreaterEqualsDTO cTmp = (GreaterEqualsDTO) cDTO;
+                GreaterEquals cNew = new GreaterEquals(cTmp.getValue(), cTmp.getKeys(),
+                        PostElement.valueOf(cTmp.getPostElement().value()));
+                constraints.add(cNew);
+            } else if (cDTO instanceof InDTO) {
+                InDTO cTmp = (InDTO) cDTO;
+                In cNew = new In(cTmp.getSet(), cTmp.getKeys(),
+                        PostElement.valueOf(cTmp.getPostElement().value()));
+                constraints.add(cNew);
+            } else if (cDTO instanceof LessDTO) {
+                LessDTO cTmp = (LessDTO) cDTO;
+                Less cNew = new Less(cTmp.getValue(), cTmp.getKeys(),
+                        PostElement.valueOf(cTmp.getPostElement().value()));
+                constraints.add(cNew);
+            } else if (cDTO instanceof LessEqualsDTO) {
+                LessEqualsDTO cTmp = (LessEqualsDTO) cDTO;
+                LessEquals cNew = new LessEquals(cTmp.getValue(), cTmp.getKeys(),
+                        PostElement.valueOf(cTmp.getPostElement().value()));
+                constraints.add(cNew);
+            }
+        }
+        Query q = new Query(constraints);
 
-		ResultContainer rContainer = this.getSuccessor.get(q);
+        ResultContainer rContainer = this.getSuccessor.get(q);
 
-		ResultDTO result = new ResultDTO();
+        ResultDTO result = new ResultDTO();
 
-		for (ch.bfh.uniboard.service.Post p : rContainer.getResult()) {
-			PostDTO pNew = new PostDTO();
-			pNew.setAlpha(this.convertAttributesToDTO(p.getAlpha()));
-			pNew.setBeta(this.convertAttributesToDTO(p.getBeta()));
-			pNew.setMessage(p.getMessage());
-			result.getPost().add(pNew);
-		}
+        for (ch.bfh.uniboard.service.Post p : rContainer.getResult()) {
+            PostDTO pNew = new PostDTO();
+            pNew.setAlpha(this.convertAttributesToDTO(p.getAlpha()));
+            pNew.setBeta(this.convertAttributesToDTO(p.getBeta()));
+            pNew.setMessage(p.getMessage());
+            result.getPost().add(pNew);
+        }
 
-		ResultContainerDTO resultContainer = new ResultContainerDTO();
-		resultContainer.setResult(result);
-		resultContainer.setGamma(this.convertAttributesToDTO(rContainer.getGamma()));
-		return resultContainer;
-	}
+        ResultContainerDTO resultContainer = new ResultContainerDTO();
+        resultContainer.setResult(result);
+        resultContainer.setGamma(this.convertAttributesToDTO(rContainer.getGamma()));
+        return resultContainer;
+    }
 
-	@Override
-	public AttributesDTO post(byte[] message, AttributesDTO alpha) {
+    @Override
+    public AttributesDTO post(byte[] message, AttributesDTO alpha) {
 
-		Attributes alphaIntern = new Attributes();
-		for (EntryDTO e : alpha.getEntry()) {
-			alphaIntern.add(e.getKey(), e.getValue());
-		}
+        Attributes alphaIntern = new Attributes();
+        for (EntryDTO e : alpha.getEntry()) {
+            alphaIntern.add(e.getKey(), e.getValue());
+        }
 
-		Attributes betaIntern = new Attributes();
+        Attributes betaIntern = new Attributes();
 
-		betaIntern = this.postSuccessor.post(message, alphaIntern, betaIntern);
+        betaIntern = this.postSuccessor.post(message, alphaIntern, betaIntern);
 
-		return this.convertAttributesToDTO(betaIntern);
-	}
+        return this.convertAttributesToDTO(betaIntern);
+    }
 
-	private AttributesDTO convertAttributesToDTO(Attributes attributes) {
+    private AttributesDTO convertAttributesToDTO(Attributes attributes) {
 
-		AttributesDTO aDTO = new AttributesDTO();
-		for (Map.Entry<String, String> e : attributes.getEntries()) {
-			EntryDTO ent = new EntryDTO();
-			ent.setKey(e.getKey());
-			ent.setValue(e.getValue());
-			aDTO.getEntry().add(ent);
-		}
-		return aDTO;
-	}
+        AttributesDTO aDTO = new AttributesDTO();
+        for (Map.Entry<String, String> e : attributes.getEntries()) {
+            EntryDTO ent = new EntryDTO();
+            ent.setKey(e.getKey());
+            ent.setValue(e.getValue());
+            aDTO.getEntry().add(ent);
+        }
+        return aDTO;
+    }
 
 }

@@ -11,10 +11,13 @@
  */
 package ch.bfh.uniboard.service;
 
+import javax.ejb.Local;
+
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@Local
 public interface GetService {
 
 	/**
