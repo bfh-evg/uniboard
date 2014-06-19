@@ -13,50 +13,50 @@ package ch.bfh.uniboard.service;
 
 import java.util.Objects;
 
-
 /**
  * Wrapper for double variables
+ *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class DoubleValue implements Value<Double>{
+public class DoubleValue implements Value<Double> {
 
-    private Double value;
+	private Double value;
 
-    public DoubleValue(Double value) {
-        this.value = value;
-    }
-    
-    @Override
-    public Double getValue() {
-        return this.value;
-    }
+	public DoubleValue(Double value) {
+		this.value = value;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.value);
-        return hash;
-    }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final DoubleValue other = (DoubleValue) obj;
-        if (!Objects.equals(this.value, other.value)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public Double getValue() {
+		return this.value;
+	}
 
-    @Override
-    public String toString() {
-        return "DoubleType{" + "value=" + value + '}';
-    }
-    
-    
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 67 * hash + Objects.hashCode(this.value);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final DoubleValue other = (DoubleValue) obj;
+		if (!Objects.equals(this.value, other.value)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "DoubleValue{" + "value=" + value + '}';
+	}
+
 }

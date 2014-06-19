@@ -15,46 +15,47 @@ import java.util.Objects;
 
 /**
  * Wrapper for integer variables
+ *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class IntegerValue implements Value<Integer> {
 
-    private Integer value;
+	private Integer value;
 
-    public IntegerValue(Integer value) {
-        this.value = value;
-    }
-    
-    @Override
-    public Integer getValue() {
-        return this.value;
-    }
+	public IntegerValue(Integer value) {
+		this.value = value;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 43 * hash + Objects.hashCode(this.value);
-        return hash;
-    }
+	@Override
+	public Integer getValue() {
+		return this.value;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final IntegerValue other = (IntegerValue) obj;
-        if (!Objects.equals(this.value, other.value)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 43 * hash + Objects.hashCode(this.value);
+		return hash;
+	}
 
-    @Override
-    public String toString() {
-        return "IntegerType{" + "value=" + value + '}';
-    }
-    
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final IntegerValue other = (IntegerValue) obj;
+		if (!Objects.equals(this.value, other.value)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "IntegerValue{" + "value=" + value + '}';
+	}
+
 }

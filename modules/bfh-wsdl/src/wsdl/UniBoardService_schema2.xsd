@@ -7,11 +7,65 @@
         <xs:complexType>
           <xs:sequence>
             <xs:element name="key" type="xs:string"/>
-            <xs:element name="value" type="xs:string"/>
+            <xs:element name="value" type="tns:value"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="value" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="byteArrayValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:base64Binary"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="dateValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="doubleValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:double"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="integerValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stringValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="query">
@@ -32,8 +86,8 @@
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
-          <xs:element name="end" type="xs:anyType" minOccurs="0"/>
-          <xs:element name="start" type="xs:anyType" minOccurs="0"/>
+          <xs:element name="start" type="tns:value"/>
+          <xs:element name="end" type="tns:value"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -41,8 +95,8 @@
 
   <xs:complexType name="constraint" abstract="true">
     <xs:sequence>
-      <xs:element name="keys" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="postElement" type="tns:postElement" minOccurs="0"/>
+      <xs:element name="key" type="xs:string" maxOccurs="unbounded"/>
+      <xs:element name="postElement" type="tns:postElement"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -50,7 +104,7 @@
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
-          <xs:element name="set" type="xs:anyType" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="element" type="tns:value" maxOccurs="unbounded"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -60,7 +114,7 @@
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
-          <xs:element name="value" type="xs:anyType" minOccurs="0"/>
+          <xs:element name="value" type="tns:value"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -70,7 +124,7 @@
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
-          <xs:element name="value" type="xs:anyType" minOccurs="0"/>
+          <xs:element name="value" type="tns:value"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -80,7 +134,7 @@
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
-          <xs:element name="value" type="xs:anyType" minOccurs="0"/>
+          <xs:element name="value" type="tns:value"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -90,7 +144,7 @@
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
-          <xs:element name="value" type="xs:anyType" minOccurs="0"/>
+          <xs:element name="value" type="tns:value"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -100,7 +154,7 @@
     <xs:complexContent>
       <xs:extension base="tns:constraint">
         <xs:sequence>
-          <xs:element name="value" type="xs:anyType" minOccurs="0"/>
+          <xs:element name="value" type="tns:value"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

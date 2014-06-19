@@ -11,8 +11,9 @@
  */
 package ch.bfh.uniboard.webservice;
 
-import ch.bfh.uniboard.service.PostService;
+import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.webservice.data.AttributesDTO;
+import ch.bfh.uniboard.webservice.data.StringValueDTO;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,55 +32,59 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class UniBoardServiceImplTest {
 
-    /**
-     * Helper method for building the in-memory variant of a deployable unit. See Arquillian for more information.
-     *
-     * @return a Java archive
-     */
-    @Deployment
-    public static JavaArchive createDeployment() {
-        JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
-                .addPackage(UniBoardServiceImpl.class.getPackage())
-                .addClass(PostServiceTestBean.class)
-                .addClass(GetServiceTestBean.class)
-                .addAsManifestResource("ejb-jar.xml", "ejb-jar.xml")
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-        return ja;
-    }
+	/**
+	 * Helper method for building the in-memory variant of a deployable unit. See Arquillian for more information.
+	 *
+	 * @return a Java archive
+	 */
+	@Deployment
+	public static JavaArchive createDeployment() {
+		JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
+				.addPackage(UniBoardServiceImpl.class.getPackage())
+				.addClass(PostServiceTestBean.class)
+				.addClass(GetServiceTestBean.class)
+				.addAsManifestResource("ejb-jar.xml", "ejb-jar.xml")
+				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+		return ja;
+	}
 
-    @EJB(name = "UniBoardServiceImpl")
-    UniBoardService service;
+	@EJB(name = "UniBoardServiceImpl")
+	UniBoardService service;
 
-    @EJB(name = "PostServiceTestBean")
-    PostServiceTestBean postService;
+	@EJB(name = "PostServiceTestBean")
+	PostServiceTestBean postService;
 
-    public UniBoardServiceImplTest() {
-    }
+	public UniBoardServiceImplTest() {
+	}
 
-    @Test
-    public void testPost1() {
-        byte[] message = new byte[1];
-        message[0] = 0x16;
+	@Test
+	public void testPost1() {
+		byte[] message = new byte[1];
+		message[0] = 0x16;
 
-        AttributesDTO adto = new AttributesDTO();
-        AttributesDTO.EntryDTO entry1 = new AttributesDTO.EntryDTO();
-        entry1.setKey("test");
-        entry1.setValue("test");
-        adto.getEntry().add(entry1);
-        AttributesDTO.EntryDTO entry2 = new AttributesDTO.EntryDTO();
-        entry2.setKey("test2");
-        entry2.setValue("test2");
-        adto.getEntry().add(entry2);
+		AttributesDTO adto = new AttributesDTO();
+		AttributesDTO.EntryDTO entry1 = new AttributesDTO.EntryDTO();
+		entry1.setKey("test");
+		StringValueDTO string1 = new StringValueDTO();
+		string1.setValue("test");
+		entry1.setValue(string1);
+		adto.getEntry().add(entry1);
+		AttributesDTO.EntryDTO entry2 = new AttributesDTO.EntryDTO();
+		entry2.setKey("test2");
+		StringValueDTO string2 = new StringValueDTO();
+		string2.setValue("test2");
+		entry2.setValue(string2);
+		adto.getEntry().add(entry2);
 
-        service.post(message, adto);
+		service.post(message, adto);
 
-        ch.bfh.uniboard.service.Post p = postService.getLastPost();
+		ch.bfh.uniboard.service.Post p = postService.getLastPost();
 
-        assertEquals(2, p.getAlpha().getEntries().size());
-        assertEquals("test",p.getAlpha().getValue("test"));
-        assertEquals("test2",p.getAlpha().getValue("test2"));
-        Assert.assertArrayEquals(message, p.getMessage());
+		assertEquals(2, p.getAlpha().getEntries().size());
+		assertEquals(new StringValue("test"), p.getAlpha().getValue("test"));
+		assertEquals(new StringValue("test2"), p.getAlpha().getValue("test2"));
+		Assert.assertArrayEquals(message, p.getMessage());
 
-    }
+	}
 
 }
