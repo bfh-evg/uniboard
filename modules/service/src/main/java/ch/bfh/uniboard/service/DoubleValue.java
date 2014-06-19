@@ -32,11 +32,6 @@ public class DoubleValue implements Value<Double>{
     }
 
     @Override
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
-    @Override
     public int hashCode() {
         int hash = 7;
         hash = 67 * hash + Objects.hashCode(this.value);

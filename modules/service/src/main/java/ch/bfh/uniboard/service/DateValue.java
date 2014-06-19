@@ -31,10 +31,7 @@ public class DateValue implements Value<Date> {
         return this.value;
     }
 
-    @Override
-    public void setValue(Date value) {
-        this.value = value;
-    }
+    
 
     @Override
     public int hashCode() {

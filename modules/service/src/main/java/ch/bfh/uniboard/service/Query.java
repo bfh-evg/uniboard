@@ -15,30 +15,29 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * A data container for arbitrary key/value pairs. Keys are strings, values can be anything. Values should be immutable.
- * Map entries are sorted by key values.
+ * A data container for arbitrary key/value pairs. Keys are strings, values can
+ * be anything. Values should be immutable. Map entries are sorted by key
+ * values.
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
 public class Query implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final List<Constraint> constraints;
+    private final List<Constraint> constraints;
 
-	/**
-	 * Initializes the data container
-	 *
-	 * @param constraints
-	 */
-	public Query(List<Constraint> constraints) {
-		this.constraints = constraints;
-	}
+    /**
+     * Initializes the data container
+     *
+     * @param constraints
+     */
+    public Query(List<Constraint> constraints) {
+        this.constraints = constraints;
+    }
 
     public List<Constraint> getConstraints() {
         return constraints;
     }
-        
-        
 
 }

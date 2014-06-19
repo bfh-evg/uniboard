@@ -16,6 +16,7 @@ import java.util.List;
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class In extends Constraint {
 
@@ -28,9 +29,5 @@ public class In extends Constraint {
 
     public List<Value> getSet() {
         return element;
-    }
-
-    public void setSet(List<Value> set) {
-        this.element = set;
     }
 }

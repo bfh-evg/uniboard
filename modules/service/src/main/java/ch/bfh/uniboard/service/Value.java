@@ -23,12 +23,6 @@ public interface Value<K> {
      */
     public K getValue();
     
-    /**
-     * Set the value of the variable
-     * @param value value of the variable 
-     */
-    public void setValue(K value);
-
     
     
     

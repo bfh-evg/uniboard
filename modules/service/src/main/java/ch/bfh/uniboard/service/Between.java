@@ -16,6 +16,7 @@ import java.util.List;
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class Between extends Constraint {
 
@@ -32,16 +33,8 @@ public class Between extends Constraint {
         return start;
     }
 
-    public void setStart(Value start) {
-        this.start = start;
-    }
-
     public Value getEnd() {
         return end;
-    }
-
-    public void setEnd(Value end) {
-        this.end = end;
     }
 
 }

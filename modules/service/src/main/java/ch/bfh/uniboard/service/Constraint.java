@@ -19,6 +19,7 @@ import java.util.List;
  * one or more keys (in hierarchival order) indicating to which field inside the specified part of the post the restriction applies
  * and one or more values depending on the type of constraint.
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public abstract class Constraint {
 
@@ -44,27 +45,11 @@ public abstract class Constraint {
     }
 
     /**
-     * Sets the keys (in hierarchival order) to which this constraint applies
-     * @param keys keys (in hierarchival order)
-     */
-    public void setKeys(List<String> keys) {
-        this.keys = keys;
-    }
-
-    /**
      * Get the post part to which this constraint applies
      * @return part of the post
      */
     public PostElement getPostElement() {
         return postElement;
-    }
-
-    /**
-     * Set the post part to which this constraint applies
-     * @param postElement part of the post
-     */
-    public void setPostElement(PostElement postElement) {
-        this.postElement = postElement;
     }
 
 }

@@ -22,10 +22,12 @@ import java.util.logging.Logger;
  * A post represents a posted message and all belonging attributes.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class Post implements Serializable, Comparable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(Post.class.getName());
 
     protected byte[] message;
     protected Attributes alpha;
@@ -77,16 +79,16 @@ public class Post implements Serializable, Comparable {
         }
         final Post other = (Post) obj;
         if (!Arrays.equals(this.message, other.message)) {
-            Logger.getLogger(Post.class.getName()).log(Level.INFO, "messages are not equal: {0} {1}", 
+            logger.log(Level.INFO, "messages are not equal: {0} {1}", 
                     new Object[]{Arrays.toString(this.message), Arrays.toString(other.message)});
             return false;
         }
         if (!Objects.equals(this.alpha, other.alpha)) {
-            Logger.getLogger(Post.class.getName()).log(Level.INFO, "alphas are not equal");
+            logger.getLogger(Post.class.getName()).log(Level.INFO, "alphas are not equal");
             return false;
         }
         if (!Objects.equals(this.beta, other.beta)) {
-            Logger.getLogger(Post.class.getName()).log(Level.INFO, "betas are not equal");
+            logger.getLogger(Post.class.getName()).log(Level.INFO, "betas are not equal");
             return false;
         }
         return true;

@@ -30,10 +30,7 @@ public class ByteArrayValue implements Value<byte[]> {
         return this.value;
     }
 
-    @Override
-    public void setValue(byte[] value) {
-        this.value = value;
-    }
+    
 
     @Override
     public int hashCode() {

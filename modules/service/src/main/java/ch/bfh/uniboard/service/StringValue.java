@@ -30,10 +30,7 @@ public class StringValue implements Value<String> {
         return this.value;
     }
 
-    @Override
-    public void setValue(String value) {
-        this.value = value;
-    }
+    
 
     @Override
     public int hashCode() {

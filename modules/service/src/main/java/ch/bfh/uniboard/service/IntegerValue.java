@@ -31,11 +31,6 @@ public class IntegerValue implements Value<Integer> {
     }
 
     @Override
-    public void setValue(Integer value) {
-        this.value = value;
-    }
-
-    @Override
     public int hashCode() {
         int hash = 7;
         hash = 43 * hash + Objects.hashCode(this.value);
