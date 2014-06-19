@@ -16,51 +16,52 @@ import java.util.Objects;
 
 /**
  * Wrapper for date variables
+ *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class DateValue implements Value<Date> {
 
-    private Date value;
+	private Date value;
 
-    public DateValue(Date value) {
-        this.value = value;
-    }
-    
-    @Override
-    public Date getValue() {
-        return this.value;
-    }
+	public DateValue(Date value) {
+		this.value = value;
+	}
 
-    @Override
-    public void setValue(Date value) {
-        this.value = value;
-    }
+	@Override
+	public Date getValue() {
+		return this.value;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + Objects.hashCode(this.value);
-        return hash;
-    }
+	@Override
+	public void setValue(Date value) {
+		this.value = value;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final DateValue other = (DateValue) obj;
-        if (!Objects.equals(this.value, other.value)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 29 * hash + Objects.hashCode(this.value);
+		return hash;
+	}
 
-    @Override
-    public String toString() {
-        return "DateType{" + "value=" + value + '}';
-    }
-    
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final DateValue other = (DateValue) obj;
+		if (!Objects.equals(this.value, other.value)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "DateValue{" + "value=" + value + '}';
+	}
+
 }

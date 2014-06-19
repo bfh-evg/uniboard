@@ -15,51 +15,52 @@ import java.util.Objects;
 
 /**
  * Wrapper for string variables
+ *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class StringValue implements Value<String> {
 
-    private String value;
+	private String value;
 
-    public StringValue(String value) {
-        this.value = value;
-    }
-    
-    @Override
-    public String getValue() {
-        return this.value;
-    }
+	public StringValue(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public void setValue(String value) {
-        this.value = value;
-    }
+	@Override
+	public String getValue() {
+		return this.value;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.value);
-        return hash;
-    }
+	@Override
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final StringValue other = (StringValue) obj;
-        if (!Objects.equals(this.value, other.value)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 79 * hash + Objects.hashCode(this.value);
+		return hash;
+	}
 
-    @Override
-    public String toString() {
-        return "StringType{" + "value=" + value + '}';
-    }
-    
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final StringValue other = (StringValue) obj;
+		if (!Objects.equals(this.value, other.value)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "StringValue{" + "value=" + value + '}';
+	}
+
 }
