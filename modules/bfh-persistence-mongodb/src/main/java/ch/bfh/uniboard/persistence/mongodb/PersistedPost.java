@@ -1,40 +1,63 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014 Berner Fachhochschule, Switzerland.
+ * Bern University of Applied Sciences, Engineering and Information Technology,
+ * Research Institute for Security in the Information Society, E-Voting Group,
+ * Biel, Switzerland.
+ *
+ * Project UniBoard.
+ *
+ * Distributable under GPL license.
+ * See terms of license at gnu.org.
  */
-
 package ch.bfh.uniboard.persistence.mongodb;
 
 import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.ByteArrayValue;
+import ch.bfh.uniboard.service.DateValue;
+import ch.bfh.uniboard.service.DoubleValue;
+import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.Post;
-import com.mongodb.BasicDBList;
+import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.Value;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author phil
+ * A persisted post represents the posted message and all belonging attributes in the format in which it is persisted
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class PersistedPost extends Post {
     
+    /**
+     * Create a persisted post
+     * @param message
+     * @param alpha
+     * @param beta 
+     */
     public PersistedPost(byte[] message, Attributes alpha, Attributes beta){
         this.message = message;
         this.alpha = alpha;
         this.beta = beta;
     };
     
+    /**
+     * Creates an empty persisted post
+     */
     public PersistedPost(){};
     
+    /**
+     * Method allowing to convert the current PersistedPost to the format supported by the database
+     * @return a DBObject format of the PersistedPost
+     */
     public BasicDBObject toDBObject() {
         BasicDBObject doc = new BasicDBObject();
         
@@ -56,33 +79,37 @@ public class PersistedPost extends Post {
             doc.put("message", message);
         }
         
-        //TODO take into account the type of the attribute value => see this.prepareForJson()
-        List<BasicDBObject> alphaList = new ArrayList<BasicDBObject>();
-        //BasicDBObject alphaDB = new BasicDBObject();
-        //alphaList.putAll(alpha.getAllAttributes()); Not possible since keys are not integers
-        for(Entry<String,String> entry: alpha.getEntries()){
-            alphaList.add(new BasicDBObject(entry.getKey(), entry.getValue()));
-            //alphaDB.put(entry.getKey(), this.prepareForJson(entry.getValue()));
+        //Prepares the Alpha attributes
+        List<BasicDBObject> alphaList = new ArrayList<>();
+        for(Entry<String,Value> entry: alpha.getEntries()){
+            alphaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
         }
         doc.put("alpha", alphaList);
         
-        List<BasicDBObject> betaList = new ArrayList<BasicDBObject>();
-        for(Entry<String,String> entry: beta.getEntries()){
-            betaList.add(new BasicDBObject(entry.getKey(), entry.getValue()));
+        //Prepares the Beta attributes
+        List<BasicDBObject> betaList = new ArrayList<>();
+        for(Entry<String,Value> entry: beta.getEntries()){
+            betaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
         }
         doc.put("beta", betaList);
 
         return doc;
     }
 
+    /**
+     * Method allowing to retrieve a PersistedPost out of the DBObject returned by the database.
+     * If the passed DBObject does not represent a PersistedPost, an empty PersistedPost is retuned
+     * @param doc the DBObject returned by the database
+     * @return the corresponding persisted post
+     */
     public static PersistedPost fromDBObject(DBObject doc) {
         PersistedPost pp = new PersistedPost();
         
         //Check if message is a JSON message
         if(doc.get("message") instanceof BasicDBObject){
+            //is a JSON string
             try {
-                //is a JSON string
-                pp.setMessage(JSON.serialize(doc.get("message")).getBytes("UTF-8"));
+                pp.message = JSON.serialize(doc.get("message")).getBytes("UTF-8");
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(PersistedPost.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -91,43 +118,45 @@ public class PersistedPost extends Post {
             pp.message = (byte[]) doc.get("message");
         }
         
-        
-//        List<BasicDBObject> alphaList = new ArrayList<BasicDBObject>();
-//        alphaList = (ArrayList<BasicDBObject>)doc.get("alpha");
-//        for(BasicDBObject o : alphaList){
-//            o.g
-//        }
+        //fill alpha attributes
         Attributes alpha = new Attributes();
         ArrayList<DBObject> alphaList = (ArrayList<DBObject>)doc.get("alpha");
         for(DBObject dbObj : alphaList){
             String key = dbObj.keySet().iterator().next();
-            alpha.add(key, (String)dbObj.get(key));
+            alpha.add(key, inflateType(dbObj.get(key)));
         }
-        pp.setAlpha(alpha);
+        pp.alpha = alpha;
         
+        //fill beta attributes
         Attributes beta = new Attributes();
         ArrayList<DBObject> betaList = (ArrayList<DBObject>)doc.get("beta");
         for(DBObject dbObj : betaList){
             String key = dbObj.keySet().iterator().next();
-            beta.add(key, (String)dbObj.get(key));
+            beta.add(key, inflateType(dbObj.get(key)));
         }
-        pp.setBeta(beta);
-//        BasicDBObject betaList = (BasicDBObject)doc.get("beta");
-//        for(Entry<String, Object> entry : betaList.entrySet()){
-//            beta.add(entry.getKey(), convertFromJson(entry.getValue()));
-//        }
+        pp.beta = beta;
 
         return pp;
     }
     
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+    /**
+     * Helper method checking the type of the given object and creating the corresponding Type
+     * @param o object to check
+     * @return an object of the corresponding Type or null if the type of o is unknown
+     */
+    private static Value inflateType(Object o){
+        if(o instanceof Integer){
+            return new IntegerValue((int)o);
+        } else if (o instanceof String){
+            return new StringValue((String)o);
+        } else if (o instanceof Date){
+            return new DateValue((Date)o);
+        } else if (o instanceof byte[]){
+            return new ByteArrayValue((byte[])o);
+        } else if (o instanceof Double){
+            return new DoubleValue((Double)o);
+        } else {
+            return null;
+        }
     }
-    
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-    
 }
