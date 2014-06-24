@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -21,7 +22,7 @@ import java.util.SortedSet;
  */
 public class ResultContainer {
 
-	private final SortedSet<Post> result;
+	private final List<Post> result;
 	private Attributes gamma;
 
 	/**
@@ -30,7 +31,7 @@ public class ResultContainer {
 	 * @param result the Result object containing the result of the query
 	 * @param gamma additional attributes
 	 */
-	public ResultContainer(SortedSet<Post> result, Attributes gamma) {
+	public ResultContainer(List<Post> result, Attributes gamma) {
 		this.result = result;
 		this.gamma = gamma;
 	}
@@ -40,7 +41,7 @@ public class ResultContainer {
 	 *
 	 * @return a Result object
 	 */
-	public SortedSet<Post> getResult() {
+	public List<Post> getResult() {
 		return result;
 	}
 
