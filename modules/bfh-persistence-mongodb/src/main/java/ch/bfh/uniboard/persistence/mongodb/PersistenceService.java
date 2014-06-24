@@ -45,20 +45,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Component responsible for persisting the received posts
+ * Service responsible for persisting the received posts
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class PersistenceComponent implements PostService, GetService, InternalGet {
+public class PersistenceService implements PostService, GetService, InternalGet {
     
-    private static final Logger logger = Logger.getLogger(PersistenceComponent.class.getName());
+    private static final Logger logger = Logger.getLogger(PersistenceService.class.getName());
 
     private DBCollection collection;
 
     /**
      * Creates the persistence component
      */
-    public PersistenceComponent() {
+    public PersistenceService() {
         MongoClient mongoClient = null;
         try {
             //MongoClient already works as a pool if only one instance is used (http://docs.mongodb.org/ecosystem/tutorial/getting-started-with-java-driver/)
@@ -232,7 +232,6 @@ public class PersistenceComponent implements PostService, GetService, InternalGe
                 //convert to PersistedPost
                 ss.add(PersistedPost.fromDBObject(object));
             }
-            
             return new ResultContainer(ss, new Attributes());
         } catch (Exception e) {
             Attributes gamma = new Attributes();
@@ -252,7 +251,7 @@ public class PersistenceComponent implements PostService, GetService, InternalGe
      *
      * @return the collection of the database
      */
-    public DBCollection getCollection() {
+    protected DBCollection getCollection() {
         return this.collection;
     }
 }

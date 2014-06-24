@@ -50,12 +50,12 @@ import org.junit.Test;
  * Test class of persistence componenent
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class PersistenceComponentTest {
+public class PersistenceServiceTest {
     
      //TODO test errors and rejected
     
     
-    private static PersistenceComponent pc;
+    private static PersistenceService pc;
     private static byte[] message;
     private static Attributes alpha;
     private static Attributes beta;
@@ -66,14 +66,14 @@ public class PersistenceComponentTest {
     private static Attributes beta2;
     private static PersistedPost pp2;
     
-    public PersistenceComponentTest() {}
+    public PersistenceServiceTest() {}
     
     /**
      * Prepares two Post that will be used in the tests
      */
     @BeforeClass
     public static void setUpClass() {
-        pc = new PersistenceComponent();
+        pc = new PersistenceService();
         
         message = new byte[]{1,2,3,4};
         
@@ -94,7 +94,7 @@ public class PersistenceComponentTest {
         try {
             message2 = "{ \"sub1\" : { \"subsub1\" : \"subsubvalue1\"} , \"sub2\" : 2}".getBytes("UTF-8");
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(PersistenceComponentTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PersistenceServiceTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         alpha2 = new Attributes();
