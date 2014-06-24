@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
+import static ch.bfh.uniboard.persistence.mongodb.PersistenceService.port;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Between;
 import ch.bfh.uniboard.service.ByteArrayValue;
@@ -31,8 +32,19 @@ import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,85 +60,111 @@ import org.junit.Test;
 
 /**
  * Test class of persistence componenent
+ *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class PersistenceServiceTest {
-    
-     //TODO test errors and rejected
-    
-    
+
     private static PersistenceService pc;
     private static byte[] message;
     private static Attributes alpha;
     private static Attributes beta;
     private static PersistedPost pp;
-    
+
     private static byte[] message2;
     private static Attributes alpha2;
     private static Attributes beta2;
     private static PersistedPost pp2;
-    
-    public PersistenceServiceTest() {}
-    
+
+    private static final MongodStarter starter = MongodStarter.getDefaultInstance();
+
+    private static MongodExecutable mongodExe;
+    private static MongodProcess mongod;
+    private static DBCollection collection;
+
+    public PersistenceServiceTest() {
+    }
+
     /**
      * Prepares two Post that will be used in the tests
      */
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpClass() throws IOException {
+        
+        //Download and start a mongodb deamon for testing
+        //TODO use port defined in config
+        mongodExe = starter.prepare(new MongodConfigBuilder()
+                .version(Version.Main.PRODUCTION)
+                .net(new Net(PersistenceService.port, Network.localhostIsIPv6()))
+                .build());
+        mongod = mongodExe.start();
+        
+        MongoClient mongoClient = new MongoClient("localhost", port);
+        //Create or load the database
+        DB db = mongoClient.getDB("testDB");
+
+        //create or load the collection
+        collection = db.getCollection("test");
+        if (collection == null) {
+            collection = db.createCollection("test", null);
+        }
+
         pc = new PersistenceService();
-        
-        message = new byte[]{1,2,3,4};
-        
+
+        message = new byte[]{1, 2, 3, 4};
+
         alpha = new Attributes();
         alpha.add("first", new StringValue("value1"));
         alpha.add("second", new IntegerValue(2));
-        alpha.add("third", new ByteArrayValue(new byte[]{3,3}));
+        alpha.add("third", new ByteArrayValue(new byte[]{3, 3}));
         alpha.add("fourth", new DateValue(new Date(System.currentTimeMillis())));
-        
+
         beta = new Attributes();
         beta.add("fifth", new StringValue("value5"));
         beta.add("sixth", new DoubleValue(0.5));
         beta.add("seventh", new IntegerValue(7));
-        beta.add("eighth", new ByteArrayValue(new byte[]{8,8}));
-        
+        beta.add("eighth", new ByteArrayValue(new byte[]{8, 8}));
+
         pp = new PersistedPost(message, alpha, beta);
-        
+
         try {
             message2 = "{ \"sub1\" : { \"subsub1\" : \"subsubvalue1\"} , \"sub2\" : 2}".getBytes("UTF-8");
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(PersistenceServiceTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         alpha2 = new Attributes();
         alpha2.add("first", new StringValue("value12"));
         alpha2.add("second", new IntegerValue(22));
-        alpha2.add("third", new ByteArrayValue(new byte[]{3,3,2}));
-        alpha2.add("fourth", new DateValue(new Date(System.currentTimeMillis()+100)));
-        
+        alpha2.add("third", new ByteArrayValue(new byte[]{3, 3, 2}));
+        alpha2.add("fourth", new DateValue(new Date(System.currentTimeMillis() + 100)));
+
         beta2 = new Attributes();
         beta2.add("fifth", new StringValue("value52"));
         beta2.add("sixth", new DoubleValue(0.52));
         beta2.add("seventh", new IntegerValue(72));
-        beta2.add("eighth", new ByteArrayValue(new byte[]{8,8,2}));
-        
+        beta2.add("eighth", new ByteArrayValue(new byte[]{8, 8, 2}));
+
         pp2 = new PersistedPost(message2, alpha2, beta2);
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
-        
+        //stops the mongodb deamon started
+        mongod.stop();
+        mongodExe.stop();
     }
-    
+
     @Before
     public void setUp() {
-        
+
     }
-    
+
     @After
     public void tearDown() {
         //empties the DB after each test
-        pc.getCollection().remove(pp.toDBObject());
-        pc.getCollection().remove(pp2.toDBObject());
+        collection.remove(pp.toDBObject());
+        collection.remove(pp2.toDBObject());
     }
 
     /**
@@ -134,44 +172,42 @@ public class PersistenceServiceTest {
      */
     @Test
     public void connectionTest() {
-        assertNotNull(pc.getCollection());
+        assertNotNull(collection);
     }
-    
+
     /**
      * Test Post method
      */
     @Test
     public void postTest() {
         Attributes returned = pc.post(message, alpha, beta);
-        
-        DBCursor cursor = pc.getCollection().find();
-        
+
+        DBCursor cursor = collection.find();
+
         assertEquals(1, cursor.size());
         assertEquals(beta, returned);
-        
-        cursor = pc.getCollection().find(pp.toDBObject());
-        
+
+        cursor = collection.find(pp.toDBObject());
+
         assertEquals(1, cursor.size());
-        
+
         DBObject query = new BasicDBObject();
         query.put("alpha.first", "value1");
-        
-        cursor = pc.getCollection().find(query);
-        
+
+        cursor = collection.find(query);
+
         assertEquals(1, cursor.size());
-        
+
         assertEquals(pp, PersistedPost.fromDBObject(cursor.next()));
     }
-    
-    
-    
+
     /**
      * Test searching a value in the message which is a JSON string
      */
     @Test
     public void inMessageQueryTest() {
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("sub1");
@@ -182,10 +218,10 @@ public class PersistenceServiceTest {
         constraints.add(new Equals(new IntegerValue(2), keys2, PostElement.MESSAGE));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
     }
-    
+
     /**
      * Test Equals constraint for String Type
      */
@@ -193,18 +229,18 @@ public class PersistenceServiceTest {
     public void equalsStringQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("first");
         constraints.add(new Equals(new StringValue("value1"), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
-        assertEquals(pp, rc.getResult().first());
+        assertEquals(pp, rc.getResult().get(0));
     }
-    
+
     /**
      * Test Equals constraint for Integer Type
      */
@@ -212,19 +248,19 @@ public class PersistenceServiceTest {
     public void equalsIntegerQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("second");
         constraints.add(new Equals(new IntegerValue(2), keys, PostElement.ALPHA));
-        
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
-        assertEquals(pp, rc.getResult().first());
+        assertEquals(pp, rc.getResult().get(0));
     }
-    
+
     /**
      * Test Equals constraint for Double Type
      */
@@ -232,19 +268,19 @@ public class PersistenceServiceTest {
     public void equalsDoubleQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("sixth");
         constraints.add(new Equals(new DoubleValue(0.5), keys, PostElement.BETA));
-        
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
-        assertEquals(pp, rc.getResult().first());
+        assertEquals(pp, rc.getResult().get(0));
     }
-    
+
     /**
      * Test Equals constraint for ByteArray Type
      */
@@ -252,19 +288,19 @@ public class PersistenceServiceTest {
     public void equalsByteArrayQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("third");
-        constraints.add(new Equals(new ByteArrayValue(new byte[]{3,3}), keys, PostElement.ALPHA));
-        
+        constraints.add(new Equals(new ByteArrayValue(new byte[]{3, 3}), keys, PostElement.ALPHA));
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
-        assertEquals(pp, rc.getResult().first());
+        assertEquals(pp, rc.getResult().get(0));
     }
-    
+
     /**
      * Test Equals constraint for Date Type
      */
@@ -272,19 +308,19 @@ public class PersistenceServiceTest {
     public void equalsDateQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("fourth");
-        constraints.add(new Equals((DateValue)pp.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
-        
+        constraints.add(new Equals((DateValue) pp.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
-        assertEquals(pp, rc.getResult().first());
+        assertEquals(pp, rc.getResult().get(0));
     }
-    
+
     /**
      * Test multiple Equals constraint for String Type
      */
@@ -292,7 +328,7 @@ public class PersistenceServiceTest {
     public void multipleEqualsStringQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("first");
@@ -302,11 +338,11 @@ public class PersistenceServiceTest {
         constraints.add(new Equals(new StringValue("value5"), keys2, PostElement.BETA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
-        assertEquals(pp, rc.getResult().first());
+        assertEquals(pp, rc.getResult().get(0));
     }
-    
+
     /**
      * Test NotEquals constraint for String Type
      */
@@ -314,21 +350,20 @@ public class PersistenceServiceTest {
     public void notEqualsStringQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("first");
         constraints.add(new NotEquals(new StringValue("value4"), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
-    
+
     /**
      * Test In constraint for String Type
      */
@@ -336,7 +371,7 @@ public class PersistenceServiceTest {
     public void inStringQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("first");
@@ -347,21 +382,21 @@ public class PersistenceServiceTest {
         constraints.add(new In(values, keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
+
     /**
      * Test In constraint for Integer Type
-     */ 
+     */
     @Test
     public void inIntegerQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("second");
@@ -372,13 +407,13 @@ public class PersistenceServiceTest {
         constraints.add(new In(values, keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
+
     /**
      * Test In constraint for Double Type
      */
@@ -386,7 +421,7 @@ public class PersistenceServiceTest {
     public void inDoubleQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("sixth");
@@ -397,13 +432,13 @@ public class PersistenceServiceTest {
         constraints.add(new In(values, keys, PostElement.BETA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
+
     /**
      * Test In constraint for byte[] Type
      */
@@ -411,24 +446,24 @@ public class PersistenceServiceTest {
     public void inByteArrayQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("third");
         List<Value> values = new ArrayList<>();
-        values.add(new ByteArrayValue(new byte[]{1,1}));
-        values.add(new ByteArrayValue(new byte[]{3,3}));
-        values.add(new ByteArrayValue(new byte[]{3,3,2}));
+        values.add(new ByteArrayValue(new byte[]{1, 1}));
+        values.add(new ByteArrayValue(new byte[]{3, 3}));
+        values.add(new ByteArrayValue(new byte[]{3, 3, 2}));
         constraints.add(new In(values, keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
+
     /**
      * Test In constraint for Date Type
      */
@@ -436,7 +471,7 @@ public class PersistenceServiceTest {
     public void inDateQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("fourth");
@@ -447,14 +482,13 @@ public class PersistenceServiceTest {
         constraints.add(new In(values, keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
-    
+
     /**
      * Test Between constraint for String Type
      */
@@ -462,19 +496,19 @@ public class PersistenceServiceTest {
     public void betweenStringQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("first");
-        constraints.add(new Between(new StringValue("a"),new StringValue("z"), keys, PostElement.ALPHA));
+        constraints.add(new Between(new StringValue("a"), new StringValue("z"), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
     }
-    
+
     /**
      * Test Between constraint for Integer Type
      */
@@ -482,19 +516,19 @@ public class PersistenceServiceTest {
     public void betweenIntegerQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("second");
-        constraints.add(new Between(new IntegerValue(1),new IntegerValue(4), keys, PostElement.ALPHA));
+        constraints.add(new Between(new IntegerValue(1), new IntegerValue(4), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
     }
-     
+
     /**
      * Test Between constraint for Double Type
      */
@@ -502,20 +536,20 @@ public class PersistenceServiceTest {
     public void betweenDoubleQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("sixth");
-        constraints.add(new Between(new DoubleValue(0.1),new DoubleValue(0.6), keys, PostElement.BETA));
+        constraints.add(new Between(new DoubleValue(0.1), new DoubleValue(0.6), keys, PostElement.BETA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
+
     /**
      * Test Between constraint for byte[] Type
      */
@@ -523,19 +557,19 @@ public class PersistenceServiceTest {
     public void betweenByteArrayQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("third");
-        constraints.add(new Between(new ByteArrayValue(new byte[]{0}),new ByteArrayValue(new byte[]{9,9,9,9}), keys, PostElement.ALPHA));
+        constraints.add(new Between(new ByteArrayValue(new byte[]{0}), new ByteArrayValue(new byte[]{9, 9, 9, 9}), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
     }
-    
+
     /**
      * Test Between constraint for Date Type
      */
@@ -543,23 +577,23 @@ public class PersistenceServiceTest {
     public void betweenDateQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("fourth");
-        DateValue startDate = new DateValue(new Date(((Date)pp.getAlpha().getValue("fourth").getValue()).getTime()-1000));
+        DateValue startDate = new DateValue(new Date(((Date) pp.getAlpha().getValue("fourth").getValue()).getTime() - 1000));
         DateValue endDate = new DateValue(new Date(System.currentTimeMillis()));
-        
+
         constraints.add(new Between(startDate, endDate, keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
-        
+
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
     }
-    
+
     /**
      * Test Less, LessEquals, Greater, GreaterEquals queries for String
      */
@@ -567,50 +601,50 @@ public class PersistenceServiceTest {
     public void greaterLessStringQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("first");
-        
+
         //test greater
         constraints.add(new Greater(new StringValue("value1"), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test greater equals
         constraints.clear();
         constraints.add(new GreaterEquals(new StringValue("value1"), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test less
         constraints.clear();
         constraints.add(new Less(new StringValue("value12"), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
-        
+
         //test less equals
         constraints.clear();
         constraints.add(new LessEquals(new StringValue("value12"), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
     }
-    
+
     /**
      * Test Less, LessEquals, Greater, GreaterEquals queries for Integer
      */
@@ -618,50 +652,50 @@ public class PersistenceServiceTest {
     public void greaterLessIntegerQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("second");
-        
+
         //test greater
         constraints.add(new Greater(new IntegerValue(2), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test greater equals
         constraints.clear();
         constraints.add(new GreaterEquals(new IntegerValue(2), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test less
         constraints.clear();
         constraints.add(new Less(new IntegerValue(22), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
-        
+
         //test less equals
         constraints.clear();
         constraints.add(new LessEquals(new IntegerValue(22), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
     }
-    
+
     /**
      * Test Less, LessEquals, Greater, GreaterEquals queries for Double
      */
@@ -669,50 +703,50 @@ public class PersistenceServiceTest {
     public void greaterLessDoubleQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("sixth");
-        
+
         //test greater
         constraints.add(new Greater(new DoubleValue(0.5), keys, PostElement.BETA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test greater equals
         constraints.clear();
         constraints.add(new GreaterEquals(new DoubleValue(0.5), keys, PostElement.BETA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test less
         constraints.clear();
         constraints.add(new Less(new DoubleValue(0.52), keys, PostElement.BETA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
-        
+
         //test less equals
         constraints.clear();
         constraints.add(new LessEquals(new DoubleValue(0.52), keys, PostElement.BETA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
     }
-    
+
     /**
      * Test Less, LessEquals, Greater, GreaterEquals queries for byte[]
      */
@@ -720,50 +754,50 @@ public class PersistenceServiceTest {
     public void greaterLessByteArrayQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("third");
-        
+
         //test greater
-        constraints.add(new Greater(new ByteArrayValue(new byte[]{3,3}), keys, PostElement.ALPHA));
+        constraints.add(new Greater(new ByteArrayValue(new byte[]{3, 3}), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test greater equals
         constraints.clear();
-        constraints.add(new GreaterEquals(new ByteArrayValue(new byte[]{3,3}), keys, PostElement.ALPHA));
+        constraints.add(new GreaterEquals(new ByteArrayValue(new byte[]{3, 3}), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test less
         constraints.clear();
-        constraints.add(new Less(new ByteArrayValue(new byte[]{3,3,2}), keys, PostElement.ALPHA));
+        constraints.add(new Less(new ByteArrayValue(new byte[]{3, 3, 2}), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
-        
+
         //test less equals
         constraints.clear();
-        constraints.add(new LessEquals(new ByteArrayValue(new byte[]{3,3,2}), keys, PostElement.ALPHA));
+        constraints.add(new LessEquals(new ByteArrayValue(new byte[]{3, 3, 2}), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
     }
-    
+
     /**
      * Test Less, LessEquals, Greater, GreaterEquals queries for Date
      */
@@ -771,50 +805,50 @@ public class PersistenceServiceTest {
     public void greaterLessDateQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
         List<String> keys = new ArrayList<>();
         keys.add("fourth");
-        
+
         //test greater
         constraints.add(new Greater(pp.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test greater equals
         constraints.clear();
         constraints.add(new GreaterEquals(pp.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
         //test less
         constraints.clear();
         constraints.add(new Less(pp2.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(1, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
-        
+
         //test less equals
         constraints.clear();
         constraints.add(new LessEquals(pp2.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
         q = new Query(constraints);
         rc = pc.get(q);
-                
+
         assertEquals(2, rc.getResult().size());
         assertTrue(rc.getResult().contains(pp));
         assertTrue(rc.getResult().contains(pp2));
-        
+
     }
-    
+
     /**
      * Test a complex query containing different Types and Different Constraints
      */
@@ -822,34 +856,34 @@ public class PersistenceServiceTest {
     public void complexQueryTest() {
         pc.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
         pc.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-        
+
         List<Constraint> constraints = new ArrayList<>();
-        
+
         //String Equals
         List<String> keys1 = new ArrayList<>();
         keys1.add("first");
         constraints.add(new Equals(new StringValue("value1"), keys1, PostElement.ALPHA));
-        
+
         //Integer GreaterEquals
         List<String> keys2 = new ArrayList<>();
         keys2.add("second");
         constraints.add(new GreaterEquals(new IntegerValue(2), keys2, PostElement.ALPHA));
-        
+
         //byte[] equals
         List<String> keys3 = new ArrayList<>();
         keys3.add("third");
-        constraints.add(new Equals(new ByteArrayValue(new byte[]{3,3}), keys3, PostElement.ALPHA));
-        
+        constraints.add(new Equals(new ByteArrayValue(new byte[]{3, 3}), keys3, PostElement.ALPHA));
+
         //Date Less
         List<String> keys4 = new ArrayList<>();
         keys4.add("fourth");
         constraints.add(new Less(new DateValue(new Date(System.currentTimeMillis())), keys4, PostElement.ALPHA));
-               
+
         //String NotEquals
         List<String> keys5 = new ArrayList<>();
         keys5.add("fifth");
         constraints.add(new NotEquals(new StringValue("notthisstring"), keys5, PostElement.BETA));
-        
+
         //Double In
         List<String> keys6 = new ArrayList<>();
         keys6.add("sixth");
@@ -862,63 +896,63 @@ public class PersistenceServiceTest {
         values.add(new DoubleValue(1.8));
         values.add(new DoubleValue(2.1));
         constraints.add(new In(values, keys6, PostElement.BETA));
-        
+
         //Integer Between
         List<String> keys7 = new ArrayList<>();
         keys7.add("seventh");
         constraints.add(new Between(new IntegerValue(2), new IntegerValue(18), keys7, PostElement.BETA));
-        
+
         //byte[] NotEquals
         List<String> keys8 = new ArrayList<>();
         keys8.add("eighth");
         constraints.add(new NotEquals(new ByteArrayValue(new byte[]{1}), keys8, PostElement.BETA));
-        
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertEquals(1, rc.getResult().size());
-        assertEquals(pp, rc.getResult().first());
+        assertEquals(pp, rc.getResult().get(0));
     }
-    
+
     /* -------------------------------
      * ERROR TESTING
      * ------------------------------- */
-    
     /**
      * Test Post method with a null parameter
      */
     @Test
     public void postNullTest() {
         Attributes returned = pc.post(message, null, beta);
-        
+
         assertTrue(returned.getKeys().contains(Attributes.REJECTED));
-        
-        DBCursor cursor = pc.getCollection().find();
-        
+
+        DBCursor cursor = collection.find();
+
         assertEquals(0, cursor.size());
-              
+
     }
-    
+
     /**
      * Test Get method with a null parameter
      */
     @Test
     public void getNullTest() {
         ResultContainer rc = pc.get(null);
-        
+
         assertTrue(rc.getGamma().getKeys().contains(Attributes.REJECTED));
         assertEquals(0, rc.getResult().size());
-              
+
     }
-    
+
     /**
-     * Test query consititued of a In constraint conataining different Value types
+     * Test query consititued of a In constraint conataining different Value
+     * types
      */
     @Test
     public void queryInDifferentTypeTest() {
-        
+
         List<Constraint> constraints = new ArrayList<>();
-                
+
         List<String> keys = new ArrayList<>();
         keys.add("sixth");
         List<Value> values = new ArrayList<>();
@@ -927,53 +961,53 @@ public class PersistenceServiceTest {
         values.add(new DoubleValue(0.9));
         values.add(new StringValue("1.5"));
         constraints.add(new In(values, keys, PostElement.BETA));
-                
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertTrue(rc.getGamma().getKeys().contains(Attributes.REJECTED));
         assertEquals(0, rc.getResult().size());
     }
-    
+
     /**
-     * Test query consititued of a Between constraint conataining different Value types
+     * Test query consititued of a Between constraint conataining different
+     * Value types
      */
     @Test
     public void queryBetweenDifferentTypeTest() {
-        
+
         List<Constraint> constraints = new ArrayList<>();
-               
+
         List<String> keys = new ArrayList<>();
         keys.add("seventh");
         constraints.add(new Between(new IntegerValue(2), new ByteArrayValue(new byte[]{1}), keys, PostElement.BETA));
-        
-        
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertTrue(rc.getGamma().getKeys().contains(Attributes.REJECTED));
         assertEquals(0, rc.getResult().size());
     }
-    
+
     /**
-     * Test query consititued of a Between constraint conataining different Value types
+     * Test query consititued of a Between constraint conataining different
+     * Value types
      */
     @Test
     public void queryNullTypeTest() {
-        
+
         List<Constraint> constraints = new ArrayList<>();
-               
+
         //Integer Between
         List<String> keys = new ArrayList<>();
         keys.add("first");
         constraints.add(new Equals(null, keys, PostElement.ALPHA));
-        
-        
+
         Query q = new Query(constraints);
         ResultContainer rc = pc.get(q);
-        
+
         assertTrue(rc.getGamma().getKeys().contains(Attributes.ERROR));
         assertEquals(0, rc.getResult().size());
     }
-    
- }
+
+}
