@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class Post implements Serializable, Comparable {
+public class Post implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(Post.class.getName());
@@ -98,53 +98,4 @@ public class Post implements Serializable, Comparable {
     public String toString() {
         return "Post{" + "message=" + Arrays.toString(message) + ", alpha=" + alpha + ", beta=" + beta + '}';
     }
-
-    //TODO this is needed for the ordered set of the result container
-    //adapt it
-    @Override
-    public int compareTo(Object aThat) {
-        final int BEFORE = -1;
-        final int EQUAL = 0;
-        final int AFTER = 1;
-        
-        final String key = "n";
-
-        if (this == aThat) {
-            return EQUAL;
-        }
-        
-        final Post that = (Post) aThat;
-        
-//        if(this.beta.getAllAttributes().containsKey(key)){
-//            if(that.beta.getAllAttributes().containsKey(key)){
-//                if(Integer.parseInt(this.beta.getAllAttributes().get(key)) < Integer.parseInt(that.beta.getAllAttributes().get(key))){
-//                    return BEFORE;
-//                } else if (Integer.parseInt(this.beta.getAllAttributes().get(key)) > Integer.parseInt(that.beta.getAllAttributes().get(key))){
-//                    return AFTER;
-//                } else {
-//                    return EQUAL;
-//                }
-//            } else {
-//                return BEFORE;
-//            }
-//        } else {
-//            if(that.beta.getAllAttributes().containsKey(key)){
-//                return AFTER;
-//            } else {
-//                return EQUAL;
-//            }
-//        }
-        try {
-            String myS = new String(message, "UTF-8");
-            String yourS = new String(that.getMessage(), "UTF-8");
-            if(myS.compareTo(yourS)<0) return BEFORE;
-            else if( myS.compareTo(yourS)>0) return AFTER;
-            else return EQUAL;
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Post.class.getName()).log(Level.SEVERE, null, ex);
-            return EQUAL;
-        }
-        
-    }
-
 }

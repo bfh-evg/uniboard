@@ -13,7 +13,6 @@ package ch.bfh.uniboard.persistence.mongodb;
 
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Between;
-import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.Equals;
 import ch.bfh.uniboard.service.GetService;
@@ -36,11 +35,12 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,8 +50,18 @@ import java.util.logging.Logger;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class PersistenceService implements PostService, GetService, InternalGet {
-    
+
     private static final Logger logger = Logger.getLogger(PersistenceService.class.getName());
+
+    //TODO put this in a config file
+    private static final String host = "localhost";
+    private static final String dbName = "testDB";
+    private static final String collectionName = "test";
+    protected static final int port = 27017;
+    private static final String username = "test";
+    private static final String password = "test";
+    //must be false in Unit testing config
+    private static final boolean authentication = false;
 
     private DBCollection collection;
 
@@ -59,27 +69,31 @@ public class PersistenceService implements PostService, GetService, InternalGet 
      * Creates the persistence component
      */
     public PersistenceService() {
-        MongoClient mongoClient = null;
+        MongoClient mongoClient;
+
         try {
-            //MongoClient already works as a pool if only one instance is used (http://docs.mongodb.org/ecosystem/tutorial/getting-started-with-java-driver/)
-            mongoClient = new MongoClient();
+            if (authentication) {
+                MongoCredential credential = MongoCredential.createMongoCRCredential(username, dbName, password.toCharArray());
+                //MongoClient already works as a pool if only one instance is used (http://docs.mongodb.org/ecosystem/tutorial/getting-started-with-java-driver/)
+                mongoClient = new MongoClient(new ServerAddress(host, port), Arrays.asList(credential));
+            } else {
+                mongoClient = new MongoClient(host, port);
+            }
         } catch (UnknownHostException ex) {
             logger.log(Level.SEVERE, "DB creation error", ex);
             return;
         }
 
         //Create or load the database
-        DB db = mongoClient.getDB("testDB");
+        DB db = mongoClient.getDB(dbName);
 
-        //authenticates the user
-        //boolean auth = db.authenticate(myUserName, myPassword);
         //create or load the collection
-        collection = db.getCollection("test");
+        collection = db.getCollection(collectionName);
         if (collection == null) {
-            collection = db.createCollection("test", null);
+            collection = db.createCollection(collectionName, null);
         }
     }
-    
+
     @Override
     public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
         try {
@@ -98,14 +112,14 @@ public class PersistenceService implements PostService, GetService, InternalGet 
                 logger.log(Level.WARNING, "Syntax error: incomplete post");
                 return betaError;
             }
-            
+
             PersistedPost pp = new PersistedPost();
             pp.setMessage(message);
             pp.setAlpha(alpha);
             pp.setBeta(beta);
-            
+
             this.collection.insert(pp.toDBObject());
-            
+
             return beta;
         } catch (Exception e) {
             Attributes betaError = new Attributes();
@@ -115,7 +129,6 @@ public class PersistenceService implements PostService, GetService, InternalGet 
         }
     }
 
-    
     @Override
     public ResultContainer get(Query query) {
         try {
@@ -124,7 +137,7 @@ public class PersistenceService implements PostService, GetService, InternalGet 
                 Attributes gamma = new Attributes();
                 gamma.add(Attributes.ERROR, new StringValue("Database error: unable to connect to database"));
                 logger.log(Level.WARNING, "Database error: unable to connect to database");
-                return new ResultContainer(new TreeSet<Post>(), gamma);
+                return new ResultContainer(new ArrayList<Post>(), gamma);
             }
 
             //check basic wellformedness of query
@@ -132,9 +145,9 @@ public class PersistenceService implements PostService, GetService, InternalGet 
                 Attributes gamma = new Attributes();
                 gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Incomplete query"));
                 logger.log(Level.WARNING, "Syntax error: Incomplete query");
-                return new ResultContainer(new TreeSet<Post>(), gamma);
+                return new ResultContainer(new ArrayList<Post>(), gamma);
             }
-            
+
             List<DBObject> constraintsList = new ArrayList<>();
 
             //iterates over the constraints and constructs the corresponding query string
@@ -156,7 +169,7 @@ public class PersistenceService implements PostService, GetService, InternalGet 
                         Attributes gamma = new Attributes();
                         gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown post element"));
                         logger.log(Level.WARNING, "Syntax error: Unknown post element");
-                        return new ResultContainer(new TreeSet<Post>(), gamma);
+                        return new ResultContainer(new ArrayList<Post>(), gamma);
                 }
 
                 //constructs the hierarchy of the keys
@@ -178,11 +191,10 @@ public class PersistenceService implements PostService, GetService, InternalGet 
                     Class valueClass = op.getSet().get(0).getClass();
                     for (Value v : op.getSet()) {
                         if (!(v.getClass().equals(valueClass))) {
-                            //TODO test it
                             Attributes gamma = new Attributes();
                             gamma.add(Attributes.REJECTED, new StringValue("Syntax error: not same value type for IN constraint"));
                             logger.log(Level.WARNING, "Syntax error: not same value type for IN constraint");
-                            return new ResultContainer(new TreeSet<Post>(), gamma);
+                            return new ResultContainer(new ArrayList<Post>(), gamma);
                         }
                         values.add(v.getValue());
                     }
@@ -190,11 +202,10 @@ public class PersistenceService implements PostService, GetService, InternalGet 
                 } else if (c instanceof Between) {
                     Between op = (Between) c;
                     if (!(op.getStart().getClass().equals(op.getEnd().getClass()))) {
-                        //TODO test it
                         Attributes gamma = new Attributes();
                         gamma.add(Attributes.REJECTED, new StringValue("Syntax error: not same value type for BETWEEN constraint"));
                         logger.log(Level.WARNING, "Syntax error: not same value type for BETWEEN constraint");
-                        return new ResultContainer(new TreeSet<Post>(), gamma);
+                        return new ResultContainer(new ArrayList<Post>(), gamma);
                     }
                     actualConstraint.put(keyString, new BasicDBObject("$gt", op.getStart().getValue()).append("$lt", op.getEnd().getValue()));
                 } else if (c instanceof Greater) {
@@ -213,7 +224,7 @@ public class PersistenceService implements PostService, GetService, InternalGet 
                     Attributes gamma = new Attributes();
                     gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown type of constraint"));
                     logger.log(Level.WARNING, "Syntax error: Unknown type of constraint");
-                    return new ResultContainer(new TreeSet<Post>(), gamma);
+                    return new ResultContainer(new ArrayList<Post>(), gamma);
                 }
                 constraintsList.add(actualConstraint);
             }
@@ -226,32 +237,24 @@ public class PersistenceService implements PostService, GetService, InternalGet 
             DBCursor cursor = this.collection.find(completeQuery);
 
             //creates the result container with the db result
-            SortedSet<Post> ss = new TreeSet<>();
+            List<Post> list = new ArrayList<>();
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
                 //convert to PersistedPost
-                ss.add(PersistedPost.fromDBObject(object));
+                list.add(PersistedPost.fromDBObject(object));
             }
-            return new ResultContainer(ss, new Attributes());
+            return new ResultContainer(list, new Attributes());
         } catch (Exception e) {
             Attributes gamma = new Attributes();
             gamma.add(Attributes.ERROR, new StringValue("General error: " + e.getMessage()));
             logger.log(Level.WARNING, "General Get error", e);
-            return new ResultContainer(new TreeSet(), gamma);
+            return new ResultContainer(new ArrayList<Post>(), gamma);
         }
     }
-    
+
     @Override
-    public SortedSet<Post> internalGet(Query q) {
+    public List<Post> internalGet(Query q) {
         return this.get(q).getResult();
     }
 
-    /**
-     * Make the collection of the database available for test
-     *
-     * @return the collection of the database
-     */
-    protected DBCollection getCollection() {
-        return this.collection;
-    }
 }

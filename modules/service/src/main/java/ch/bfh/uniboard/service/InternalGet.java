@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
-import java.util.SortedSet;
+import java.util.List;
 
 /**
  * Generic interface for a component providing the persistence. Components that require information about posts on the
@@ -28,6 +28,6 @@ public interface InternalGet {
 	 * @param q a query containing all required information elements
 	 * @return the resulting post to the query
 	 */
-	public SortedSet<Post> internalGet(Query q);
+	public List<Post> internalGet(Query q);
 
 }
