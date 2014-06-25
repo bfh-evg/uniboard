@@ -319,27 +319,52 @@ The module bfh-webservice offers the basic operations introduced in (do Ref) as 
 %\end{figure}
 %
 %
-%\section{The Persistence Service}
-%
-%The persistence service provides operations to store and
-%retrieve data. It is a component in the sense that it
-%implements the \emph{Service} interface. However, it
-%does not any downstream component and, thus, cannot be
-%derived from the \emph{Component} abstraction.
-%
-%\fig{fig:persistence-service} shows the structure of the persistence service
-%component.
-%
-%\begin{figure}[ht]
-%\centerline{
-%\includegraphics[width=1.0\textwidth]{figs/persistence-service}}
-%\caption{UML class diagram for the illustration of the
-%persistence service component. Notice that it merely implements
-%the \emph{Service} interface, and that it is not derived
-%from the \emph{Component} class.}
-%\label{fig:persistence-service}
-%\end{figure}
+\section{The Persistence Service}
 
+The persistence service provides operations to store and
+retrieve data. It is a component in the sense that it
+implements the \emph{Service} interface. However, it
+does not have any downstream component and, thus, cannot be
+derived from the \emph{Component} abstraction.
+
+\fig{fig:persistence-service} shows the structure of the persistence service
+component.
+
+\begin{figure}[ht]
+\centerline{
+\includegraphics[width=1.0\textwidth]{figs/persistence-service}}
+\caption{UML class diagram for the illustration of the
+persistence service component. Notice that it merely implements
+the \emph{GetService}, \emph{PostService} and \emph{InternalGet} interfaces, and that it is not derived
+from the \emph{Component} class.}
+\label{fig:persistence-service}
+\end{figure}
+
+A post is always constituted of three elements: the \emph{message}, the \emph{alpha attributes} that are post attributes defined by the poster and \emph{beta attributes}, which are attributes defined by the board. The persistence service has to store these three elements.
+
+\subsection{Storing the message}
+
+The persistence service uses MongoDB as database. MongoDB is a JSON document based database. This means that a post must be transformed in a JSON document previous to saving it. This allows to store a JSON structured message in a post without having the board knowing the structure of the message in advance. A message must be given in the form of a byte array, this allowing the poster to store everything in the message. If the poster wants to store a JSON structure as message of the post, the poster has to convert the JSON string to a byte array using UTF-8 encoding, before passing it to the persistence service. When the persistence service receives a post to store, it tries to interpret the message as a JSON string. If it successes, it stores the message in that format, otherwise, it stores it as byte array. \\
+MongoDB then allows to retrieve a post giving a JSON key and the value it should have. So, a user can retrieve a post by indicating a key used in the message of a post. Therefore, the user must know the structure of the JSON message, but the board doesn't.
+
+\subsection{Storing the attributes}
+
+The attributes \emph{alpha} and \emph{beta} are of type \emph{Attributes} which is a simple class containing a map storing the attributes as key-value pair. Using MondoDB for storing these attributes offers another advantage: the database can accept an undefined number of attributes since they are also stored as JSON elements.
+
+The key of an attributes must be a string. The value however can have different type. An interface called \emph{Value} defines the abstract type of the value, its concrete implementations define the concrete type allowed for an attributes. They are: \emph{StringValue}, \emph{IntegerValue}, \emph{DoubleValue}, \emph{DateValue}, \emph{ByteArrayValue} as shown in \fig{fig}. All these types are natively supported by MongoDB for storing and querying.
+
+//TODO class diagrams
+
+\subsection{Querying a post}
+
+To retrieve a post, a so-called \emph{Query} object must be submitted to the persistence service. A \emph{Query} is composed of list of \emph{Constraint} objects. These constraints allow to specify conditions that a post must fulfill in order to be returned as result for this query. Different types of constraints are supported as show in \fig{fig}. Each concrete constraint contains one key to identify which part (for example which attribute) of the post must fulfill the condition, at least one value and a \emph{PostElement} indicator, which specifies whether the key the user is interested in is located in the message, the alpha attributes or the beta attributes. This last element is important since the query strategy of MongoDB requires to indicate the structure of the key searched. For example, if the value we are interested in is identified by the key \emph{subsubkey3}, it is necessary to indicate the path to access to this key (for example: \emph{key.subkey2.subsubkey3}. Since, when storing the post, a different key is used to separate the message, the alpha attributes and the beta attributes, the persistence service must know in which of this element the indicated key should be found. This information is given through the \emph{PostElement}. The structure of keys can be passed as list of strings, the first element being considered as the root.
+
+//TODO class diagrams
+
+The value searched must be a subtype of \emph{Value}. The constraints shown in \fig{fig} are applicable for all these subtypes. \emph{Greater}, \emph{GreaterEquals}, \emph{Less}, \emph{LessEquals} and \emph{Between} consider the alphabetical order on \emph{StringValue} type and the binary value on \emph{ByteArray}.
+
+Multiple constraint can be combined with the \emph{and} operator. This is done by inserting multiple constraints in the list that is passed at creation of the \emph{Query} object.
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Distributed Bulletin Board}
