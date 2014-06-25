@@ -54,6 +54,9 @@ public class UniBoardServiceImplTest {
 	@EJB(name = "PostServiceTestBean")
 	PostServiceTestBean postService;
 
+	@EJB(name = "GeterviceTestBean")
+	GetServiceTestBean getService;
+
 	public UniBoardServiceImplTest() {
 	}
 
@@ -84,6 +87,11 @@ public class UniBoardServiceImplTest {
 		assertEquals(new StringValue("test"), p.getAlpha().getValue("test"));
 		assertEquals(new StringValue("test2"), p.getAlpha().getValue("test2"));
 		Assert.assertArrayEquals(message, p.getMessage());
+
+	}
+
+	@Test
+	public void testGet1() {
 
 	}
 

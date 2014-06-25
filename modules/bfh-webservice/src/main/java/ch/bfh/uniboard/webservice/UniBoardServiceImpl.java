@@ -177,7 +177,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 		}
 	}
 
-	private AttributesDTO convertAttributesToDTO(Attributes attributes) throws UniBoardServiceException {
+	protected AttributesDTO convertAttributesToDTO(Attributes attributes) throws UniBoardServiceException {
 
 		AttributesDTO aDTO = new AttributesDTO();
 		for (Map.Entry<String, Value> e : attributes.getEntries()) {
@@ -189,7 +189,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 		return aDTO;
 	}
 
-	private Value convertValueDTOToValue(ValueDTO valueDTO) throws UniBoardServiceException {
+	protected Value convertValueDTOToValue(ValueDTO valueDTO) throws UniBoardServiceException {
 
 		if (valueDTO instanceof ByteArrayValueDTO) {
 			ByteArrayValueDTO tmpValue = (ByteArrayValueDTO) valueDTO;
@@ -211,7 +211,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 		throw new UniBoardServiceException("Unsupported ValueDTO type");
 	}
 
-	private ValueDTO convertValueToDTO(Value value) throws UniBoardServiceException {
+	protected ValueDTO convertValueToDTO(Value value) throws UniBoardServiceException {
 		if (value instanceof ByteArrayValue) {
 			ByteArrayValue tmpValue = (ByteArrayValue) value;
 			return new ByteArrayValueDTO(tmpValue.getValue());

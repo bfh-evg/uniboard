@@ -11,9 +11,9 @@
 * See terms of license at gnu.org.
 */
 <ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
-         version = "3.1"
-         xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+		 version = "3.1"
+		 xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
 	<enterprise-beans>
 		<session>
 			<ejb-name>UniBoardServiceImpl</ejb-name>
@@ -22,7 +22,7 @@
 				<local>ch.bfh.uniboard.service.PostService</local>
 				<ejb-link>PostServiceTestBean</ejb-link>
 			</ejb-local-ref>
-                        <ejb-local-ref>
+			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.webservice.UniBoardServiceImpl/getSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.GetService</local>
 				<ejb-link>GetServiceTestBean</ejb-link>
