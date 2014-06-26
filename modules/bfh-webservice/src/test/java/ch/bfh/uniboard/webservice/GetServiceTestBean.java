@@ -25,9 +25,20 @@ import javax.ejb.Singleton;
 @LocalBean
 public class GetServiceTestBean implements GetService {
 
-    @Override
-    public ResultContainer get(Query query) {
-        return new ResultContainer(null,null);
-    }
-    
+	private ResultContainer feedback;
+	private Query input;
+
+	@Override
+	public ResultContainer get(Query query) {
+		this.input = query;
+		return this.feedback;
+	}
+
+	public Query getInput() {
+		return input;
+	}
+
+	public void setFeedback(ResultContainer feedback) {
+		this.feedback = feedback;
+	}
 }

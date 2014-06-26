@@ -50,8 +50,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @WebService(name = "UniBoardService",
+		serviceName = "UniBoardService",
 		targetNamespace = "http://webservice.uniboard.bfh.ch/",
-		wsdlLocation = "WEB-INF/wsdl/UniBoardService.wsdl")
+		wsdlLocation = "META-INF/wsdl/UniBoardService.wsdl")
 @Stateless
 public class UniBoardServiceImpl implements UniBoardService {
 

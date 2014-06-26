@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application version="6" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd">
-  <display-name>EJBDescriptor</display-name>
-  <module>
-    <java>persistence-existdb.jar</java>
-  </module>
+	<display-name>UniBoard Single Instance</display-name>
+	<module>
+		<ejb>bfh-webservice-1.0.jar</ejb>
+		<alt-dd>META-INF/service-descriptor.xml</alt-dd>
+	</module>
+	<module>
+		<ejb>bfh-persistence-mongodb-1.0.jar</ejb>
+	</module>
 </application>
