@@ -14,15 +14,14 @@ package ch.bfh.uniboard.persistence.mongodb;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Between;
 import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.Equals;
+import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.GetService;
 import ch.bfh.uniboard.service.Greater;
-import ch.bfh.uniboard.service.GreaterEquals;
+import ch.bfh.uniboard.service.GreaterEqual;
 import ch.bfh.uniboard.service.In;
-import ch.bfh.uniboard.service.InternalGet;
 import ch.bfh.uniboard.service.Less;
-import ch.bfh.uniboard.service.LessEquals;
-import ch.bfh.uniboard.service.NotEquals;
+import ch.bfh.uniboard.service.LessEqual;
+import ch.bfh.uniboard.service.NotEqual;
 import ch.bfh.uniboard.service.Post;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.Query;
@@ -30,19 +29,13 @@ import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 /**
@@ -51,62 +44,31 @@ import javax.ejb.Stateless;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 @Stateless
-public class PersistenceService implements PostService, GetService, InternalGet {
+public class PersistenceService implements PostService, GetService {
 
 	private static final Logger logger = Logger.getLogger(PersistenceService.class.getName());
 
-	//TODO put this in a config file
-	private static final String host = "localhost";
-	private static final String dbName = "testDB";
-	private static final String collectionName = "test";
-	protected static final int port = 27017;
-	private static final String username = "test";
-	private static final String password = "test";
-	//must be false in Unit testing config
-	private static final boolean authentication = false;
-
-	private DBCollection collection;
+	@EJB
+	ConnectionManager connectionManager;
 
 	/**
 	 * Creates the persistence component
 	 */
 	public PersistenceService() {
-		MongoClient mongoClient;
-
-		try {
-			if (authentication) {
-				MongoCredential credential = MongoCredential.createMongoCRCredential(username, dbName, password.toCharArray());
-				//MongoClient already works as a pool if only one instance is used (http://docs.mongodb.org/ecosystem/tutorial/getting-started-with-java-driver/)
-				mongoClient = new MongoClient(new ServerAddress(host, port), Arrays.asList(credential));
-			} else {
-				mongoClient = new MongoClient(host, port);
-			}
-		} catch (UnknownHostException ex) {
-			logger.log(Level.SEVERE, "DB creation error", ex);
-			return;
-		}
-
-		//Create or load the database
-		DB db = mongoClient.getDB(dbName);
-
-		//create or load the collection
-		collection = db.getCollection(collectionName);
-		if (collection == null) {
-			collection = db.createCollection(collectionName, null);
-		}
 	}
 
 	@Override
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
 		try {
 			//Check Database connection
-			if (collection == null) {
+			if (!this.connectionManager.isConnected()) {
 				Attributes betaError = new Attributes();
-				betaError.add(Attributes.ERROR, new StringValue("Database error: unable to connect to database"));
+				betaError.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
 				logger.log(Level.WARNING, "Database error: unable to connect to database");
 				return betaError;
 			}
 
+			//TODO Remove this block and its tests
 			//check basic wellformedness of post
 			if (message == null || alpha == null || beta == null) {
 				Attributes betaError = new Attributes();
@@ -120,7 +82,7 @@ public class PersistenceService implements PostService, GetService, InternalGet 
 			pp.setAlpha(alpha);
 			pp.setBeta(beta);
 
-			this.collection.insert(pp.toDBObject());
+			this.connectionManager.getCollection().insert(pp.toDBObject());
 
 			return beta;
 		} catch (Exception e) {
@@ -135,13 +97,14 @@ public class PersistenceService implements PostService, GetService, InternalGet 
 	public ResultContainer get(Query query) {
 		try {
 			//Check Database connection
-			if (collection == null) {
+			if (!this.connectionManager.isConnected()) {
 				Attributes gamma = new Attributes();
-				gamma.add(Attributes.ERROR, new StringValue("Database error: unable to connect to database"));
+				gamma.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
 				logger.log(Level.WARNING, "Database error: unable to connect to database");
 				return new ResultContainer(new ArrayList<Post>(), gamma);
 			}
 
+			//TODO Remove this block and its tests
 			//check basic wellformedness of query
 			if (query == null || query.getConstraints() == null || query.getConstraints().isEmpty() || query.getConstraints().contains(null)) {
 				Attributes gamma = new Attributes();
@@ -181,11 +144,11 @@ public class PersistenceService implements PostService, GetService, InternalGet 
 
 				//constructs the researched value string by checking the type of constraints and getting the searched values
 				DBObject actualConstraint = new BasicDBObject();
-				if (c instanceof Equals) {
-					Equals op = (Equals) c;
+				if (c instanceof Equal) {
+					Equal op = (Equal) c;
 					actualConstraint.put(keyString, op.getValue().getValue());
-				} else if (c instanceof NotEquals) {
-					NotEquals op = (NotEquals) c;
+				} else if (c instanceof NotEqual) {
+					NotEqual op = (NotEqual) c;
 					actualConstraint.put(keyString, new BasicDBObject("$ne", op.getValue().getValue()));
 				} else if (c instanceof In) {
 					In op = (In) c;
@@ -213,14 +176,14 @@ public class PersistenceService implements PostService, GetService, InternalGet 
 				} else if (c instanceof Greater) {
 					Greater op = (Greater) c;
 					actualConstraint.put(keyString, new BasicDBObject("$gt", op.getValue().getValue()));
-				} else if (c instanceof GreaterEquals) {
-					GreaterEquals op = (GreaterEquals) c;
+				} else if (c instanceof GreaterEqual) {
+					GreaterEqual op = (GreaterEqual) c;
 					actualConstraint.put(keyString, new BasicDBObject("$gte", op.getValue().getValue()));
 				} else if (c instanceof Less) {
 					Less op = (Less) c;
 					actualConstraint.put(keyString, new BasicDBObject("$lt", op.getValue().getValue()));
-				} else if (c instanceof LessEquals) {
-					LessEquals op = (LessEquals) c;
+				} else if (c instanceof LessEqual) {
+					LessEqual op = (LessEqual) c;
 					actualConstraint.put(keyString, new BasicDBObject("$lte", op.getValue().getValue()));
 				} else {
 					Attributes gamma = new Attributes();
@@ -236,7 +199,7 @@ public class PersistenceService implements PostService, GetService, InternalGet 
 			completeQuery.put("$and", constraintsList);
 
 			//apply query on database
-			DBCursor cursor = this.collection.find(completeQuery);
+			DBCursor cursor = this.connectionManager.getCollection().find(completeQuery);
 
 			//creates the result container with the db result
 			List<Post> list = new ArrayList<>();
@@ -252,11 +215,6 @@ public class PersistenceService implements PostService, GetService, InternalGet 
 			logger.log(Level.WARNING, "General Get error", e);
 			return new ResultContainer(new ArrayList<Post>(), gamma);
 		}
-	}
-
-	@Override
-	public List<Post> internalGet(Query q) {
-		return this.get(q).getResult();
 	}
 
 }

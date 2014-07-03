@@ -9,20 +9,20 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard;
 
+import ch.bfh.uniboard.data.ByteArrayValueDTO;
+import ch.bfh.uniboard.data.DateValueDTO;
+import ch.bfh.uniboard.data.DoubleValueDTO;
+import ch.bfh.uniboard.data.IntegerValueDTO;
+import ch.bfh.uniboard.data.StringValueDTO;
+import ch.bfh.uniboard.data.ValueDTO;
 import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.DoubleValue;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
-import ch.bfh.uniboard.webservice.data.ByteArrayValueDTO;
-import ch.bfh.uniboard.webservice.data.DateValueDTO;
-import ch.bfh.uniboard.webservice.data.DoubleValueDTO;
-import ch.bfh.uniboard.webservice.data.IntegerValueDTO;
-import ch.bfh.uniboard.webservice.data.StringValueDTO;
-import ch.bfh.uniboard.webservice.data.ValueDTO;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;

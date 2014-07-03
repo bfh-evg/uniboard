@@ -9,11 +9,11 @@
 	</parent>
 
 	<groupId>ch.bfh.uniboard</groupId>
-	<artifactId>XXXNameXXX</artifactId>
+	<artifactId>bfh-configuration</artifactId>
 	<version>1.0</version>
 	<packaging>ejb</packaging>
 
-	<name>XXXNameXXX</name>
+	<name>bfh-configuration</name>
 
 	<dependencies>
 		<dependency>

@@ -9,16 +9,14 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard;
+
+import ch.bfh.uniboard.data.ValueDTO;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class UniBoardServiceException extends Exception {
-
-	public UniBoardServiceException(String message) {
-		super(message);
-	}
+public class UnknownValueDTO extends ValueDTO {
 
 }

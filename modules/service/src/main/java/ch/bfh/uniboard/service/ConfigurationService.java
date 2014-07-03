@@ -9,14 +9,18 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard.service;
 
-import ch.bfh.uniboard.webservice.data.ValueDTO;
+import java.util.Properties;
+import javax.ejb.Local;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class UnknownValueDTO extends ValueDTO {
+@Local
+public interface ConfigurationService {
+
+	public Properties getConfiguration(String key);
 
 }

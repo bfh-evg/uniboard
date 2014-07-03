@@ -9,32 +9,34 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard;
 
+import ch.bfh.uniboard.data.AttributesDTO;
+import ch.bfh.uniboard.data.BetweenDTO;
+import ch.bfh.uniboard.data.EqualDTO;
+import ch.bfh.uniboard.data.GreaterDTO;
+import ch.bfh.uniboard.data.GreaterEqualDTO;
+import ch.bfh.uniboard.data.InDTO;
+import ch.bfh.uniboard.data.LessDTO;
+import ch.bfh.uniboard.data.LessEqualDTO;
+import ch.bfh.uniboard.data.NotEqualDTO;
+import ch.bfh.uniboard.data.PostElementDTO;
+import ch.bfh.uniboard.data.QueryDTO;
+import ch.bfh.uniboard.data.ResultContainerDTO;
+import ch.bfh.uniboard.data.StringValueDTO;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.Between;
 import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.Equals;
+import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.Greater;
-import ch.bfh.uniboard.service.GreaterEquals;
+import ch.bfh.uniboard.service.GreaterEqual;
 import ch.bfh.uniboard.service.In;
 import ch.bfh.uniboard.service.Less;
-import ch.bfh.uniboard.service.LessEquals;
+import ch.bfh.uniboard.service.LessEqual;
+import ch.bfh.uniboard.service.NotEqual;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.webservice.data.AttributesDTO;
-import ch.bfh.uniboard.webservice.data.BetweenDTO;
-import ch.bfh.uniboard.webservice.data.EqualsDTO;
-import ch.bfh.uniboard.webservice.data.GreaterDTO;
-import ch.bfh.uniboard.webservice.data.GreaterEqualsDTO;
-import ch.bfh.uniboard.webservice.data.InDTO;
-import ch.bfh.uniboard.webservice.data.LessDTO;
-import ch.bfh.uniboard.webservice.data.LessEqualsDTO;
-import ch.bfh.uniboard.webservice.data.PostElementDTO;
-import ch.bfh.uniboard.webservice.data.QueryDTO;
-import ch.bfh.uniboard.webservice.data.ResultContainerDTO;
-import ch.bfh.uniboard.webservice.data.StringValueDTO;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -89,18 +91,18 @@ public class UniBoardServiceImplTest {
 		message[0] = 0x16;
 
 		AttributesDTO adto = new AttributesDTO();
-		AttributesDTO.EntryDTO entry1 = new AttributesDTO.EntryDTO();
-		entry1.setKey("test");
+		AttributesDTO.AttributeDTO attribute1 = new AttributesDTO.AttributeDTO();
+		attribute1.setKey("test");
 		StringValueDTO string1 = new StringValueDTO();
 		string1.setValue("test");
-		entry1.setValue(string1);
-		adto.getEntry().add(entry1);
-		AttributesDTO.EntryDTO entry2 = new AttributesDTO.EntryDTO();
-		entry2.setKey("test2");
+		attribute1.setValue(string1);
+		adto.getAttribute().add(attribute1);
+		AttributesDTO.AttributeDTO attribute2 = new AttributesDTO.AttributeDTO();
+		attribute2.setKey("test2");
 		StringValueDTO string2 = new StringValueDTO();
 		string2.setValue("test2");
-		entry2.setValue(string2);
-		adto.getEntry().add(entry2);
+		attribute2.setValue(string2);
+		adto.getAttribute().add(attribute2);
 
 		service.post(message, adto);
 
@@ -125,9 +127,9 @@ public class UniBoardServiceImplTest {
 		constraint.setPostElement(postElement);
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setEnd(string);
-		constraint.setStart(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		constraint.setLowerBound(string);
+		constraint.setUpperBound(string);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
@@ -135,7 +137,7 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 0);
+		assertEquals(result.getGamma().getAttribute().size(), 0);
 		assertEquals(result.getResult().getPost().size(), 0);
 
 		Query resultingQuery = getService.getInput();
@@ -158,13 +160,13 @@ public class UniBoardServiceImplTest {
 	public void testGet2() {
 		//Set the input
 		QueryDTO query = new QueryDTO();
-		EqualsDTO constraint = new EqualsDTO();
+		EqualDTO constraint = new EqualDTO();
 		PostElementDTO postElement = PostElementDTO.MESSAGE;
 		constraint.setPostElement(postElement);
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
@@ -172,16 +174,16 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 0);
+		assertEquals(result.getGamma().getAttribute().size(), 0);
 		assertEquals(result.getResult().getPost().size(), 0);
 
 		Query resultingQuery = getService.getInput();
 		assertEquals(resultingQuery.getConstraints().size(), 1);
 		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof Equals)) {
+		if (!(resultingConstraint instanceof Equal)) {
 			Assert.fail();
 		}
-		Equals bconstraint = (Equals) resultingConstraint;
+		Equal bconstraint = (Equal) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
 		assertEquals(bconstraint.getKeys().get(0), "test");
 		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
@@ -200,7 +202,7 @@ public class UniBoardServiceImplTest {
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
@@ -208,7 +210,7 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 0);
+		assertEquals(result.getGamma().getAttribute().size(), 0);
 		assertEquals(result.getResult().getPost().size(), 0);
 
 		Query resultingQuery = getService.getInput();
@@ -230,13 +232,13 @@ public class UniBoardServiceImplTest {
 	public void testGet4() {
 		//Set the input
 		QueryDTO query = new QueryDTO();
-		GreaterEqualsDTO constraint = new GreaterEqualsDTO();
+		GreaterEqualDTO constraint = new GreaterEqualDTO();
 		PostElementDTO postElement = PostElementDTO.MESSAGE;
 		constraint.setPostElement(postElement);
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
@@ -244,16 +246,16 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 0);
+		assertEquals(result.getGamma().getAttribute().size(), 0);
 		assertEquals(result.getResult().getPost().size(), 0);
 
 		Query resultingQuery = getService.getInput();
 		assertEquals(resultingQuery.getConstraints().size(), 1);
 		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof GreaterEquals)) {
+		if (!(resultingConstraint instanceof GreaterEqual)) {
 			Assert.fail();
 		}
-		GreaterEquals bconstraint = (GreaterEquals) resultingConstraint;
+		GreaterEqual bconstraint = (GreaterEqual) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
 		assertEquals(bconstraint.getKeys().get(0), "test");
 		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
@@ -272,7 +274,7 @@ public class UniBoardServiceImplTest {
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.getElement().add(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
@@ -280,7 +282,7 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 0);
+		assertEquals(result.getGamma().getAttribute().size(), 0);
 		assertEquals(result.getResult().getPost().size(), 0);
 
 		Query resultingQuery = getService.getInput();
@@ -308,7 +310,7 @@ public class UniBoardServiceImplTest {
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
@@ -316,7 +318,7 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 0);
+		assertEquals(result.getGamma().getAttribute().size(), 0);
 		assertEquals(result.getResult().getPost().size(), 0);
 
 		Query resultingQuery = getService.getInput();
@@ -338,13 +340,13 @@ public class UniBoardServiceImplTest {
 	public void testGet7() {
 		//Set the input
 		QueryDTO query = new QueryDTO();
-		LessEqualsDTO constraint = new LessEqualsDTO();
+		LessEqualDTO constraint = new LessEqualDTO();
 		PostElementDTO postElement = PostElementDTO.MESSAGE;
 		constraint.setPostElement(postElement);
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
@@ -352,16 +354,52 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 0);
+		assertEquals(result.getGamma().getAttribute().size(), 0);
 		assertEquals(result.getResult().getPost().size(), 0);
 
 		Query resultingQuery = getService.getInput();
 		assertEquals(resultingQuery.getConstraints().size(), 1);
 		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof LessEquals)) {
+		if (!(resultingConstraint instanceof LessEqual)) {
 			Assert.fail();
 		}
-		LessEquals bconstraint = (LessEquals) resultingConstraint;
+		LessEqual bconstraint = (LessEqual) resultingConstraint;
+		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
+		assertEquals(bconstraint.getKeys().get(0), "test");
+		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+	}
+
+	/**
+	 * Test if a notequal constraint works
+	 */
+	@Test
+	public void testGet8() {
+		//Set the input
+		QueryDTO query = new QueryDTO();
+		NotEqualDTO constraint = new NotEqualDTO();
+		PostElementDTO postElement = PostElementDTO.MESSAGE;
+		constraint.setPostElement(postElement);
+		constraint.getKey().add("test");
+		StringValueDTO string = new StringValueDTO("test2");
+		constraint.setValue(string);
+		query.getConstraint().add(constraint);
+
+		//Setup the expected result
+		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
+		getService.setFeedback(expectedResult);
+
+		ResultContainerDTO result = service.get(query);
+
+		assertEquals(result.getGamma().getAttribute().size(), 0);
+		assertEquals(result.getResult().getPost().size(), 0);
+
+		Query resultingQuery = getService.getInput();
+		assertEquals(resultingQuery.getConstraints().size(), 1);
+		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
+		if (!(resultingConstraint instanceof NotEqual)) {
+			Assert.fail();
+		}
+		NotEqual bconstraint = (NotEqual) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
 		assertEquals(bconstraint.getKeys().get(0), "test");
 		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
@@ -371,16 +409,16 @@ public class UniBoardServiceImplTest {
 	 * Test if the resultcontainer is translated correctly
 	 */
 	@Test
-	public void testGet8() {
+	public void testGet9() {
 		//Set the input
 		QueryDTO query = new QueryDTO();
-		LessEqualsDTO constraint = new LessEqualsDTO();
+		LessEqualDTO constraint = new LessEqualDTO();
 		PostElementDTO postElement = PostElementDTO.MESSAGE;
 		constraint.setPostElement(postElement);
 		constraint.getKey().add("test");
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
-		query.getBetweenOrInOrLess().add(constraint);
+		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		List<ch.bfh.uniboard.service.Post> posts = new ArrayList<>();
@@ -402,14 +440,14 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getEntry().size(), 1);
-		assertEquals(result.getGamma().getEntry().get(0).getKey(), "gamma");
-		assertEquals(((StringValueDTO) result.getGamma().getEntry().get(0).getValue()).getValue(), "gamma");
+		assertEquals(result.getGamma().getAttribute().size(), 1);
+		assertEquals(result.getGamma().getAttribute().get(0).getKey(), "gamma");
+		assertEquals(((StringValueDTO) result.getGamma().getAttribute().get(0).getValue()).getValue(), "gamma");
 		assertEquals(result.getResult().getPost().size(), 1);
 		Assert.assertArrayEquals(result.getResult().getPost().get(0).getMessage(), message);
-		assertEquals(result.getResult().getPost().get(0).getAlpha().getEntry().get(0).getKey(), "alpha");
-		assertEquals(((StringValueDTO) result.getResult().getPost().get(0).getAlpha().getEntry().get(0).getValue()).getValue(), "alpha");
-		assertEquals(result.getResult().getPost().get(0).getBeta().getEntry().get(0).getKey(), "beta");
-		assertEquals(((StringValueDTO) result.getResult().getPost().get(0).getBeta().getEntry().get(0).getValue()).getValue(), "beta");
+		assertEquals(result.getResult().getPost().get(0).getAlpha().getAttribute().get(0).getKey(), "alpha");
+		assertEquals(((StringValueDTO) result.getResult().getPost().get(0).getAlpha().getAttribute().get(0).getValue()).getValue(), "alpha");
+		assertEquals(result.getResult().getPost().get(0).getBeta().getAttribute().get(0).getKey(), "beta");
+		assertEquals(((StringValueDTO) result.getResult().getPost().get(0).getBeta().getAttribute().get(0).getValue()).getValue(), "beta");
 	}
 }

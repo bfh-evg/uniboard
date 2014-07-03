@@ -18,11 +18,11 @@ import java.util.List;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class GreaterEquals extends Constraint {
+public class NotEqual extends Constraint {
 
     private Value value;
 
-    public GreaterEquals(Value value, List<String> keys, PostElement postElement) {
+    public NotEqual(Value value, List<String> keys, PostElement postElement) {
         super(keys, postElement);
         this.value = value;
     }

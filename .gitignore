@@ -26,3 +26,4 @@
 /doc/uniboard-arch/*.toc
 /doc/uniboard-arch/*.hst
 /doc/uniboard-arch/*.ver
+/application-clients/singleinstance-client/target/
