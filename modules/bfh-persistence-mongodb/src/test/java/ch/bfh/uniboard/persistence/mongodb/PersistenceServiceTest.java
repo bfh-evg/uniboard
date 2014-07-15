@@ -121,29 +121,6 @@ public class PersistenceServiceTest {
      */
     @BeforeClass
     public static void setUpClass() throws IOException {
-//<<<<<<< HEAD
-//        
-//        //Download and start a mongodb deamon for testing
-//        //TODO use port defined in config
-//        mongodExe = starter.prepare(new MongodConfigBuilder()
-//                .version(Version.Main.PRODUCTION)
-//                .net(new Net(PersistenceService.port, Network.localhostIsIPv6()))
-//                .build());
-//        mongod = mongodExe.start();
-//        //TODO use port defined in config
-//        MongoClient mongoClient = new MongoClient("localhost", port);
-//        //Create or load the database
-//        DB db = mongoClient.getDB("testDB");
-//
-//        //create or load the collection
-//        collection = db.getCollection("test");
-//        if (collection == null) {
-//            collection = db.createCollection("test", null);
-//        }
-//
-//        pc = new PersistenceService();
-//=======
-//>>>>>>> 660bb6c0dae7b8f6e855594b031cedd2c29dfafc
 
         message = new byte[]{1, 2, 3, 4};
 
