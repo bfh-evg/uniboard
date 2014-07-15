@@ -9,29 +9,30 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard;
 
+import ch.bfh.uniboard.data.AttributesDTO;
+import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
+import ch.bfh.uniboard.data.BetweenDTO;
+import ch.bfh.uniboard.data.ByteArrayValueDTO;
+import ch.bfh.uniboard.data.ConstraintDTO;
+import ch.bfh.uniboard.data.DateValueDTO;
+import ch.bfh.uniboard.data.DoubleValueDTO;
+import ch.bfh.uniboard.data.EqualDTO;
+import ch.bfh.uniboard.data.GreaterDTO;
+import ch.bfh.uniboard.data.GreaterEqualDTO;
+import ch.bfh.uniboard.data.InDTO;
+import ch.bfh.uniboard.data.IntegerValueDTO;
+import ch.bfh.uniboard.data.LessDTO;
+import ch.bfh.uniboard.data.LessEqualDTO;
+import ch.bfh.uniboard.data.NotEqualDTO;
+import ch.bfh.uniboard.data.PostDTO;
+import ch.bfh.uniboard.data.QueryDTO;
+import ch.bfh.uniboard.data.ResultContainerDTO;
+import ch.bfh.uniboard.data.ResultDTO;
+import ch.bfh.uniboard.data.StringValueDTO;
+import ch.bfh.uniboard.data.ValueDTO;
 import ch.bfh.uniboard.service.*;
-import ch.bfh.uniboard.webservice.data.AttributesDTO;
-import ch.bfh.uniboard.webservice.data.AttributesDTO.EntryDTO;
-import ch.bfh.uniboard.webservice.data.BetweenDTO;
-import ch.bfh.uniboard.webservice.data.ByteArrayValueDTO;
-import ch.bfh.uniboard.webservice.data.ConstraintDTO;
-import ch.bfh.uniboard.webservice.data.DateValueDTO;
-import ch.bfh.uniboard.webservice.data.DoubleValueDTO;
-import ch.bfh.uniboard.webservice.data.EqualsDTO;
-import ch.bfh.uniboard.webservice.data.GreaterDTO;
-import ch.bfh.uniboard.webservice.data.GreaterEqualsDTO;
-import ch.bfh.uniboard.webservice.data.InDTO;
-import ch.bfh.uniboard.webservice.data.IntegerValueDTO;
-import ch.bfh.uniboard.webservice.data.LessDTO;
-import ch.bfh.uniboard.webservice.data.LessEqualsDTO;
-import ch.bfh.uniboard.webservice.data.PostDTO;
-import ch.bfh.uniboard.webservice.data.QueryDTO;
-import ch.bfh.uniboard.webservice.data.ResultContainerDTO;
-import ch.bfh.uniboard.webservice.data.ResultDTO;
-import ch.bfh.uniboard.webservice.data.StringValueDTO;
-import ch.bfh.uniboard.webservice.data.ValueDTO;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -49,9 +50,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-@WebService(name = "UniBoardService",
-		targetNamespace = "http://webservice.uniboard.bfh.ch/",
-		wsdlLocation = "WEB-INF/wsdl/UniBoardService.wsdl")
+@WebService(serviceName = "UniBoardService",
+		portName = "UniBoardServicePort",
+		endpointInterface = "ch.bfh.uniboard.UniBoardService",
+		targetNamespace = "http://uniboard.bfh.ch/",
+		wsdlLocation = "META-INF/wsdl/UniBoardService.wsdl")
+
 @Stateless
 public class UniBoardServiceImpl implements UniBoardService {
 
@@ -69,17 +73,17 @@ public class UniBoardServiceImpl implements UniBoardService {
 		List<Constraint> constraints = new ArrayList<>();
 
 		try {
-			for (ConstraintDTO cDTO : query.getBetweenOrInOrLess()) {
+			for (ConstraintDTO cDTO : query.getConstraint()) {
 				if (cDTO instanceof BetweenDTO) {
 					BetweenDTO cTmp = (BetweenDTO) cDTO;
-					Value start = this.convertValueDTOToValue(cTmp.getStart());
-					Value end = this.convertValueDTOToValue(cTmp.getEnd());
-					Between cNew = new Between(start, end, cTmp.getKey(),
+					Value lowB = this.convertValueDTOToValue(cTmp.getLowerBound());
+					Value upB = this.convertValueDTOToValue(cTmp.getUpperBound());
+					Between cNew = new Between(lowB, upB, cTmp.getKey(),
 							PostElement.valueOf(cTmp.getPostElement().value()));
 					constraints.add(cNew);
-				} else if (cDTO instanceof EqualsDTO) {
-					EqualsDTO cTmp = (EqualsDTO) cDTO;
-					Equals cNew = new Equals(this.convertValueDTOToValue(cTmp.getValue()), cTmp.getKey(),
+				} else if (cDTO instanceof EqualDTO) {
+					EqualDTO cTmp = (EqualDTO) cDTO;
+					Equal cNew = new Equal(this.convertValueDTOToValue(cTmp.getValue()), cTmp.getKey(),
 							PostElement.valueOf(cTmp.getPostElement().value()));
 					constraints.add(cNew);
 				} else if (cDTO instanceof GreaterDTO) {
@@ -87,9 +91,9 @@ public class UniBoardServiceImpl implements UniBoardService {
 					Greater cNew = new Greater(this.convertValueDTOToValue(cTmp.getValue()), cTmp.getKey(),
 							PostElement.valueOf(cTmp.getPostElement().value()));
 					constraints.add(cNew);
-				} else if (cDTO instanceof GreaterEqualsDTO) {
-					GreaterEqualsDTO cTmp = (GreaterEqualsDTO) cDTO;
-					GreaterEquals cNew = new GreaterEquals(this.convertValueDTOToValue(cTmp.getValue()), cTmp.getKey(),
+				} else if (cDTO instanceof GreaterEqualDTO) {
+					GreaterEqualDTO cTmp = (GreaterEqualDTO) cDTO;
+					GreaterEqual cNew = new GreaterEqual(this.convertValueDTOToValue(cTmp.getValue()), cTmp.getKey(),
 							PostElement.valueOf(cTmp.getPostElement().value()));
 					constraints.add(cNew);
 				} else if (cDTO instanceof InDTO) {
@@ -106,19 +110,28 @@ public class UniBoardServiceImpl implements UniBoardService {
 					Less cNew = new Less(this.convertValueDTOToValue(cTmp.getValue()), cTmp.getKey(),
 							PostElement.valueOf(cTmp.getPostElement().value()));
 					constraints.add(cNew);
-				} else if (cDTO instanceof LessEqualsDTO) {
-					LessEqualsDTO cTmp = (LessEqualsDTO) cDTO;
-					LessEquals cNew = new LessEquals(this.convertValueDTOToValue(cTmp.getValue()), cTmp.getKey(),
-							PostElement.valueOf(cTmp.getPostElement().value()));
+				} else if (cDTO instanceof LessEqualDTO) {
+					LessEqualDTO cTmp = (LessEqualDTO) cDTO;
+					LessEqual cNew = new LessEqual(this.convertValueDTOToValue(cTmp.getValue()), cTmp
+							.getKey(),
+							PostElement.valueOf(cTmp.getPostElement().value())
+					);
+					constraints.add(cNew);
+				} else if (cDTO instanceof NotEqualDTO) {
+					NotEqualDTO cTmp = (NotEqualDTO) cDTO;
+					NotEqual cNew = new NotEqual(this.convertValueDTOToValue(cTmp.getValue()), cTmp
+							.getKey(),
+							PostElement.valueOf(cTmp.getPostElement().value())
+					);
 					constraints.add(cNew);
 				}
 			}
 		} catch (UniBoardServiceException ex) {
 			AttributesDTO exAttributes = new AttributesDTO();
-			EntryDTO e = new EntryDTO();
+			AttributeDTO e = new AttributeDTO();
 			e.setKey(Attributes.ERROR);
 			e.setValue(new StringValueDTO(ex.getMessage()));
-			exAttributes.getEntry().add(e);
+			exAttributes.getAttribute().add(e);
 			ResultDTO exResult = new ResultDTO();
 			ResultContainerDTO exResultContainer = new ResultContainerDTO(exResult, exAttributes);
 			return exResultContainer;
@@ -143,10 +156,10 @@ public class UniBoardServiceImpl implements UniBoardService {
 			return resultContainer;
 		} catch (UniBoardServiceException ex) {
 			AttributesDTO exAttributes = new AttributesDTO();
-			EntryDTO e = new EntryDTO();
+			AttributeDTO e = new AttributeDTO();
 			e.setKey(Attributes.ERROR);
 			e.setValue(new StringValueDTO(ex.getMessage()));
-			exAttributes.getEntry().add(e);
+			exAttributes.getAttribute().add(e);
 			ResultDTO exResult = new ResultDTO();
 			ResultContainerDTO exResultContainer = new ResultContainerDTO(exResult, exAttributes);
 			return exResultContainer;
@@ -158,7 +171,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 
 		try {
 			Attributes alphaIntern = new Attributes();
-			for (EntryDTO e : alpha.getEntry()) {
+			for (AttributeDTO e : alpha.getAttribute()) {
 				alphaIntern.add(e.getKey(), this.convertValueDTOToValue(e.getValue()));
 			}
 			Attributes betaIntern = new Attributes();
@@ -169,27 +182,27 @@ public class UniBoardServiceImpl implements UniBoardService {
 
 		} catch (UniBoardServiceException ex) {
 			AttributesDTO exAttributes = new AttributesDTO();
-			EntryDTO e = new EntryDTO();
+			AttributeDTO e = new AttributeDTO();
 			e.setKey(Attributes.ERROR);
 			e.setValue(new StringValueDTO(ex.getMessage()));
-			exAttributes.getEntry().add(e);
+			exAttributes.getAttribute().add(e);
 			return exAttributes;
 		}
 	}
 
-	private AttributesDTO convertAttributesToDTO(Attributes attributes) throws UniBoardServiceException {
+	protected AttributesDTO convertAttributesToDTO(Attributes attributes) throws UniBoardServiceException {
 
 		AttributesDTO aDTO = new AttributesDTO();
 		for (Map.Entry<String, Value> e : attributes.getEntries()) {
-			EntryDTO ent = new EntryDTO();
+			AttributeDTO ent = new AttributeDTO();
 			ent.setKey(e.getKey());
 			ent.setValue(this.convertValueToDTO(e.getValue()));
-			aDTO.getEntry().add(ent);
+			aDTO.getAttribute().add(ent);
 		}
 		return aDTO;
 	}
 
-	private Value convertValueDTOToValue(ValueDTO valueDTO) throws UniBoardServiceException {
+	protected Value convertValueDTOToValue(ValueDTO valueDTO) throws UniBoardServiceException {
 
 		if (valueDTO instanceof ByteArrayValueDTO) {
 			ByteArrayValueDTO tmpValue = (ByteArrayValueDTO) valueDTO;
@@ -211,7 +224,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 		throw new UniBoardServiceException("Unsupported ValueDTO type");
 	}
 
-	private ValueDTO convertValueToDTO(Value value) throws UniBoardServiceException {
+	protected ValueDTO convertValueToDTO(Value value) throws UniBoardServiceException {
 		if (value instanceof ByteArrayValue) {
 			ByteArrayValue tmpValue = (ByteArrayValue) value;
 			return new ByteArrayValueDTO(tmpValue.getValue());

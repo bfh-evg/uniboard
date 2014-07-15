@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% UNIVOTE LATEX TEMPLATE
+% UNIBOARD LATEX TEMPLATE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[oneside]{scrreprt}
@@ -78,7 +78,7 @@ In (Ref.\ to be provided), several properties and the basic operations of a publ
 board have been identified. We present in this document the
 specification of a software architecture allowing to implement
 these properties by \emph{composition} of respective building
-blocks, the so-called \emph{components}. A
+blocks, the so-called \emph{components}. For every operation a 
 \emph{chain of components} is used as the pattern for the
 composition.
 
@@ -89,8 +89,8 @@ into the chain of components. That component implements
 the respective agreement protocol by communicating with
 peer nodes.
 
-Each component implements the same generic service interface.
-This allows the desired chain of components. (Of
+Each component implements at least one of the generic service interfaces.
+This allows the desired chains of components. (Of
 course, not every arbitrary combination of components results
 in a useful configuration.) The final component in this chain
 is a persistence service allowing to store information, and
@@ -100,18 +100,17 @@ to retrieve it later. In fact, our architecture follows the
 
 \section{Chain of Components}
 
-In order to achieve upmost flexibility, all components of
-\uniboard\ implement the very same \emph{generic} service
-interface, simply called \emph{Service} (namespaces in text
-omitted for brevity). That is, each component (indirectly)
-implements this interface. This interface is deduced from the 
-basic operations of a bulletin board.
+In order to achieve upmost flexibility, the two basic operations of
+\uniboard\ are represented with \emph{generic} service
+interfaces, simply called \emph{GetService} and \emph{PostService} (namespaces in text
+omitted for brevity). That is, each component
+implements either one or both interfaces.
 
-The chain of components is achieved by linking a component
+The chains of components (Get-Chain and Post-Chain) are achieved by linking a component
 to the next one, which in turn is linked to another component.
 Only the last component in the chain, the \emph{PersistenceService}, is not
 linked anymore to another component. \fig{fig:chain-of-components}
-shows the static structure. This chain is 
+shows the static structure. 
 
 \begin{figure}[ht]
 \centerline{

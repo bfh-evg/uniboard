@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard;
 
 import ch.bfh.uniboard.service.GetService;
 import ch.bfh.uniboard.service.Query;
@@ -25,9 +25,20 @@ import javax.ejb.Singleton;
 @LocalBean
 public class GetServiceTestBean implements GetService {
 
-    @Override
-    public ResultContainer get(Query query) {
-        return new ResultContainer(null,null);
-    }
-    
+	private ResultContainer feedback;
+	private Query input;
+
+	@Override
+	public ResultContainer get(Query query) {
+		this.input = query;
+		return this.feedback;
+	}
+
+	public Query getInput() {
+		return input;
+	}
+
+	public void setFeedback(ResultContainer feedback) {
+		this.feedback = feedback;
+	}
 }

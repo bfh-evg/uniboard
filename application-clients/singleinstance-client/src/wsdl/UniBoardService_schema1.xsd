@@ -13,27 +13,27 @@
 
 	<xs:complexType name="post">
 		<xs:sequence>
-			<xs:element name="message" type="xs:base64Binary" />
-			<xs:element name="alpha" type="ns1:attributes"/>
+			<xs:element name="message" type="xs:base64Binary" nillable="true" minOccurs="0"/>
+			<xs:element name="alpha" type="ns1:attributes" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="postResponse">
 		<xs:sequence>
-			<xs:element name="beta" type="ns1:attributes"/>
+			<xs:element name="beta" type="ns1:attributes" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="get">
 		<xs:sequence>
-			<xs:element name="query" type="ns1:query"/>
+			<xs:element name="query" type="ns1:query" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 
 
 	<xs:complexType name="getResponse">
 		<xs:sequence>
-			<xs:element name="resultContainer" type="ns1:resultContainer"/>
+			<xs:element name="resultContainer" type="ns1:resultContainer" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
