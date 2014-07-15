@@ -98,7 +98,7 @@ public class PersistenceServiceTest {
                 .net(new Net(PersistenceService.port, Network.localhostIsIPv6()))
                 .build());
         mongod = mongodExe.start();
-        
+        //TODO use port defined in config
         MongoClient mongoClient = new MongoClient("localhost", port);
         //Create or load the database
         DB db = mongoClient.getDB("testDB");
