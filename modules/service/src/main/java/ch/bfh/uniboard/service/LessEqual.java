@@ -18,11 +18,11 @@ import java.util.List;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class Equals extends Constraint {
+public class LessEqual extends Constraint {
 
     private Value value;
 
-    public Equals(Value value, List<String> keys, PostElement postElement) {
+    public LessEqual(Value value, List<String> keys, PostElement postElement) {
         super(keys, postElement);
         this.value = value;
     }
@@ -30,5 +30,4 @@ public class Equals extends Constraint {
     public Value getValue() {
         return value;
     }
-
 }
