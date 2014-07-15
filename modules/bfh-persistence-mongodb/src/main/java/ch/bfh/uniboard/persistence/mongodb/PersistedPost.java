@@ -33,130 +33,138 @@ import java.util.logging.Logger;
 
 /**
  * A persisted post represents the posted message and all belonging attributes in the format in which it is persisted
+ *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 public class PersistedPost extends Post {
-    
-    /**
-     * Create a persisted post
-     * @param message
-     * @param alpha
-     * @param beta 
-     */
-    public PersistedPost(byte[] message, Attributes alpha, Attributes beta){
-        this.message = message;
-        this.alpha = alpha;
-        this.beta = beta;
-    };
-    
+
+	/**
+	 * Create a persisted post
+	 *
+	 * @param message
+	 * @param alpha
+	 * @param beta
+	 */
+	public PersistedPost(byte[] message, Attributes alpha, Attributes beta) {
+		this.message = message;
+		this.alpha = alpha;
+		this.beta = beta;
+	}
+
+	;
+
     /**
      * Creates an empty persisted post
      */
-    public PersistedPost(){};
-    
+    public PersistedPost() {
+	}
+
+	;
+
     /**
      * Method allowing to convert the current PersistedPost to the format supported by the database
      * @return a DBObject format of the PersistedPost
      */
     public BasicDBObject toDBObject() {
-        BasicDBObject doc = new BasicDBObject();
-        
-        //Check if message is a JSON message
-        DBObject jsonMessageContent = null;
-        try{
-            jsonMessageContent = (DBObject)JSON.parse(new String(message,"UTF-8"));
-        } catch (JSONParseException | UnsupportedEncodingException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Message is not a JSON string "+ex.getMessage());
-            System.out.println("Message is not a JSON string "+ex.getMessage());
-        }
-        
-        if(jsonMessageContent!=null) {
-            //save message as JSON content
-            DBObject jsonMessage = new BasicDBObject("message", jsonMessageContent);
-            doc.putAll(jsonMessage);
-        } else {
-            //save message as byte[]
-            doc.put("message", message);
-        }
-        
-        //Prepares the Alpha attributes
-        List<BasicDBObject> alphaList = new ArrayList<>();
-        for(Entry<String,Value> entry: alpha.getEntries()){
-            alphaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
-        }
-        doc.put("alpha", alphaList);
-        
-        //Prepares the Beta attributes
-        List<BasicDBObject> betaList = new ArrayList<>();
-        for(Entry<String,Value> entry: beta.getEntries()){
-            betaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
-        }
-        doc.put("beta", betaList);
+		BasicDBObject doc = new BasicDBObject();
 
-        return doc;
-    }
+		//Check if message is a JSON message
+		DBObject jsonMessageContent = null;
+		try {
+			jsonMessageContent = (DBObject) JSON.parse(new String(message, "UTF-8"));
+		} catch (JSONParseException | UnsupportedEncodingException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Message is not a JSON string {0}", ex.getMessage());
+		}
 
-    /**
-     * Method allowing to retrieve a PersistedPost out of the DBObject returned by the database.
-     * If the passed DBObject does not represent a PersistedPost, an empty PersistedPost is retuned
-     * @param doc the DBObject returned by the database
-     * @return the corresponding persisted post
-     */
-    public static PersistedPost fromDBObject(DBObject doc) {
-        PersistedPost pp = new PersistedPost();
-        
-        //Check if message is a JSON message
-        if(doc.get("message") instanceof BasicDBObject){
-            //is a JSON string
-            try {
-                pp.message = JSON.serialize(doc.get("message")).getBytes("UTF-8");
-            } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(PersistedPost.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            //otherwise is a byte[]
-            pp.message = (byte[]) doc.get("message");
-        }
-        
-        //fill alpha attributes
-        Attributes alpha = new Attributes();
-        ArrayList<DBObject> alphaList = (ArrayList<DBObject>)doc.get("alpha");
-        for(DBObject dbObj : alphaList){
-            String key = dbObj.keySet().iterator().next();
-            alpha.add(key, inflateType(dbObj.get(key)));
-        }
-        pp.alpha = alpha;
-        
-        //fill beta attributes
-        Attributes beta = new Attributes();
-        ArrayList<DBObject> betaList = (ArrayList<DBObject>)doc.get("beta");
-        for(DBObject dbObj : betaList){
-            String key = dbObj.keySet().iterator().next();
-            beta.add(key, inflateType(dbObj.get(key)));
-        }
-        pp.beta = beta;
+		if (jsonMessageContent != null) {
+			//save message as JSON content
+			DBObject jsonMessage = new BasicDBObject("message", jsonMessageContent);
+			doc.putAll(jsonMessage);
+		} else {
+			//save message as byte[]
+			doc.put("message", message);
+		}
 
-        return pp;
-    }
-    
-    /**
-     * Helper method checking the type of the given object and creating the corresponding Type
-     * @param o object to check
-     * @return an object of the corresponding Type or null if the type of o is unknown
-     */
-    private static Value inflateType(Object o){
-        if(o instanceof Integer){
-            return new IntegerValue((int)o);
-        } else if (o instanceof String){
-            return new StringValue((String)o);
-        } else if (o instanceof Date){
-            return new DateValue((Date)o);
-        } else if (o instanceof byte[]){
-            return new ByteArrayValue((byte[])o);
-        } else if (o instanceof Double){
-            return new DoubleValue((Double)o);
-        } else {
-            return null;
-        }
-    }
+		//Prepares the Alpha attributes
+		List<BasicDBObject> alphaList = new ArrayList<>();
+		for (Entry<String, Value> entry : alpha.getEntries()) {
+			alphaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
+		}
+		doc.put("alpha", alphaList);
+
+		//Prepares the Beta attributes
+		List<BasicDBObject> betaList = new ArrayList<>();
+		for (Entry<String, Value> entry : beta.getEntries()) {
+			betaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
+		}
+		doc.put("beta", betaList);
+
+		return doc;
+	}
+
+	/**
+	 * Method allowing to retrieve a PersistedPost out of the DBObject returned by the database. If the passed DBObject
+	 * does not represent a PersistedPost, an empty PersistedPost is retuned
+	 *
+	 * @param doc the DBObject returned by the database
+	 * @return the corresponding persisted post
+	 */
+	public static PersistedPost fromDBObject(DBObject doc) {
+		PersistedPost pp = new PersistedPost();
+
+		//Check if message is a JSON message
+		if (doc.get("message") instanceof BasicDBObject) {
+			//is a JSON string
+			try {
+				pp.message = JSON.serialize(doc.get("message")).getBytes("UTF-8");
+			} catch (UnsupportedEncodingException ex) {
+				Logger.getLogger(PersistedPost.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} else {
+			//otherwise is a byte[]
+			pp.message = (byte[]) doc.get("message");
+		}
+
+		//fill alpha attributes
+		Attributes alpha = new Attributes();
+		ArrayList<DBObject> alphaList = (ArrayList<DBObject>) doc.get("alpha");
+		for (DBObject dbObj : alphaList) {
+			String key = dbObj.keySet().iterator().next();
+			alpha.add(key, inflateType(dbObj.get(key)));
+		}
+		pp.alpha = alpha;
+
+		//fill beta attributes
+		Attributes beta = new Attributes();
+		ArrayList<DBObject> betaList = (ArrayList<DBObject>) doc.get("beta");
+		for (DBObject dbObj : betaList) {
+			String key = dbObj.keySet().iterator().next();
+			beta.add(key, inflateType(dbObj.get(key)));
+		}
+		pp.beta = beta;
+
+		return pp;
+	}
+
+	/**
+	 * Helper method checking the type of the given object and creating the corresponding Type
+	 *
+	 * @param o object to check
+	 * @return an object of the corresponding Type or null if the type of o is unknown
+	 */
+	private static Value inflateType(Object o) {
+		if (o instanceof Integer) {
+			return new IntegerValue((int) o);
+		} else if (o instanceof String) {
+			return new StringValue((String) o);
+		} else if (o instanceof Date) {
+			return new DateValue((Date) o);
+		} else if (o instanceof byte[]) {
+			return new ByteArrayValue((byte[]) o);
+		} else if (o instanceof Double) {
+			return new DoubleValue((Double) o);
+		} else {
+			return null;
+		}
+	}
 }
