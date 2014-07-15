@@ -31,6 +31,7 @@
 							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-webservice</artifactId>
 							<artifactId>bfh-persistence-mongodb</artifactId>
+							<artifactId>bfh-configuration</artifactId>
 						</ejbModule>
 					</modules>
 				</configuration>
@@ -56,6 +57,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bfh-webservice</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-configuration</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>

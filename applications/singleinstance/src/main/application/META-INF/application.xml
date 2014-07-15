@@ -8,4 +8,7 @@
 	<module>
 		<ejb>bfh-persistence-mongodb-1.0.jar</ejb>
 	</module>
+	<module>
+		<ejb>bfh-configuration-1.0.jar</ejb>
+	</module>
 </application>

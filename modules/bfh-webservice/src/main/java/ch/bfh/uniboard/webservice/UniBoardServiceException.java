@@ -9,19 +9,16 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard;
-
-import ch.bfh.uniboard.service.Value;
+package ch.bfh.uniboard.webservice;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class UnknownValue implements Value {
+public class UniBoardServiceException extends Exception {
 
-	@Override
-	public Object getValue() {
-		return "Hallo";
+	public UniBoardServiceException(String message) {
+		super(message);
 	}
 
 }

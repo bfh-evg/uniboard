@@ -3,15 +3,22 @@
 \BOOKMARK [1][-]{section.2.1}{Chain of Components}{chapter.2}% 3
 \BOOKMARK [1][-]{section.2.2}{Service Request Delegation}{chapter.2}% 4
 \BOOKMARK [1][-]{section.2.3}{Handling Service Requests}{chapter.2}% 5
-\BOOKMARK [0][-]{chapter.3}{Specific Services}{}% 6
-\BOOKMARK [1][-]{section.3.1}{A Service Implementing a Property}{chapter.3}% 7
-\BOOKMARK [1][-]{section.3.2}{The Persistence Service}{chapter.3}% 8
-\BOOKMARK [0][-]{chapter.4}{Distributed Bulletin Board}{}% 9
-\BOOKMARK [1][-]{section.4.1}{BFT Client Component}{chapter.4}% 10
-\BOOKMARK [1][-]{section.4.2}{BFT Replica Component}{chapter.4}% 11
-\BOOKMARK [1][-]{section.4.3}{Deployment View of the Replicated Board}{chapter.4}% 12
-\BOOKMARK [0][-]{chapter.5}{Implementation Hints}{}% 13
-\BOOKMARK [1][-]{section.5.1}{Namespaces, Names}{chapter.5}% 14
-\BOOKMARK [1][-]{section.5.2}{Access to the Downstream Component}{chapter.5}% 15
-\BOOKMARK [1][-]{section.5.3}{Skeleton for a Concrete Component}{chapter.5}% 16
-\BOOKMARK [1][-]{section.5.4}{A Simple Scheme for Data Containers}{chapter.5}% 17
+\BOOKMARK [1][-]{section.2.4}{Generic Data Container}{chapter.2}% 6
+\BOOKMARK [2][-]{subsection.2.4.1}{Attributes}{section.2.4}% 7
+\BOOKMARK [2][-]{subsection.2.4.2}{Query}{section.2.4}% 8
+\BOOKMARK [2][-]{subsection.2.4.3}{ResultContainer}{section.2.4}% 9
+\BOOKMARK [0][-]{chapter.3}{Specific Services}{}% 10
+\BOOKMARK [1][-]{section.3.1}{bfh-webservice}{chapter.3}% 11
+\BOOKMARK [1][-]{section.3.2}{The Persistence Service}{chapter.3}% 12
+\BOOKMARK [2][-]{subsection.3.2.1}{Storing the message}{section.3.2}% 13
+\BOOKMARK [2][-]{subsection.3.2.2}{Storing the attributes}{section.3.2}% 14
+\BOOKMARK [2][-]{subsection.3.2.3}{Querying a post}{section.3.2}% 15
+\BOOKMARK [0][-]{chapter.4}{Distributed Bulletin Board}{}% 16
+\BOOKMARK [1][-]{section.4.1}{BFT Client Component}{chapter.4}% 17
+\BOOKMARK [1][-]{section.4.2}{BFT Replica Component}{chapter.4}% 18
+\BOOKMARK [1][-]{section.4.3}{Deployment View of the Replicated Board}{chapter.4}% 19
+\BOOKMARK [0][-]{chapter.5}{Implementation Hints}{}% 20
+\BOOKMARK [1][-]{section.5.1}{Namespaces, Names}{chapter.5}% 21
+\BOOKMARK [1][-]{section.5.2}{Access to the Downstream Component}{chapter.5}% 22
+\BOOKMARK [1][-]{section.5.3}{Skeleton for a Concrete Component}{chapter.5}% 23
+\BOOKMARK [1][-]{section.5.4}{A Simple Scheme for Data Containers}{chapter.5}% 24

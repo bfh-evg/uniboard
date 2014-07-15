@@ -9,8 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard;
+package ch.bfh.uniboard.webservice;
 
+import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.BetweenDTO;
 import ch.bfh.uniboard.data.EqualDTO;
@@ -70,6 +71,7 @@ public class UniBoardServiceImplTest {
 				.addClass(GetServiceTestBean.class)
 				.addAsManifestResource("ejb-jar.xml", "ejb-jar.xml")
 				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+		System.out.println(ja.toString(true));
 		return ja;
 	}
 

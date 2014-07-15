@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2011.8.15)  8 MAY 2014 10:37
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2011.8.15)  9 JUL 2014 13:28
 entering extended mode
 **arch-spec.tex
 (C:\Users\hss3\Documents\Git\Uniboard\doc\uniboard-arch\arch-spec.tex
@@ -957,11 +957,15 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 
 ]
 Chapter 2.
-<figs/chain-of-components.jpg, id=118, 1120.185pt x 592.2125pt>
-File: figs/chain-of-components.jpg Graphic file (type jpg)
 
-<use figs/chain-of-components.jpg>
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 131.
+Package natbib Warning: Citation `Gamma:1995:DPE:186897' on page 5 undefined on
+ input line 98.
+
+<figs/chainsofcomp.jpg, id=152, 929.4725pt x 603.25375pt>
+File: figs/chainsofcomp.jpg Graphic file (type jpg)
+
+<use figs/chainsofcomp.jpg>
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 126.
 
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\t1cmtt.fd"
@@ -969,76 +973,94 @@ File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 ) [5
 
 ]
-<figs/service-request-delegation.jpg, id=135, 1019.81pt x 807.015pt>
+<figs/service-request-delegation.jpg, id=173, 1019.81pt x 807.015pt>
 File: figs/service-request-delegation.jpg Graphic file (type jpg)
 
 <use figs/service-request-delegation.jpg> [6 <C:/Users/hss3/Documents/Git/Unibo
-ard/doc/uniboard-arch/figs/chain-of-components.jpg>] [7 <C:/Users/hss3/Document
-s/Git/Uniboard/doc/uniboard-arch/figs/service-request-delegation.jpg>] [8]
-Chapter 3.
-<figs/authorization-service.jpg, id=193, 881.2925pt x 461.725pt>
-File: figs/authorization-service.jpg Graphic file (type jpg)
+ard/doc/uniboard-arch/figs/chainsofcomp.jpg>] [7 <C:/Users/hss3/Documents/Git/U
+niboard/doc/uniboard-arch/figs/service-request-delegation.jpg>]
 
-<use figs/authorization-service.jpg>
-<figs/persistence-service.jpg, id=195, 884.30376pt x 349.305pt>
+LaTeX Warning: Reference `fig:chain-of-components' on page 8 undefined on input
+ line 207.
+
+
+Package natbib Warning: Citation `Gamma:1995:DPE:186897' on page 8 undefined on
+ input line 208.
+
+[8] [9]
+Chapter 3.
+<figs/persistence-service.jpg, id=233, 884.30376pt x 349.305pt>
 File: figs/persistence-service.jpg Graphic file (type jpg)
 
-<use figs/persistence-service.jpg> [9
+<use figs/persistence-service.jpg> [10
 
-] [10 <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboard-arch/figs/authorizatio
-n-service.jpg> <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboard-arch/figs/per
-sistence-service.jpg>]
+]
+
+LaTeX Warning: Reference `fig' on page 11 undefined on input line 356.
+
+
+LaTeX Warning: Reference `fig' on page 11 undefined on input line 362.
+
+[11 <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboard-arch/figs/persistence-se
+rvice.jpg>]
+
+LaTeX Warning: Reference `fig' on page 12 undefined on input line 366.
+
+[12]
 Chapter 4.
-<figs/byzantine-client.jpg, id=207, 873.2625pt x 473.77pt>
+<figs/byzantine-client.jpg, id=250, 873.2625pt x 473.77pt>
 File: figs/byzantine-client.jpg Graphic file (type jpg)
 
-<use figs/byzantine-client.jpg> [11
+<use figs/byzantine-client.jpg> [13
 
  <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboard-arch/figs/byzantine-client.
 jpg>]
-<figs/byzantine-replica.jpg, id=214, 804.00375pt x 479.7925pt>
+<figs/byzantine-replica.jpg, id=258, 804.00375pt x 479.7925pt>
 File: figs/byzantine-replica.jpg Graphic file (type jpg)
 
-<use figs/byzantine-replica.jpg> [12 <C:/Users/hss3/Documents/Git/Uniboard/doc/
+<use figs/byzantine-replica.jpg> [14 <C:/Users/hss3/Documents/Git/Uniboard/doc/
 uniboard-arch/figs/byzantine-replica.jpg>]
 Chapter 5.
-[13
+[15
 
 ]
-LaTeX Font Info:    Try loading font information for OMS+cmss on input line 548
+LaTeX Font Info:    Try loading font information for OMS+cmss on input line 585
 .
-LaTeX Font Info:    No file OMScmss.fd. on input line 548.
+LaTeX Font Info:    No file OMScmss.fd. on input line 585.
 
 
 LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textasteriskcentered' on input line 548.
+(Font)              for symbol `textasteriskcentered' on input line 585.
 
-[14] (C:\Users\hss3\Documents\Git\Uniboard\doc\uniboard-arch\arch-spec.bbl
-[15])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 591.
- [16
+[16]
+No file arch-spec.bbl.
 
-]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 591.
+Package natbib Warning: There were undefined citations.
 
-(C:\Users\hss3\Documents\Git\Uniboard\doc\uniboard-arch\arch-spec.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 591.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 628.
+[17]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 628.
+ (C:\Users\hss3\Documents\Git\Uniboard\doc\uniboard-arch\arch-spec.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 628.
 Package rerunfilecheck Info: File `arch-spec.out' has not changed.
-(rerunfilecheck)             Checksum: 73EA78046C4CB4275BA83D6442B389BB;1173.
+(rerunfilecheck)             Checksum: A652B244952947F90D31857254AB8C9E;1640.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
+
+LaTeX Warning: There were undefined references.
+
  ) 
 Here is how much of TeX's memory you used:
- 13506 strings out of 494053
- 195486 string characters out of 3148606
- 634877 words of memory out of 3000000
- 16303 multiletter control sequences out of 15000+200000
+ 13515 strings out of 494053
+ 195354 string characters out of 3148606
+ 636465 words of memory out of 3000000
+ 16305 multiletter control sequences out of 15000+200000
  24124 words of font info for 62 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 53i,8n,69p,870b,1990s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 53i,8n,69p,1403b,1867s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\hss3\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\e
 csi0900.pk> <C:\Users\hss3\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec
 \dpi600\ecss0900.pk> <C:\Users\hss3\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jk
@@ -1056,11 +1078,13 @@ jknappen\ec\dpi600\ecrm1440.pk> <C:\Users\hss3\AppData\Local\MiKTeX\2.9\fonts\p
 k\ljfour\jknappen\ec\dpi600\ecsx1200.pk> <C:\Users\hss3\AppData\Local\MiKTeX\2.
 9\fonts\pk\ljfour\jknappen\ec\dpi600\ecsx2074.pk> <C:\Users\hss3\AppData\Local\
 MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1095.pk><C:/Program Files/MiK
-TeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/
-fonts/type1/public/amsfonts/cm/cmsy9.pfb>
-Output written on arch-spec.pdf (16 pages, 591302 bytes).
+TeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/
+fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cm/cmsy9.pfb>
+Output written on arch-spec.pdf (17 pages, 544805 bytes).
 PDF statistics:
- 901 PDF objects out of 1000 (max. 8388607)
- 176 named destinations out of 1000 (max. 500000)
- 167 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 973 PDF objects out of 1000 (max. 8388607)
+ 186 named destinations out of 1000 (max. 500000)
+ 218 words of extra memory for PDF output out of 10000 (max. 10000000)
 

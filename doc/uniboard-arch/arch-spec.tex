@@ -109,46 +109,49 @@ implements either one or both interfaces.
 The chains of components (Get-Chain and Post-Chain) are achieved by linking a component
 to the next one, which in turn is linked to another component.
 Only the last component in the chain, the \emph{PersistenceService}, is not
-linked anymore to another component. \fig{fig:chain-of-components}
-shows the static structure. 
+linked to another component. \fig{fig:chains-of-components}
+shows a possible structure of the chains. 
+
 
 \begin{figure}[ht]
 \centerline{
-\includegraphics[width=1.0\textwidth]{figs/chain-of-components}}
-\caption{UML class diagram defining the interface and linking
-of the components. Each component implements the same generic
-interface. The Component class, as shown, is abstract. That
-implies that concrete components subclass the abstract
-Component class.}
-\label{fig:chain-of-components}
+\includegraphics[width=1.0\textwidth]{figs/chainsofcomp}}
+\caption{Simple setup of the the chains in \uniboard}
+\label{fig:chains-of-components}
 \end{figure}
 
-The \emph{Service} interface consists of two
-general-purpose methods, \emph{post} and \emph{get}:
+The service interfaces consists each of one
+general-purpose method:
 
 \begin{lstlisting}[style=javastyle]
-package ch.bfh.uniboard;
+package ch.bfh.uniboard.service;
 
-public interface Service {
-    public Attributes post(byte[] message, Attributes alpha, Attributes beta);
+public interface GetService {
     public ResultContainer get(Query query);
 }
 \end{lstlisting}
 
-Not only the interface is rather generic, but also the provided
-and returned data containers \emph{Attributes},
-\emph{Query}, and \emph{ResultContainer}. The introduction of generic
-data containers minimizes the coupling: Components depend on
+\begin{lstlisting}[style=javastyle]
+package ch.bfh.uniboard.service;
+
+public interface PostService {
+    public Attributes post(byte[] message, Attributes alpha, Attributes beta);
+}
+\end{lstlisting}
+
+The provided and returned data containers \emph{Attributes},
+\emph{Query}, and \emph{ResultContainer} are kept as generic as possible, so that to ensure 
+a good flexibility for the components. The introduction of generic
+data containers also minimizes the coupling: Components depend on
 the core classes only, but not on specific classes of other
-components. See (TODO: Provide Ref.\ to be provided) for
-a more detailed elaboration on this topic.
+components.
 
 The meaning of the data abstractions can be summarized as follows:
 
 \begin{itemize}
 	\item \emph{Attributes:} List of attributes, where each attribute is computed
-		by the author or a component. These attributes belong either to a message or result.
-	\item \emph{Query:} Data that originates from an author
+		by the user or a component. These attributes belong either to a message or result.
+	\item \emph{Query:} Data that originates from an user
 		for a \emph{get} operation. The \emph{Query} defines the set of posts that are returned as the result.
 	\item \emph{ResultContainer:} Consists of two parts. First there is a set of posts that satisfies the \emph{Query}, and there are \emph{Attributes} for this result. Every component may add an attribute. The result is set by the final component, the persistence store.
 \end{itemize}

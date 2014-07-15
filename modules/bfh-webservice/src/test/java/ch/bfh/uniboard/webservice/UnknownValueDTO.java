@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard;
+package ch.bfh.uniboard.webservice;
 
 import ch.bfh.uniboard.data.ValueDTO;
 

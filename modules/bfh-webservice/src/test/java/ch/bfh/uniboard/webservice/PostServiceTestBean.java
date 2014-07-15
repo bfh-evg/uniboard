@@ -10,7 +10,7 @@
  * See terms of license at gnu.org.
  */
 
-package ch.bfh.uniboard;
+package ch.bfh.uniboard.webservice;
 
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.PostService;

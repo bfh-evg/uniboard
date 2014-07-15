@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
+import ch.bfh.uniboard.service.ConfigurationManager;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
@@ -18,10 +19,12 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -37,22 +40,75 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
 	private static final Logger logger = Logger.getLogger(ConnectionManagerImpl.class.getName());
 
-	//TODO put this in a config file
-	private static final String host = "localhost";
-	private static final String dbName = "testDB";
-	private static final String collectionName = "test";
-	protected static final int port = 27017;
-	private static final String username = "test";
-	private static final String password = "test";
-	//must be false in Unit testing config
-	private static final boolean authentication = false;
+	private static final String CONFIG_NAME = "bfh-mongodb";
+	private static final String HOST_KEY = "host";
+	private static final String DBNAME_KEY = "dbname";
+	private static final String COLLECTION_KEY = "collection";
+	private static final String PORT_KEY = "port";
+	private static final String USERNAME_KEY = "username";
+	private static final String PASSWORD_KEY = "password";
+	private static final String AUTH_KEY = "authentication";
 
 	private DBCollection collection;
 	private MongoClient mongoClient;
 	private boolean connected = false;
 
+	@EJB
+	ConfigurationManager cm;
+
 	@PostConstruct
 	private void init() {
+
+		Properties props = cm.getConfiguration(CONFIG_NAME);
+
+		if (props == null) {
+			logger.log(Level.SEVERE, "Confiugration could not be loaded.");
+			return;
+		}
+		//DB Connection Information
+		String host;
+		String dbName;
+		String collectionName;
+		int port;
+		String username;
+		String password;
+		boolean authentication;
+		//Check if values are set or use defaults
+		if (props.containsKey(HOST_KEY)) {
+			host = props.getProperty(HOST_KEY);
+		} else {
+			host = "localhost";
+		}
+		if (props.containsKey(DBNAME_KEY)) {
+			dbName = props.getProperty(DBNAME_KEY);
+		} else {
+			dbName = "uniboard";
+		}
+		if (props.containsKey(COLLECTION_KEY)) {
+			collectionName = props.getProperty(COLLECTION_KEY);
+		} else {
+			collectionName = "default";
+		}
+		if (props.containsKey(PORT_KEY)) {
+			port = Integer.parseInt(props.getProperty(PORT_KEY));
+		} else {
+			port = 27017;
+		}
+		if (props.containsKey(USERNAME_KEY)) {
+			username = props.getProperty(USERNAME_KEY);
+		} else {
+			username = "admin";
+		}
+		if (props.containsKey(PASSWORD_KEY)) {
+			password = props.getProperty(PASSWORD_KEY);
+		} else {
+			password = "password";
+		}
+		if (props.containsKey(AUTH_KEY)) {
+			authentication = Boolean.parseBoolean(props.getProperty(AUTH_KEY));
+		} else {
+			authentication = false;
+		}
 
 		try {
 			if (authentication) {
@@ -84,12 +140,12 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		mongoClient.close();
 	}
 
-    @Override
+	@Override
 	public DBCollection getCollection() {
 		return this.collection;
 	}
 
-    @Override
+	@Override
 	public boolean isConnected() {
 		return connected;
 	}

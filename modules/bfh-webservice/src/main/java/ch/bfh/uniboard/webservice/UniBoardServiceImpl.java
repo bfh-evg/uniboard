@@ -9,8 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard;
+package ch.bfh.uniboard.webservice;
 
+import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
 import ch.bfh.uniboard.data.BetweenDTO;
