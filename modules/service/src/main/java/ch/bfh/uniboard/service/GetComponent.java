@@ -19,6 +19,7 @@ package ch.bfh.uniboard.service;
 public abstract class GetComponent implements GetService {
 
 	@Override
+	//TODO finish the method for error/reject cases
 	public final ResultContainer get(Query query) {
 		//do some verification actions
 		beforeGet(query);

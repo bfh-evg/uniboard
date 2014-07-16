@@ -85,6 +85,16 @@ public class Attributes implements Serializable {
 		this.map.put(key, value);
 	}
 
+	/**
+	 * Returns true if the attributes contains an attribute with the specified key.
+	 *
+	 * @param key The key of the attribute
+	 * @return true if an attribute for the specified key exists.
+	 */
+	public boolean containsKey(String key) {
+		return this.map.containsKey(key);
+	}
+
 	@Override
 	public int hashCode() {
 		int hash = 7;

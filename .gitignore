@@ -27,3 +27,6 @@
 /doc/uniboard-arch/*.hst
 /doc/uniboard-arch/*.ver
 /application-clients/singleinstance-client/target/
+/modules/bfh-sectioned/target/classes
+/modules/bfh-configuration/nb-configuration.xml
+/modules/bfh-configuration/target

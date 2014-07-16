@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+/*
+* Copyright (c) 2013 Berner Fachhochschule, Switzerland.
+* Bern University of Applied Sciences, Engineering and Information Technology,
+* Research Institute for Security in the Information Society, E-Voting Group,
+* Biel, Switzerland.
+*
+* Project UniBoard.
+*
+* Distributable under GPL license.
+* See terms of license at gnu.org.
+*/
+<ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
+		 version = "3.1"
+		 xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+	<enterprise-beans>
+		<session>
+			<ejb-name>ConfigurationManagerTestBean</ejb-name>
+			<ejb-local-ref>
+				<ejb-ref-name>ch.bfh.uniboard.sectioned.UniBoardServiceImpl/postSuccessor</ejb-ref-name>
+				<local>ch.bfh.uniboard.service.PostService</local>
+				<ejb-link>PostServiceTestBean</ejb-link>
+			</ejb-local-ref>
+			<ejb-local-ref>
+				<ejb-ref-name>ch.bfh.uniboard.sectioned.UniBoardServiceImpl/getSuccessor</ejb-ref-name>
+				<local>ch.bfh.uniboard.service.GetService</local>
+				<ejb-link>GetServiceTestBean</ejb-link>
+			</ejb-local-ref>
+			<ejb-local-ref>
+				<ejb-ref-name>ch.bfh.uniboard.sectioned.UniBoardServiceImpl/configurationManager</ejb-ref-name>
+				<local>ch.bfh.uniboard.service.ConfigurationManager</local>
+				<ejb-link>ConfigurationManagerTestBean</ejb-link>
+			</ejb-local-ref>
+		</session>
+	</enterprise-beans>
+</ejb-jar>

@@ -19,7 +19,7 @@ package ch.bfh.uniboard.service;
 public abstract class Component implements PostService, GetService {
 
 	@Override
-	public final Attributes post(byte[] message, Attributes alpha, Attributes beta) {
+	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
 		//do some preprocessing actions
 		Attributes beforePost = this.beforePost(message, alpha, beta);
 		//Check if the preprocessing created an error
@@ -43,7 +43,8 @@ public abstract class Component implements PostService, GetService {
 	}
 
 	@Override
-	public final ResultContainer get(Query query) {
+	//TODO finish the method for error/reject cases
+	public ResultContainer get(Query query) {
 		//do some verification actions
 		beforeGet(query);
 		//pass content received to the successor
