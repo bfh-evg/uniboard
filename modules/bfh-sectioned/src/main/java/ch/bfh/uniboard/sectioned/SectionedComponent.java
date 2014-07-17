@@ -31,7 +31,7 @@ import javax.ejb.Stateless;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @Stateless
-public class SectionedComponent extends Component {
+public class SectionedComponent extends Component implements GetService,PostService {
 
 	private static final String ATTRIBUTE_NAME = "section";
 	private static final String CONFIG_NAME = "bfh-sectioned";
@@ -80,8 +80,8 @@ public class SectionedComponent extends Component {
 			beta.add(Attributes.ERROR, new StringValue("This UniBoard instance is down due to a configuration error."));
 			return beta;
 		}
-		if (!p.containsValue(section)) {
-			beta.add(Attributes.REJECTED, new StringValue("Unknown section: " + section));
+		if (!p.containsValue(section.getValue())) {
+			beta.add(Attributes.REJECTED, new StringValue("Unknown section: " + section.getValue()));
 			return beta;
 		}
 		return beta;
