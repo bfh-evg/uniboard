@@ -16,9 +16,10 @@ This component doesn't modify the attributes.
 ## Configuration
 
 This component uses the ConfigurationManager. It requests the properties for "bfh-mongodb".
-Following configurations can be made. If not specified defaults apply:
-| Key      | Meaning        | default  |
-| ------------- |-------------| -----|
+Following configurations can be made. If not specified defaults apply.
+
+| Key | Meaning | Default |
+| ------------- | ----------- | ----------- |
 | host | hostname of the machine running the MongoDB server | localhost |
 | dbname | name of the database | uniboard |
 | collection | name of the collection to use | default |
