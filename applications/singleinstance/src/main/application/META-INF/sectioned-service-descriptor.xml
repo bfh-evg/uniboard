@@ -9,7 +9,7 @@
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.sectioned.SectionedService/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>PostServiceTestBean</ejb-link>
+				<ejb-link>PersistenceService</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>

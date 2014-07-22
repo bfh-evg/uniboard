@@ -3,7 +3,7 @@
 	<display-name>UniBoard Single Instance</display-name>
 	<module>
 		<ejb>bfh-webservice-1.0.jar</ejb>
-		<alt-dd>META-INF/service-descriptor.xml</alt-dd>
+		<alt-dd>META-INF/webservice-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
 		<ejb>bfh-persistence-mongodb-1.0.jar</ejb>
@@ -11,7 +11,8 @@
 	<module>
 		<ejb>bfh-configuration-1.0.jar</ejb>
 	</module>
-        <module>
+	<module>
 		<ejb>bfh-sectioned-1.0.jar</ejb>
+		<alt-dd>META-INF/sectioned-service-descriptor.xml</alt-dd>
 	</module>
 </application>

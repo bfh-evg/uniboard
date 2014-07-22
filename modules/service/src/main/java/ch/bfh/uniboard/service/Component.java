@@ -43,7 +43,6 @@ public abstract class Component implements PostService, GetService {
 	}
 
 	@Override
-	//TODO finish the method for error/reject cases
 	public ResultContainer get(Query query) {
 		//do some verification actions
 		beforeGet(query);
