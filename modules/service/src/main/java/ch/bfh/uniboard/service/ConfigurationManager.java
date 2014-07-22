@@ -15,6 +15,8 @@ import java.util.Properties;
 import javax.ejb.Local;
 
 /**
+ * Interface that allows components to retrieve their configuration without worrying from where this configuration is
+ * loaded. For every application there is expected exactly one component implementing this interface.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */

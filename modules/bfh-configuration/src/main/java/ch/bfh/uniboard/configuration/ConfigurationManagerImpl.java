@@ -32,6 +32,7 @@ import javax.naming.NamingException;
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
 	private static final Logger logger = Logger.getLogger(ConfigurationManagerImpl.class.getName());
+	private static final String JNDI_URI = "/uniboard/configuration";
 
 	public Map<String, Properties> configurations;
 
@@ -41,7 +42,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 		Properties props;
 		try {
 			javax.naming.InitialContext ic = new javax.naming.InitialContext();
-			props = (Properties) ic.lookup("/uniboard/configuration");
+			props = (Properties) ic.lookup(JNDI_URI);
 		} catch (NamingException ex) {
 			logger.log(Level.SEVERE, "JNDI lookup for '/uniboard/configuration' failed."
 					+ "ConfigurationManager could not be initialized. Exception: {0}",
