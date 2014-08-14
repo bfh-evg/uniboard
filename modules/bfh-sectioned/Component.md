@@ -19,6 +19,13 @@ of this attribute has to be in the set of configured sections.
 This component uses the ConfigurationManager. It requests the properties for the "bfh-sectioned" key.
 In this properties all values are expected to be valid sections. The key values are ignored.
 
+## Error Codes
+
+BSE-001 - Attribute missing
+BSE-002 - Attribute is not a StringValue
+BSE-003 - Configuration for section-bfh is missing
+BSE-004 - Specified section is not known on this UniBoard
+
 ## Example EJB-Descriptor
 
 	<enterprise-beans>

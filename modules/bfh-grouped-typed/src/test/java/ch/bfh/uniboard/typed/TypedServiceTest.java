@@ -9,8 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.sectioned;
+package ch.bfh.uniboard.typed;
 
+import ch.bfh.uniboard.PostServiceTestBean;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostService;
@@ -32,7 +33,7 @@ import org.junit.runner.RunWith;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @RunWith(Arquillian.class)
-public class SectionedServiceTest {
+public class TypedServiceTest {
 
 	/**
 	 * Helper method for building the in-memory variant of a deployable unit. See Arquillian for more information.
@@ -42,16 +43,16 @@ public class SectionedServiceTest {
 	@Deployment
 	public static WebArchive createDeployment() {
 		WebArchive ja = ShrinkWrap.create(WebArchive.class)
-				.addPackage(SectionedService.class.getPackage())
+				.addClass(TypedService.class)
 				.addClass(PostServiceTestBean.class)
 				.addClass(ConfigurationManagerTestBean.class)
-				.addAsWebInfResource(new File("src/test/resources/ejb-jar.xml"), "ejb-jar.xml")
+				.addAsWebInfResource(new File("src/test/resources/typed-ejb-jar.xml"), "ejb-jar.xml")
 				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-		System.out.println(ja.toString(true));
+		//System.out.println(ja.toString(true));
 		return ja;
 	}
 
-	@EJB(beanName = "SectionedService")
+	@EJB(beanName = "TypedService")
 	PostService postService;
 
 	@EJB
@@ -60,16 +61,17 @@ public class SectionedServiceTest {
 	@EJB
 	ConfigurationManagerTestBean configurationManager;
 
-	public SectionedServiceTest() {
+	public TypedServiceTest() {
 	}
 
 	@Test
-	public void testCorrectRequest() {
-		byte[] message = new byte[1];
+	public void testCorrectRequestGrouped() {
+		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test"));
+		alpha.add("group", new StringValue("number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
+		this.configurationManager.setGroupded(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (beta.containsKey(Attributes.REJECTED) || beta.containsKey(Attributes.ERROR)) {
 			fail();
@@ -77,67 +79,132 @@ public class SectionedServiceTest {
 	}
 
 	@Test
-	public void testPostAlphaAttributeMissing() {
-		byte[] message = new byte[1];
+	public void testAttributeMissingGrouped() {
+		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("test", new StringValue("test"));
+		alpha.add("group2", new StringValue("number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
+		this.configurationManager.setGroupded(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-001", tmp2);
+		assertEquals("BGT-001", tmp2);
 	}
 
 	@Test
-	public void testPostAlphaAttributeValueInvalid() {
-		byte[] message = new byte[1];
+	public void testPostAlphaAttributeValueInvalidGrouped() {
+		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("section", new IntegerValue(1));
+		alpha.add("group", new IntegerValue(1));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
+		this.configurationManager.setGroupded(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-002", tmp2);
+		assertEquals("BGT-002", tmp2);
 	}
 
 	@Test
-	public void testPostConfigurationMissing() {
+	public void testPostConfigurationMissingGrouped() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test"));
+		alpha.add("group", new StringValue("number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(false);
+		this.configurationManager.setGroupded(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.ERROR)) {
 			fail();
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.ERROR);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-003", tmp2);
+		assertEquals("BGT-003", tmp2);
 	}
 
 	@Test
-	public void testPostUnkownSection() {
+	public void testPostUnkownGroupGrouped() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test3"));
+		alpha.add("group", new StringValue("invalid"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
+		this.configurationManager.setGroupded(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-004", tmp2);
+		assertEquals("BGT-004", tmp2);
 	}
 
+	@Test
+	public void testInvalidMessageGrouped() {
+		byte[] message = "\"1.1.1.1\"".getBytes();
+		Attributes alpha = new Attributes();
+		alpha.add("group", new StringValue("number"));
+		Attributes beta = new Attributes();
+		this.configurationManager.setCorrect(true);
+		this.configurationManager.setGroupded(true);
+		beta = this.postService.post(message, alpha, beta);
+		if (!beta.containsKey(Attributes.REJECTED)) {
+			fail();
+		}
+		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		String tmp2 = tmp.getValue().substring(0, 7);
+		assertEquals("BGT-006", tmp2);
+	}
+
+	@Test
+	public void testCorrectRequestNoNGrouped() {
+		byte[] message = "1".getBytes();
+		Attributes alpha = new Attributes();
+		Attributes beta = new Attributes();
+		this.configurationManager.setCorrect(true);
+		this.configurationManager.setGroupded(false);
+		beta = this.postService.post(message, alpha, beta);
+		if (beta.containsKey(Attributes.REJECTED) || beta.containsKey(Attributes.ERROR)) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testInvalidMessageNoNGrouped() {
+		byte[] message = "\"1.1.1.1\"".getBytes();
+		Attributes alpha = new Attributes();
+		Attributes beta = new Attributes();
+		this.configurationManager.setCorrect(true);
+		this.configurationManager.setGroupded(false);
+		beta = this.postService.post(message, alpha, beta);
+		if (!beta.containsKey(Attributes.REJECTED)) {
+			fail();
+		}
+		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		String tmp2 = tmp.getValue().substring(0, 7);
+		assertEquals("BGT-005", tmp2);
+	}
+
+	@Test
+	public void testPostConfigurationMissingNoNGrouped() {
+		byte[] message = "1".getBytes();
+		Attributes alpha = new Attributes();
+		Attributes beta = new Attributes();
+		this.configurationManager.setCorrect(false);
+		this.configurationManager.setGroupded(false);
+		beta = this.postService.post(message, alpha, beta);
+		if (!beta.containsKey(Attributes.ERROR)) {
+			fail();
+		}
+		StringValue tmp = (StringValue) beta.getValue(Attributes.ERROR);
+		String tmp2 = tmp.getValue().substring(0, 7);
+		assertEquals("BGT-003", tmp2);
+	}
 }

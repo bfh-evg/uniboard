@@ -261,10 +261,17 @@ the desired behavior.
 The generic data containers are not only used to transmit data from component to component, but also for the communication with the users of UniBoard.
 
 \subsection{Attributes}
-Attributes is basically 
+Attributes is basically a hashmap which only accepts strings as keys and implementations of the interface "value"(see \fig{fig:value-type}) as values.
 \subsection{Query}
-
+A Query consists of a list of Constraints. Each Constraint identifies an entry in one of the attributes or in the message and limits it's value range.
 \subsection{ResultContainer}
+A Resultcontainer holds a list of posts, which did fulfil the corresponding Query, and Attributes.
+\section{Error Handling}
+When a error occurs in one of the components the operation is to be halted and all changes are reverted. On a exception every component has to stop passing the message/query down and return a beta/gamma, which indicates that an exception occurred.
+
+This beta/gamma is expected to only contain the error attribute. This attribute can either be a rejection, because some requirements weren't fulfilled or an error because the board had some other issues. The keyword for this two cases are "error" and "rejected" and can be found in the \emph{Attributes} class as static references.
+
+The value of the attribute is to be expected to be a \emph{StringValue}. This \emph{StringValue} should start with a 7 sign long error code in the form "ZZZ-000", where "ZZZ" is an identifier of the component that did throw the error and "000" a component specific error number.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Specific Services}

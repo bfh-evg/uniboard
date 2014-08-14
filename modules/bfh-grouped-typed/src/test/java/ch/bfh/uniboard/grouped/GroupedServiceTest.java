@@ -9,8 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.sectioned;
+package ch.bfh.uniboard.grouped;
 
+import ch.bfh.uniboard.PostServiceTestBean;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostService;
@@ -32,7 +33,7 @@ import org.junit.runner.RunWith;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @RunWith(Arquillian.class)
-public class SectionedServiceTest {
+public class GroupedServiceTest {
 
 	/**
 	 * Helper method for building the in-memory variant of a deployable unit. See Arquillian for more information.
@@ -42,16 +43,16 @@ public class SectionedServiceTest {
 	@Deployment
 	public static WebArchive createDeployment() {
 		WebArchive ja = ShrinkWrap.create(WebArchive.class)
-				.addPackage(SectionedService.class.getPackage())
+				.addClass(GroupedService.class)
 				.addClass(PostServiceTestBean.class)
 				.addClass(ConfigurationManagerTestBean.class)
-				.addAsWebInfResource(new File("src/test/resources/ejb-jar.xml"), "ejb-jar.xml")
+				.addAsWebInfResource(new File("src/test/resources/grouped-ejb-jar.xml"), "ejb-jar.xml")
 				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-		System.out.println(ja.toString(true));
+		//System.out.println(ja.toString(true));
 		return ja;
 	}
 
-	@EJB(beanName = "SectionedService")
+	@EJB(beanName = "GroupedService")
 	PostService postService;
 
 	@EJB
@@ -60,14 +61,14 @@ public class SectionedServiceTest {
 	@EJB
 	ConfigurationManagerTestBean configurationManager;
 
-	public SectionedServiceTest() {
+	public GroupedServiceTest() {
 	}
 
 	@Test
 	public void testCorrectRequest() {
-		byte[] message = new byte[1];
+		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test"));
+		alpha.add("group", new StringValue("number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
@@ -77,10 +78,10 @@ public class SectionedServiceTest {
 	}
 
 	@Test
-	public void testPostAlphaAttributeMissing() {
-		byte[] message = new byte[1];
+	public void testAttributeMissing() {
+		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("test", new StringValue("test"));
+		alpha.add("group2", new StringValue("number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
@@ -89,14 +90,14 @@ public class SectionedServiceTest {
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-001", tmp2);
+		assertEquals("BGT-001", tmp2);
 	}
 
 	@Test
 	public void testPostAlphaAttributeValueInvalid() {
-		byte[] message = new byte[1];
+		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("section", new IntegerValue(1));
+		alpha.add("group", new IntegerValue(1));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
@@ -105,14 +106,14 @@ public class SectionedServiceTest {
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-002", tmp2);
+		assertEquals("BGT-002", tmp2);
 	}
 
 	@Test
 	public void testPostConfigurationMissing() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test"));
+		alpha.add("group", new StringValue("number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(false);
 		beta = this.postService.post(message, alpha, beta);
@@ -121,14 +122,14 @@ public class SectionedServiceTest {
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.ERROR);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-003", tmp2);
+		assertEquals("BGT-003", tmp2);
 	}
 
 	@Test
-	public void testPostUnkownSection() {
+	public void testPostUnkownGroup() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test3"));
+		alpha.add("group", new StringValue("invalid"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
@@ -137,7 +138,7 @@ public class SectionedServiceTest {
 		}
 		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
-		assertEquals("BSE-004", tmp2);
+		assertEquals("BGT-004", tmp2);
 	}
 
 }

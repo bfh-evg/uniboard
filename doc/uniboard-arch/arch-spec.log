@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2011.8.15)  9 JUL 2014 13:28
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2011.8.15)  14 AUG 2014 11:29
 entering extended mode
 **arch-spec.tex
 (C:\Users\hss3\Documents\Git\Uniboard\doc\uniboard-arch\arch-spec.tex
@@ -961,7 +961,7 @@ Chapter 2.
 Package natbib Warning: Citation `Gamma:1995:DPE:186897' on page 5 undefined on
  input line 98.
 
-<figs/chainsofcomp.jpg, id=152, 929.4725pt x 603.25375pt>
+<figs/chainsofcomp.jpg, id=157, 929.4725pt x 603.25375pt>
 File: figs/chainsofcomp.jpg Graphic file (type jpg)
 
 <use figs/chainsofcomp.jpg>
@@ -973,7 +973,7 @@ File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 ) [5
 
 ]
-<figs/service-request-delegation.jpg, id=173, 1019.81pt x 807.015pt>
+<figs/service-request-delegation.jpg, id=178, 1019.81pt x 807.015pt>
 File: figs/service-request-delegation.jpg Graphic file (type jpg)
 
 <use figs/service-request-delegation.jpg> [6 <C:/Users/hss3/Documents/Git/Unibo
@@ -989,62 +989,61 @@ Package natbib Warning: Citation `Gamma:1995:DPE:186897' on page 8 undefined on
 
 [8] [9]
 Chapter 3.
-<figs/persistence-service.jpg, id=233, 884.30376pt x 349.305pt>
+<figs/persistence-service.jpg, id=240, 884.30376pt x 349.305pt>
 File: figs/persistence-service.jpg Graphic file (type jpg)
 
 <use figs/persistence-service.jpg> [10
 
 ]
+<figs/value_type.png, id=249, 807.015pt x 371.88937pt>
+File: figs/value_type.png Graphic file (type png)
 
-LaTeX Warning: Reference `fig' on page 11 undefined on input line 356.
+<use figs/value_type.png> [11 <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboar
+d-arch/figs/persistence-service.jpg>]
+<figs/constraints.png, id=257, 1160.83687pt x 603.0028pt>
+File: figs/constraints.png Graphic file (type png)
 
-
-LaTeX Warning: Reference `fig' on page 11 undefined on input line 362.
-
-[11 <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboard-arch/figs/persistence-se
-rvice.jpg>]
-
-LaTeX Warning: Reference `fig' on page 12 undefined on input line 366.
-
-[12]
+<use figs/constraints.png> [12 <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboa
+rd-arch/figs/value_type.png> <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboard
+-arch/figs/constraints.png>] [13]
 Chapter 4.
-<figs/byzantine-client.jpg, id=250, 873.2625pt x 473.77pt>
+<figs/byzantine-client.jpg, id=271, 873.2625pt x 473.77pt>
 File: figs/byzantine-client.jpg Graphic file (type jpg)
 
-<use figs/byzantine-client.jpg> [13
+<use figs/byzantine-client.jpg> [14
 
  <C:/Users/hss3/Documents/Git/Uniboard/doc/uniboard-arch/figs/byzantine-client.
 jpg>]
-<figs/byzantine-replica.jpg, id=258, 804.00375pt x 479.7925pt>
+<figs/byzantine-replica.jpg, id=278, 804.00375pt x 479.7925pt>
 File: figs/byzantine-replica.jpg Graphic file (type jpg)
 
-<use figs/byzantine-replica.jpg> [14 <C:/Users/hss3/Documents/Git/Uniboard/doc/
+<use figs/byzantine-replica.jpg> [15 <C:/Users/hss3/Documents/Git/Uniboard/doc/
 uniboard-arch/figs/byzantine-replica.jpg>]
 Chapter 5.
-[15
+[16
 
 ]
-LaTeX Font Info:    Try loading font information for OMS+cmss on input line 585
+LaTeX Font Info:    Try loading font information for OMS+cmss on input line 605
 .
-LaTeX Font Info:    No file OMScmss.fd. on input line 585.
+LaTeX Font Info:    No file OMScmss.fd. on input line 605.
 
 
 LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textasteriskcentered' on input line 585.
+(Font)              for symbol `textasteriskcentered' on input line 605.
 
-[16]
+[17]
 No file arch-spec.bbl.
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 628.
-[17]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 628.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 648.
+[18]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 648.
  (C:\Users\hss3\Documents\Git\Uniboard\doc\uniboard-arch\arch-spec.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 628.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 648.
 Package rerunfilecheck Info: File `arch-spec.out' has not changed.
-(rerunfilecheck)             Checksum: A652B244952947F90D31857254AB8C9E;1640.
+(rerunfilecheck)             Checksum: EC8D46956E53D70732C38BA99EEB2E11;1702.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
@@ -1054,13 +1053,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 13515 strings out of 494053
- 195354 string characters out of 3148606
- 636465 words of memory out of 3000000
- 16305 multiletter control sequences out of 15000+200000
+ 13531 strings out of 494053
+ 195656 string characters out of 3148606
+ 636625 words of memory out of 3000000
+ 16315 multiletter control sequences out of 15000+200000
  24124 words of font info for 62 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 53i,8n,69p,1403b,1867s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 53i,8n,69p,1422b,1867s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\hss3\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\e
 csi0900.pk> <C:\Users\hss3\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec
 \dpi600\ecss0900.pk> <C:\Users\hss3\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jk
@@ -1082,9 +1081,9 @@ TeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/
 fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
 e1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
 c/amsfonts/cm/cmsy9.pfb>
-Output written on arch-spec.pdf (17 pages, 544805 bytes).
+Output written on arch-spec.pdf (18 pages, 715536 bytes).
 PDF statistics:
- 973 PDF objects out of 1000 (max. 8388607)
- 186 named destinations out of 1000 (max. 500000)
- 218 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 998 PDF objects out of 1000 (max. 8388607)
+ 190 named destinations out of 1000 (max. 500000)
+ 236 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -10,12 +10,12 @@ What services are implemented by this component?
 
 ### Attributes
 
-Document wich attributes are added or required by this component.
+Document which attributes are added or required by this component.
 
 ## Configuration
 
-Describe how the confiugration works. Does this component use the the ConfigurationManager or not?
-What are the requiered fields?
+Describe how the configuration works. Does this component use the the ConfigurationManager or not?
+What are the required fields?
 
 ## Example EJB-Descriptor
 

@@ -15,4 +15,8 @@
 		<ejb>bfh-sectioned-1.0.jar</ejb>
 		<alt-dd>META-INF/sectioned-service-descriptor.xml</alt-dd>
 	</module>
+	<module>
+		<ejb>bfh-grouped-typed-1.0.jar</ejb>
+		<alt-dd>META-INF/grouped-typed-service-descriptor.xml</alt-dd>
+	</module>
 </application>

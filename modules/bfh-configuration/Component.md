@@ -2,7 +2,7 @@
 
 ## Basic Description
 
-This component provides a ConfigurationManager, which allows to either load the configurations
+This component provides a ConfigurationManager, which allows to load the configurations
 from either JNDI or from a file.
 
 ## Services

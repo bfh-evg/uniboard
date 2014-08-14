@@ -32,3 +32,4 @@
 /modules/bfh-configuration/target
 /modules/bfh-sectioned/target/
 nb-configuration.xml
+/modules/bfh-grouped-typed/target

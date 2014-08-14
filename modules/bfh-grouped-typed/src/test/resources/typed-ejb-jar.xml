@@ -5,11 +5,11 @@
 		 xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
 	<enterprise-beans>
 		<session>
-			<ejb-name>SectionedService</ejb-name>
+			<ejb-name>TypedService</ejb-name>
 			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.sectioned.SectionedService/postSuccessor</ejb-ref-name>
+				<ejb-ref-name>ch.bfh.uniboard.typed.TypedService/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>GroupedService</ejb-link>
+				<ejb-link>PostServiceTestBean</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>
