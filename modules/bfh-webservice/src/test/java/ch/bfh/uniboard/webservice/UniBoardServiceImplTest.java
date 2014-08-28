@@ -20,8 +20,8 @@ import ch.bfh.uniboard.data.GreaterEqualDTO;
 import ch.bfh.uniboard.data.InDTO;
 import ch.bfh.uniboard.data.LessDTO;
 import ch.bfh.uniboard.data.LessEqualDTO;
+import ch.bfh.uniboard.data.MessageIdentifierDTO;
 import ch.bfh.uniboard.data.NotEqualDTO;
-import ch.bfh.uniboard.data.PostElementDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
 import ch.bfh.uniboard.data.StringValueDTO;
@@ -34,6 +34,7 @@ import ch.bfh.uniboard.service.GreaterEqual;
 import ch.bfh.uniboard.service.In;
 import ch.bfh.uniboard.service.Less;
 import ch.bfh.uniboard.service.LessEqual;
+import ch.bfh.uniboard.service.MessageIdentifier;
 import ch.bfh.uniboard.service.NotEqual;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
@@ -125,9 +126,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		BetweenDTO constraint = new BetweenDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setLowerBound(string);
 		constraint.setUpperBound(string);
@@ -151,8 +152,8 @@ public class UniBoardServiceImplTest {
 		Between bconstraint = (Between) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getStart()).getValue(), "test2");
 		assertEquals(((StringValue) bconstraint.getEnd()).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -163,9 +164,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		EqualDTO constraint = new EqualDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
 		query.getConstraint().add(constraint);
@@ -187,8 +188,8 @@ public class UniBoardServiceImplTest {
 		}
 		Equal bconstraint = (Equal) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -199,9 +200,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		GreaterDTO constraint = new GreaterDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
 		query.getConstraint().add(constraint);
@@ -223,8 +224,8 @@ public class UniBoardServiceImplTest {
 		}
 		Greater bconstraint = (Greater) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -235,9 +236,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		GreaterEqualDTO constraint = new GreaterEqualDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
 		query.getConstraint().add(constraint);
@@ -259,8 +260,8 @@ public class UniBoardServiceImplTest {
 		}
 		GreaterEqual bconstraint = (GreaterEqual) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -271,9 +272,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		InDTO constraint = new InDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.getElement().add(string);
 		query.getConstraint().add(constraint);
@@ -295,8 +296,8 @@ public class UniBoardServiceImplTest {
 		}
 		In bconstraint = (In) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getSet().get(0)).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -307,9 +308,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		LessDTO constraint = new LessDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
 		query.getConstraint().add(constraint);
@@ -331,8 +332,8 @@ public class UniBoardServiceImplTest {
 		}
 		Less bconstraint = (Less) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -343,9 +344,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		LessEqualDTO constraint = new LessEqualDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
 		query.getConstraint().add(constraint);
@@ -367,8 +368,8 @@ public class UniBoardServiceImplTest {
 		}
 		LessEqual bconstraint = (LessEqual) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -379,9 +380,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		NotEqualDTO constraint = new NotEqualDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
 		query.getConstraint().add(constraint);
@@ -403,8 +404,8 @@ public class UniBoardServiceImplTest {
 		}
 		NotEqual bconstraint = (NotEqual) resultingConstraint;
 		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getKeys().get(0), "test");
-		assertEquals(bconstraint.getPostElement().name(), PostElementDTO.MESSAGE.value());
+		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
+		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 	}
 
 	/**
@@ -415,9 +416,9 @@ public class UniBoardServiceImplTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		LessEqualDTO constraint = new LessEqualDTO();
-		PostElementDTO postElement = PostElementDTO.MESSAGE;
-		constraint.setPostElement(postElement);
-		constraint.getKey().add("test");
+		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
+		identifier.getPart().add("test");
+		constraint.setIdentifier(identifier);
 		StringValueDTO string = new StringValueDTO("test2");
 		constraint.setValue(string);
 		query.getConstraint().add(constraint);

@@ -20,14 +20,14 @@ import java.util.List;
  */
 public class In extends Constraint {
 
-    private List<Value> element;
+	private final List<Value> element;
 
-    public In(List<Value> element, List<String> keys, PostElement postElement) {
-        super(keys, postElement);
-        this.element = element;
-    }
+	public In(Identifier identifier, List<Value> element) {
+		super(identifier);
+		this.element = element;
+	}
 
-    public List<Value> getSet() {
-        return element;
-    }
+	public List<Value> getSet() {
+		return element;
+	}
 }

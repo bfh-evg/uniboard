@@ -11,8 +11,6 @@
  */
 package ch.bfh.uniboard.service;
 
-import java.util.List;
-
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
@@ -20,14 +18,14 @@ import java.util.List;
  */
 public class NotEqual extends Constraint {
 
-    private Value value;
+	private final Value value;
 
-    public NotEqual(Value value, List<String> keys, PostElement postElement) {
-        super(keys, postElement);
-        this.value = value;
-    }
+	public NotEqual(Identifier identifier, Value value) {
+		super(identifier);
+		this.value = value;
+	}
 
-    public Value getValue() {
-        return value;
-    }
+	public Value getValue() {
+		return value;
+	}
 }

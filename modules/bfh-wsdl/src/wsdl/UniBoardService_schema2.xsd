@@ -70,8 +70,46 @@
 
 	<xs:complexType name="query">
 		<xs:sequence>
-			<xs:element name="constraint" type="tns:constraint" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="constraint" type="tns:constraint" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="order" type="tns:order" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="limit" type="xs:int"/>
 		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="constraint" abstract="true">
+		<xs:sequence>
+			<xs:element name="identifier" type="tns:identifier"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="identifier" abstract="true">
+		<xs:sequence>
+			<xs:element name="part" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="alphaIdentifier">
+		<xs:complexContent>
+			<xs:extension base="tns:identifier">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="betaIdentifier">
+		<xs:complexContent>
+			<xs:extension base="tns:identifier">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="messageIdentifier">
+		<xs:complexContent>
+			<xs:extension base="tns:identifier">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="between">
@@ -83,13 +121,6 @@
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="constraint" abstract="true">
-		<xs:sequence>
-			<xs:element name="key" type="xs:string" maxOccurs="unbounded"/>
-			<xs:element name="postElement" type="tns:postElement"/>
-		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="in">
@@ -162,6 +193,13 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="order">
+		<xs:sequence>
+			<xs:element name="identifier" type="tns:identifier"/>
+			<xs:element name="ascDesc" type="xs:boolean"/>
+		</xs:sequence>
+	</xs:complexType>
+
 	<xs:complexType name="resultContainer">
 		<xs:sequence>
 			<xs:element name="result" type="tns:result"/>
@@ -183,12 +221,5 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:simpleType name="postElement">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="MESSAGE"/>
-			<xs:enumeration value="ALPHA"/>
-			<xs:enumeration value="BETA"/>
-		</xs:restriction>
-	</xs:simpleType>
 </xs:schema>
 

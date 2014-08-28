@@ -23,7 +23,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 /**
- * Component that validates the section of incoming post/get requests. The list of valid sections is loaded over the
+ * Component that validates the section of incoming post requests. The list of valid sections is loaded over the
  * configuration manager.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;

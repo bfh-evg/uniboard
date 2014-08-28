@@ -12,32 +12,66 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A data container for arbitrary key/value pairs. Keys are strings, values can
- * be anything. Values should be immutable. Map entries are sorted by key
- * values.
+ * A data container for a list of constraints.
  *
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
 public class Query implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final List<Constraint> constraints;
+	private final List<Constraint> constraints;
+	private final List<Order> order;
+	private final int limit;
 
-    /**
-     * Initializes the data container
-     *
-     * @param constraints
-     */
-    public Query(List<Constraint> constraints) {
-        this.constraints = constraints;
-    }
+	public Query(List<Constraint> constraints, List<Order> order, int limit) {
+		this.constraints = constraints;
+		this.order = order;
+		//Limit has to be >=0, if limit=0 then there is no limit applied
+		if (limit >= 0) {
+			this.limit = limit;
+		} else {
+			this.limit = 0;
+		}
+	}
 
-    public List<Constraint> getConstraints() {
-        return constraints;
-    }
+	public Query(List<Constraint> constraints) {
+		this.constraints = constraints;
+		this.order = new ArrayList<>();
+		this.limit = 0;
+	}
+
+	public Query(List<Constraint> constraints, List<Order> order) {
+		this.constraints = constraints;
+		this.order = order;
+		this.limit = 0;
+	}
+
+	public Query(List<Constraint> constraints, int limit) {
+		this.constraints = constraints;
+		this.order = new ArrayList<>();
+		if (limit >= 0) {
+			this.limit = limit;
+		} else {
+			this.limit = 0;
+		}
+	}
+
+	public List<Constraint> getConstraints() {
+		return constraints;
+	}
+
+	public List<Order> getOrder() {
+		return order;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
 
 }

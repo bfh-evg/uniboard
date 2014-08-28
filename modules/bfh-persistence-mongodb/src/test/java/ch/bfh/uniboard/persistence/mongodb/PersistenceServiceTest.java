@@ -11,27 +11,7 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.Between;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.DoubleValue;
-import ch.bfh.uniboard.service.Equal;
-import ch.bfh.uniboard.service.GetService;
-import ch.bfh.uniboard.service.Greater;
-import ch.bfh.uniboard.service.GreaterEqual;
-import ch.bfh.uniboard.service.In;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.Less;
-import ch.bfh.uniboard.service.LessEqual;
-import ch.bfh.uniboard.service.NotEqual;
-import ch.bfh.uniboard.service.PostElement;
-import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.ResultContainer;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -189,10 +169,10 @@ public class PersistenceServiceTest {
 		List<String> keys = new ArrayList<>();
 		keys.add("sub1");
 		keys.add("subsub1");
-		constraints.add(new Equal(new StringValue("subsubvalue1"), keys, PostElement.MESSAGE));
+		constraints.add(new Equal(new MessageIdentifier(keys), new StringValue("subsubvalue1")));
 		List<String> keys2 = new ArrayList<>();
 		keys2.add("sub2");
-		constraints.add(new Equal(new IntegerValue(2), keys2, PostElement.MESSAGE));
+		constraints.add(new Equal(new MessageIdentifier(keys2), new IntegerValue(2)));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -210,7 +190,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("first");
-		constraints.add(new Equal(new StringValue("value1"), keys, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys), new StringValue("value1")));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -229,7 +209,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("second");
-		constraints.add(new Equal(new IntegerValue(2), keys, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys), new IntegerValue(2)));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -249,7 +229,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("sixth");
-		constraints.add(new Equal(new DoubleValue(0.5), keys, PostElement.BETA));
+		constraints.add(new Equal(new BetaIdentifier(keys), new DoubleValue(0.5)));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -269,7 +249,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("third");
-		constraints.add(new Equal(new ByteArrayValue(new byte[]{3, 3}), keys, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys), new ByteArrayValue(new byte[]{3, 3})));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -289,7 +269,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("fourth");
-		constraints.add(new Equal((DateValue) pp.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys), (DateValue) pp.getAlpha().getValue("fourth")));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -309,10 +289,10 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("first");
-		constraints.add(new Equal(new StringValue("value1"), keys, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys), new StringValue("value1")));
 		List<String> keys2 = new ArrayList<>();
 		keys2.add("fifth");
-		constraints.add(new Equal(new StringValue("value5"), keys2, PostElement.BETA));
+		constraints.add(new Equal(new BetaIdentifier(keys2), new StringValue("value5")));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -331,7 +311,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("first");
-		constraints.add(new NotEqual(new StringValue("value4"), keys, PostElement.ALPHA));
+		constraints.add(new NotEqual(new AlphaIdentifier(keys), new StringValue("value4")));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -356,7 +336,7 @@ public class PersistenceServiceTest {
 		values.add(new StringValue("value0"));
 		values.add(new StringValue("value1"));
 		values.add(new StringValue("value12"));
-		constraints.add(new In(values, keys, PostElement.ALPHA));
+		constraints.add(new In(new AlphaIdentifier(keys), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -381,7 +361,7 @@ public class PersistenceServiceTest {
 		values.add(new IntegerValue(1));
 		values.add(new IntegerValue(2));
 		values.add(new IntegerValue(22));
-		constraints.add(new In(values, keys, PostElement.ALPHA));
+		constraints.add(new In(new AlphaIdentifier(keys), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -406,7 +386,7 @@ public class PersistenceServiceTest {
 		values.add(new DoubleValue(0.5));
 		values.add(new DoubleValue(0.52));
 		values.add(new DoubleValue(0.22));
-		constraints.add(new In(values, keys, PostElement.BETA));
+		constraints.add(new In(new BetaIdentifier(keys), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -431,7 +411,7 @@ public class PersistenceServiceTest {
 		values.add(new ByteArrayValue(new byte[]{1, 1}));
 		values.add(new ByteArrayValue(new byte[]{3, 3}));
 		values.add(new ByteArrayValue(new byte[]{3, 3, 2}));
-		constraints.add(new In(values, keys, PostElement.ALPHA));
+		constraints.add(new In(new AlphaIdentifier(keys), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -456,7 +436,7 @@ public class PersistenceServiceTest {
 		values.add(new DateValue(new Date(System.currentTimeMillis())));
 		values.add(pp.getAlpha().getValue("fourth"));
 		values.add(pp2.getAlpha().getValue("fourth"));
-		constraints.add(new In(values, keys, PostElement.ALPHA));
+		constraints.add(new In(new AlphaIdentifier(keys), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -477,7 +457,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("first");
-		constraints.add(new Between(new StringValue("a"), new StringValue("z"), keys, PostElement.ALPHA));
+		constraints.add(new Between(new AlphaIdentifier(keys), new StringValue("a"), new StringValue("z")));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -497,7 +477,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("second");
-		constraints.add(new Between(new IntegerValue(1), new IntegerValue(4), keys, PostElement.ALPHA));
+		constraints.add(new Between(new AlphaIdentifier(keys), new IntegerValue(1), new IntegerValue(4)));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -517,7 +497,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("sixth");
-		constraints.add(new Between(new DoubleValue(0.1), new DoubleValue(0.6), keys, PostElement.BETA));
+		constraints.add(new Between(new BetaIdentifier(keys), new DoubleValue(0.1), new DoubleValue(0.6)));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -538,7 +518,7 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("third");
-		constraints.add(new Between(new ByteArrayValue(new byte[]{0}), new ByteArrayValue(new byte[]{9, 9, 9, 9}), keys, PostElement.ALPHA));
+		constraints.add(new Between(new AlphaIdentifier(keys), new ByteArrayValue(new byte[]{0}), new ByteArrayValue(new byte[]{9, 9, 9, 9})));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -561,7 +541,7 @@ public class PersistenceServiceTest {
 		DateValue startDate = new DateValue(new Date(((Date) pp.getAlpha().getValue("fourth").getValue()).getTime() - 1000));
 		DateValue endDate = new DateValue(new Date(System.currentTimeMillis()));
 
-		constraints.add(new Between(startDate, endDate, keys, PostElement.ALPHA));
+		constraints.add(new Between(new AlphaIdentifier(keys), startDate, endDate));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -584,7 +564,7 @@ public class PersistenceServiceTest {
 		keys.add("first");
 
 		//test greater
-		constraints.add(new Greater(new StringValue("value1"), keys, PostElement.ALPHA));
+		constraints.add(new Greater(new AlphaIdentifier(keys), new StringValue("value1")));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -593,7 +573,7 @@ public class PersistenceServiceTest {
 
 		//test greater equals
 		constraints.clear();
-		constraints.add(new GreaterEqual(new StringValue("value1"), keys, PostElement.ALPHA));
+		constraints.add(new GreaterEqual(new AlphaIdentifier(keys), new StringValue("value1")));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -603,7 +583,7 @@ public class PersistenceServiceTest {
 
 		//test less
 		constraints.clear();
-		constraints.add(new Less(new StringValue("value12"), keys, PostElement.ALPHA));
+		constraints.add(new Less(new AlphaIdentifier(keys), new StringValue("value12")));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -612,7 +592,7 @@ public class PersistenceServiceTest {
 
 		//test less equals
 		constraints.clear();
-		constraints.add(new LessEqual(new StringValue("value12"), keys, PostElement.ALPHA));
+		constraints.add(new LessEqual(new AlphaIdentifier(keys), new StringValue("value12")));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -635,7 +615,7 @@ public class PersistenceServiceTest {
 		keys.add("second");
 
 		//test greater
-		constraints.add(new Greater(new IntegerValue(2), keys, PostElement.ALPHA));
+		constraints.add(new Greater(new AlphaIdentifier(keys), new IntegerValue(2)));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -644,7 +624,7 @@ public class PersistenceServiceTest {
 
 		//test greater equals
 		constraints.clear();
-		constraints.add(new GreaterEqual(new IntegerValue(2), keys, PostElement.ALPHA));
+		constraints.add(new GreaterEqual(new AlphaIdentifier(keys), new IntegerValue(2)));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -654,7 +634,7 @@ public class PersistenceServiceTest {
 
 		//test less
 		constraints.clear();
-		constraints.add(new Less(new IntegerValue(22), keys, PostElement.ALPHA));
+		constraints.add(new Less(new AlphaIdentifier(keys), new IntegerValue(22)));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -663,7 +643,7 @@ public class PersistenceServiceTest {
 
 		//test less equals
 		constraints.clear();
-		constraints.add(new LessEqual(new IntegerValue(22), keys, PostElement.ALPHA));
+		constraints.add(new LessEqual(new AlphaIdentifier(keys), new IntegerValue(22)));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -686,7 +666,7 @@ public class PersistenceServiceTest {
 		keys.add("sixth");
 
 		//test greater
-		constraints.add(new Greater(new DoubleValue(0.5), keys, PostElement.BETA));
+		constraints.add(new Greater(new BetaIdentifier(keys), new DoubleValue(0.5)));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -695,7 +675,7 @@ public class PersistenceServiceTest {
 
 		//test greater equals
 		constraints.clear();
-		constraints.add(new GreaterEqual(new DoubleValue(0.5), keys, PostElement.BETA));
+		constraints.add(new GreaterEqual(new BetaIdentifier(keys), new DoubleValue(0.5)));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -705,7 +685,7 @@ public class PersistenceServiceTest {
 
 		//test less
 		constraints.clear();
-		constraints.add(new Less(new DoubleValue(0.52), keys, PostElement.BETA));
+		constraints.add(new Less(new BetaIdentifier(keys), new DoubleValue(0.52)));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -714,7 +694,7 @@ public class PersistenceServiceTest {
 
 		//test less equals
 		constraints.clear();
-		constraints.add(new LessEqual(new DoubleValue(0.52), keys, PostElement.BETA));
+		constraints.add(new LessEqual(new BetaIdentifier(keys), new DoubleValue(0.52)));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -737,7 +717,7 @@ public class PersistenceServiceTest {
 		keys.add("third");
 
 		//test greater
-		constraints.add(new Greater(new ByteArrayValue(new byte[]{3, 3}), keys, PostElement.ALPHA));
+		constraints.add(new Greater(new AlphaIdentifier(keys), new ByteArrayValue(new byte[]{3, 3})));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -746,7 +726,7 @@ public class PersistenceServiceTest {
 
 		//test greater equals
 		constraints.clear();
-		constraints.add(new GreaterEqual(new ByteArrayValue(new byte[]{3, 3}), keys, PostElement.ALPHA));
+		constraints.add(new GreaterEqual(new AlphaIdentifier(keys), new ByteArrayValue(new byte[]{3, 3})));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -756,7 +736,7 @@ public class PersistenceServiceTest {
 
 		//test less
 		constraints.clear();
-		constraints.add(new Less(new ByteArrayValue(new byte[]{3, 3, 2}), keys, PostElement.ALPHA));
+		constraints.add(new Less(new AlphaIdentifier(keys), new ByteArrayValue(new byte[]{3, 3, 2})));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -765,7 +745,7 @@ public class PersistenceServiceTest {
 
 		//test less equals
 		constraints.clear();
-		constraints.add(new LessEqual(new ByteArrayValue(new byte[]{3, 3, 2}), keys, PostElement.ALPHA));
+		constraints.add(new LessEqual(new AlphaIdentifier(keys), new ByteArrayValue(new byte[]{3, 3, 2})));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -788,7 +768,7 @@ public class PersistenceServiceTest {
 		keys.add("fourth");
 
 		//test greater
-		constraints.add(new Greater(pp.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
+		constraints.add(new Greater(new AlphaIdentifier(keys), pp.getAlpha().getValue("fourth")));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -797,7 +777,7 @@ public class PersistenceServiceTest {
 
 		//test greater equals
 		constraints.clear();
-		constraints.add(new GreaterEqual(pp.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
+		constraints.add(new GreaterEqual(new AlphaIdentifier(keys), pp.getAlpha().getValue("fourth")));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -807,7 +787,7 @@ public class PersistenceServiceTest {
 
 		//test less
 		constraints.clear();
-		constraints.add(new Less(pp2.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
+		constraints.add(new Less(new AlphaIdentifier(keys), pp2.getAlpha().getValue("fourth")));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -816,7 +796,7 @@ public class PersistenceServiceTest {
 
 		//test less equals
 		constraints.clear();
-		constraints.add(new LessEqual(pp2.getAlpha().getValue("fourth"), keys, PostElement.ALPHA));
+		constraints.add(new LessEqual(new AlphaIdentifier(keys), pp2.getAlpha().getValue("fourth")));
 		q = new Query(constraints);
 		rc = gs.get(q);
 
@@ -839,27 +819,27 @@ public class PersistenceServiceTest {
 		//String Equal
 		List<String> keys1 = new ArrayList<>();
 		keys1.add("first");
-		constraints.add(new Equal(new StringValue("value1"), keys1, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys1), new StringValue("value1")));
 
 		//Integer GreaterEqual
 		List<String> keys2 = new ArrayList<>();
 		keys2.add("second");
-		constraints.add(new GreaterEqual(new IntegerValue(2), keys2, PostElement.ALPHA));
+		constraints.add(new GreaterEqual(new AlphaIdentifier(keys2), new IntegerValue(2)));
 
 		//byte[] equals
 		List<String> keys3 = new ArrayList<>();
 		keys3.add("third");
-		constraints.add(new Equal(new ByteArrayValue(new byte[]{3, 3}), keys3, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys3), new ByteArrayValue(new byte[]{3, 3})));
 
 		//Date Less
 		List<String> keys4 = new ArrayList<>();
 		keys4.add("fourth");
-		constraints.add(new Less(new DateValue(new Date(System.currentTimeMillis())), keys4, PostElement.ALPHA));
+		constraints.add(new Less(new AlphaIdentifier(keys4), new DateValue(new Date(System.currentTimeMillis()))));
 
 		//String NotEqual
 		List<String> keys5 = new ArrayList<>();
 		keys5.add("fifth");
-		constraints.add(new NotEqual(new StringValue("notthisstring"), keys5, PostElement.BETA));
+		constraints.add(new NotEqual(new BetaIdentifier(keys5), new StringValue("notthisstring")));
 
 		//Double In
 		List<String> keys6 = new ArrayList<>();
@@ -872,17 +852,17 @@ public class PersistenceServiceTest {
 		values.add(new DoubleValue(1.5));
 		values.add(new DoubleValue(1.8));
 		values.add(new DoubleValue(2.1));
-		constraints.add(new In(values, keys6, PostElement.BETA));
+		constraints.add(new In(new BetaIdentifier(keys6), values));
 
 		//Integer Between
 		List<String> keys7 = new ArrayList<>();
 		keys7.add("seventh");
-		constraints.add(new Between(new IntegerValue(2), new IntegerValue(18), keys7, PostElement.BETA));
+		constraints.add(new Between(new BetaIdentifier(keys7), new IntegerValue(2), new IntegerValue(18)));
 
 		//byte[] NotEqual
 		List<String> keys8 = new ArrayList<>();
 		keys8.add("eighth");
-		constraints.add(new NotEqual(new ByteArrayValue(new byte[]{1}), keys8, PostElement.BETA));
+		constraints.add(new NotEqual(new BetaIdentifier(keys8), new ByteArrayValue(new byte[]{1})));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -936,7 +916,7 @@ public class PersistenceServiceTest {
 		values.add(new IntegerValue(5));
 		values.add(new DoubleValue(0.9));
 		values.add(new StringValue("1.5"));
-		constraints.add(new In(values, keys, PostElement.BETA));
+		constraints.add(new In(new BetaIdentifier(keys), values));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -955,7 +935,7 @@ public class PersistenceServiceTest {
 
 		List<String> keys = new ArrayList<>();
 		keys.add("seventh");
-		constraints.add(new Between(new IntegerValue(2), new ByteArrayValue(new byte[]{1}), keys, PostElement.BETA));
+		constraints.add(new Between(new BetaIdentifier(keys), new IntegerValue(2), new ByteArrayValue(new byte[]{1})));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -975,7 +955,7 @@ public class PersistenceServiceTest {
 		//Integer Between
 		List<String> keys = new ArrayList<>();
 		keys.add("first");
-		constraints.add(new Equal(null, keys, PostElement.ALPHA));
+		constraints.add(new Equal(new AlphaIdentifier(keys), null));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -984,4 +964,216 @@ public class PersistenceServiceTest {
 		assertEquals(0, rc.getResult().size());
 	}
 
+	/* -------------------------------
+	 * Order Testing
+	 * ------------------------------- */
+	/**
+	 * Test that multiple elements with ascending order are returned
+	 */
+	@Test
+	public void oneOrderAsc() {
+		Attributes a1 = new Attributes();
+		a1.add("first", new StringValue("value1"));
+
+		Attributes a2 = new Attributes();
+		a2.add("first", new StringValue("value2"));
+
+		Attributes a3 = new Attributes();
+		a3.add("first", new StringValue("value3"));
+
+		ps.post(message, a2, beta);
+		ps.post(message, a1, beta);
+		ps.post(message, a3, beta);
+
+		List<Constraint> constraints = new ArrayList<>();
+		Constraint c = new Equal(new BetaIdentifier("fifth"), new StringValue("value5"));
+		constraints.add(c);
+
+		List<Order> orderBy = new ArrayList<>();
+		Order order = new Order(new AlphaIdentifier("first"), true);
+		orderBy.add(order);
+
+		Query q = new Query(constraints, orderBy);
+
+		ResultContainer rc = gs.get(q);
+
+		assertEquals(3, rc.getResult().size());
+		String s = ((StringValue) rc.getResult().get(0).getAlpha().getValue("first")).getValue();
+		assertEquals("value1", s);
+
+		String s2 = ((StringValue) rc.getResult().get(1).getAlpha().getValue("first")).getValue();
+		assertEquals("value2", s2);
+
+		String s3 = ((StringValue) rc.getResult().get(2).getAlpha().getValue("first")).getValue();
+		assertEquals("value3", s3);
+
+		PersistedPost p1 = new PersistedPost(message, a1, beta);
+		PersistedPost p2 = new PersistedPost(message, a2, beta);
+		PersistedPost p3 = new PersistedPost(message, a3, beta);
+		conManager.getCollection().remove(p1.toDBObject());
+		conManager.getCollection().remove(p2.toDBObject());
+		conManager.getCollection().remove(p3.toDBObject());
+	}
+
+	@Test
+	public void oneOrderDesc() {
+		Attributes a1 = new Attributes();
+		a1.add("first", new StringValue("value1"));
+
+		Attributes a2 = new Attributes();
+		a2.add("first", new StringValue("value2"));
+
+		Attributes a3 = new Attributes();
+		a3.add("first", new StringValue("value3"));
+
+		ps.post(message, a2, beta);
+		ps.post(message, a1, beta);
+		ps.post(message, a3, beta);
+
+		List<Constraint> constraints = new ArrayList<>();
+		Constraint c = new Equal(new BetaIdentifier("fifth"), new StringValue("value5"));
+		constraints.add(c);
+
+		List<Order> orderBy = new ArrayList<>();
+		Order order = new Order(new AlphaIdentifier("first"), false);
+		orderBy.add(order);
+
+		Query q = new Query(constraints, orderBy);
+
+		ResultContainer rc = gs.get(q);
+
+		assertEquals(3, rc.getResult().size());
+		String s = ((StringValue) rc.getResult().get(0).getAlpha().getValue("first")).getValue();
+		assertEquals("value3", s);
+
+		String s2 = ((StringValue) rc.getResult().get(1).getAlpha().getValue("first")).getValue();
+		assertEquals("value2", s2);
+
+		String s3 = ((StringValue) rc.getResult().get(2).getAlpha().getValue("first")).getValue();
+		assertEquals("value1", s3);
+
+		PersistedPost p1 = new PersistedPost(message, a1, beta);
+		PersistedPost p2 = new PersistedPost(message, a2, beta);
+		PersistedPost p3 = new PersistedPost(message, a3, beta);
+		conManager.getCollection().remove(p1.toDBObject());
+		conManager.getCollection().remove(p2.toDBObject());
+		conManager.getCollection().remove(p3.toDBObject());
+	}
+
+	@Test
+	public void multiOrder() {
+		Attributes a1 = new Attributes();
+		a1.add("second", new StringValue("value1"));
+		a1.add("first", new StringValue("value1"));
+
+		Attributes a2 = new Attributes();
+		a2.add("second", new StringValue("value2"));
+		a2.add("first", new StringValue("value2"));
+
+		Attributes a3 = new Attributes();
+		a3.add("second", new StringValue("value3"));
+		a3.add("first", new StringValue("value1"));
+
+		ps.post(message, a2, beta);
+		ps.post(message, a1, beta);
+		ps.post(message, a3, beta);
+
+		List<Constraint> constraints = new ArrayList<>();
+		Constraint c = new Equal(new BetaIdentifier("fifth"), new StringValue("value5"));
+		constraints.add(c);
+
+		List<Order> orderBy = new ArrayList<>();
+		Order order = new Order(new AlphaIdentifier("first"), true);
+		orderBy.add(order);
+		Order order2 = new Order(new AlphaIdentifier("second"), true);
+		orderBy.add(order2);
+
+		Query q = new Query(constraints, orderBy);
+
+		ResultContainer rc = gs.get(q);
+
+		assertEquals(3, rc.getResult().size());
+		String s = ((StringValue) rc.getResult().get(0).getAlpha().getValue("first")).getValue();
+		assertEquals("value1", s);
+		String s1 = ((StringValue) rc.getResult().get(0).getAlpha().getValue("second")).getValue();
+		assertEquals("value1", s1);
+
+		String s2 = ((StringValue) rc.getResult().get(1).getAlpha().getValue("first")).getValue();
+		assertEquals("value1", s2);
+		String s22 = ((StringValue) rc.getResult().get(1).getAlpha().getValue("second")).getValue();
+		assertEquals("value3", s22);
+
+		String s3 = ((StringValue) rc.getResult().get(2).getAlpha().getValue("first")).getValue();
+		assertEquals("value2", s3);
+		String s33 = ((StringValue) rc.getResult().get(2).getAlpha().getValue("second")).getValue();
+		assertEquals("value2", s33);
+
+		PersistedPost p1 = new PersistedPost(message, a1, beta);
+		PersistedPost p2 = new PersistedPost(message, a2, beta);
+		PersistedPost p3 = new PersistedPost(message, a3, beta);
+		conManager.getCollection().remove(p1.toDBObject());
+		conManager.getCollection().remove(p2.toDBObject());
+		conManager.getCollection().remove(p3.toDBObject());
+	}
+
+	/* -------------------------------
+	 * Limit Testing
+	 * ------------------------------- */
+	@Test
+	public void testLimit() {
+		ps.post(message, alpha, beta);
+		ps.post(message, alpha, beta);
+		ps.post(message, alpha, beta);
+		ps.post(message, alpha, beta);
+		ps.post(message, alpha, beta);
+		ps.post(message, alpha, beta);
+
+		List<Constraint> constraints = new ArrayList<>();
+		Constraint c = new Equal(new BetaIdentifier("fifth"), new StringValue("value5"));
+		constraints.add(c);
+
+		Query q = new Query(constraints, 4);
+
+		ResultContainer rc = gs.get(q);
+
+		assertEquals(4, rc.getResult().size());
+
+	}
+
+	@Test
+	public void testLimitWithOrder() {
+
+		Attributes a1 = new Attributes();
+		a1.add("first", new StringValue("value9"));
+		ps.post(message, a1, beta);
+		Attributes a2 = new Attributes();
+		a2.add("first", new StringValue("value8"));
+		ps.post(message, a2, beta);
+		Attributes a3 = new Attributes();
+		a3.add("first", new StringValue("value4"));
+		ps.post(message, a3, beta);
+		Attributes a4 = new Attributes();
+		a4.add("first", new StringValue("value2"));
+		ps.post(message, a4, beta);
+		Attributes a5 = new Attributes();
+		a5.add("first", new StringValue("value6"));
+		ps.post(message, a5, beta);
+
+		List<Constraint> constraints = new ArrayList<>();
+		Constraint c = new Equal(new BetaIdentifier("fifth"), new StringValue("value5"));
+		constraints.add(c);
+
+		List<Order> orderBy = new ArrayList<>();
+		Order order = new Order(new AlphaIdentifier("first"), true);
+		orderBy.add(order);
+
+		Query q = new Query(constraints, orderBy, 4);
+
+		ResultContainer rc = gs.get(q);
+
+		assertEquals(4, rc.getResult().size());
+
+		String s = ((StringValue) rc.getResult().get(3).getAlpha().getValue("first")).getValue();
+		assertEquals("value8", s);
+	}
 }

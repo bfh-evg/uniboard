@@ -32,13 +32,13 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 
 		if (this.correct && this.groupded) {
 			Properties p = new Properties();
-			p.put("number", "{\"type\" : \"number\"}");
-			p.put("ip", "{\"$schema\" : \"http://json-schema.org/draft-03/schema#\",\"format\" : \"ip-address\"}");
+			p.put("number", "src/test/resources/numberSchema.json");
+			p.put("ip", "src/test/resources/ipSchema.json");
 			return p;
 		}
 		if (this.correct && !this.groupded) {
 			Properties p = new Properties();
-			p.put("singleType", "{\"type\" : \"number\"}");
+			p.put("singleType", "src/test/resources/numberSchema.json");
 			return p;
 		}
 		return null;

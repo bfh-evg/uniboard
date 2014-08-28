@@ -11,8 +11,6 @@
  */
 package ch.bfh.uniboard.service;
 
-import java.util.List;
-
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
@@ -20,15 +18,15 @@ import java.util.List;
  */
 public class Equal extends Constraint {
 
-    private Value value;
+	private final Value value;
 
-    public Equal(Value value, List<String> keys, PostElement postElement) {
-        super(keys, postElement);
-        this.value = value;
-    }
+	public Equal(Identifier identfier, Value value) {
+		super(identfier);
+		this.value = value;
+	}
 
-    public Value getValue() {
-        return value;
-    }
+	public Value getValue() {
+		return value;
+	}
 
 }

@@ -24,9 +24,7 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,16 +84,16 @@ public class PersistedPost extends Post {
 		}
 
 		//Prepares the Alpha attributes
-		List<BasicDBObject> alphaList = new ArrayList<>();
+		BasicDBObject alphaList = new BasicDBObject();
 		for (Entry<String, Value> entry : alpha.getEntries()) {
-			alphaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
+			alphaList.put(entry.getKey(), entry.getValue().getValue());
 		}
 		doc.put("alpha", alphaList);
 
 		//Prepares the Beta attributes
-		List<BasicDBObject> betaList = new ArrayList<>();
+		BasicDBObject betaList = new BasicDBObject();
 		for (Entry<String, Value> entry : beta.getEntries()) {
-			betaList.add(new BasicDBObject(entry.getKey(), entry.getValue().getValue()));
+			betaList.put(entry.getKey(), entry.getValue().getValue());
 		}
 		doc.put("beta", betaList);
 
@@ -127,19 +125,19 @@ public class PersistedPost extends Post {
 
 		//fill alpha attributes
 		Attributes alpha = new Attributes();
-		ArrayList<DBObject> alphaList = (ArrayList<DBObject>) doc.get("alpha");
-		for (DBObject dbObj : alphaList) {
-			String key = dbObj.keySet().iterator().next();
-			alpha.add(key, inflateType(dbObj.get(key)));
+		DBObject alphaList = (DBObject) doc.get("alpha");
+		for (String key : alphaList.keySet()) {
+			//String key = dbObj.keySet().iterator().next();
+			alpha.add(key, inflateType(alphaList.get(key)));
 		}
 		pp.alpha = alpha;
 
 		//fill beta attributes
 		Attributes beta = new Attributes();
-		ArrayList<DBObject> betaList = (ArrayList<DBObject>) doc.get("beta");
-		for (DBObject dbObj : betaList) {
-			String key = dbObj.keySet().iterator().next();
-			beta.add(key, inflateType(dbObj.get(key)));
+		DBObject betaList = (DBObject) doc.get("beta");
+		for (String key : betaList.keySet()) {
+			//String key = dbObj.keySet().iterator().next();
+			beta.add(key, inflateType(betaList.get(key)));
 		}
 		pp.beta = beta;
 

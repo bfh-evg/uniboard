@@ -12,21 +12,27 @@
 package ch.bfh.uniboard.service;
 
 /**
- * A constraint allows to restrict the result retrieved from the persistence layer. A constraint consists of an
- * identifier of the element to restrict and other elements depending on the type of constraint.
+ * Order allows to indicate the persistence layer what ordering one wishes for the result.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
- * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public abstract class Constraint {
+public class Order {
 
 	private final Identifier identifier;
+	//True indicates asc and false desc
+	private final boolean ascDesc;
 
-	public Constraint(Identifier identifier) {
+	public Order(Identifier identifier, boolean ascDesc) {
 		this.identifier = identifier;
+		this.ascDesc = ascDesc;
 	}
 
 	public Identifier getIdentifier() {
 		return identifier;
 	}
+
+	public boolean isAscDesc() {
+		return ascDesc;
+	}
+
 }

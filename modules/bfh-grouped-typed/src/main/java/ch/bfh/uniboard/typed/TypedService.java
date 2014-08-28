@@ -23,6 +23,7 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,9 +66,9 @@ public class TypedService extends PostComponent implements PostService {
 		}
 
 		if (p.containsKey(NON_GROUPED_MODE)) {
-			String schema = p.getProperty(NON_GROUPED_MODE);
+			String schemaPath = p.getProperty(NON_GROUPED_MODE);
 
-			if (this.validate(new String(message), schema)) {
+			if (this.validate(new String(message, Charset.forName("UTF-8")), schemaPath)) {
 				return beta;
 			} else {
 				beta.add(Attributes.REJECTED, new StringValue("BGT-005 Message does not match the schema."));
@@ -90,12 +91,12 @@ public class TypedService extends PostComponent implements PostService {
 						new StringValue("BGT-004 Unknown " + ATTRIBUTE_NAME + ": " + group.getValue()));
 				return beta;
 			}
-			String schema = p.getProperty(group.getValue());
+			String schemaPath = p.getProperty(group.getValue());
 
-			if (this.validate(new String(message), schema)) {
+			if (this.validate(new String(message, Charset.forName("UTF-8")), schemaPath)) {
 				return beta;
 			} else {
-				beta.add(Attributes.REJECTED, new StringValue("BGT-006 Message is not of type " + group));
+				beta.add(Attributes.REJECTED, new StringValue("BGT-006 Message is not of type " + group.getValue()));
 				return beta;
 			}
 		}
@@ -104,7 +105,7 @@ public class TypedService extends PostComponent implements PostService {
 	public boolean validate(String jsonData, String jsonSchema) {
 
 		try {
-			JsonNode schemaNode = JsonLoader.fromString(jsonSchema);
+			JsonNode schemaNode = JsonLoader.fromPath(jsonSchema);
 			JsonNode data = JsonLoader.fromString(jsonData);
 
 			JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
@@ -113,7 +114,7 @@ public class TypedService extends PostComponent implements PostService {
 
 			return report.isSuccess();
 		} catch (IOException | ProcessingException ex) {
-			logger.log(Level.WARNING, "Can not validate message", ex);
+			logger.log(Level.WARNING, "Can not validate message." + jsonData, ex);
 			return false;
 		}
 	}

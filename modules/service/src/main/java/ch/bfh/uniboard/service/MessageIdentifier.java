@@ -11,21 +11,20 @@
  */
 package ch.bfh.uniboard.service;
 
-/**
- *
- * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
- * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
- */
-public class Less extends Constraint {
+import java.util.List;
 
-	private final Value value;
+public class MessageIdentifier extends Identifier {
 
-	public Less(Identifier identifier, Value value) {
+	public MessageIdentifier(List<String> parts) {
+		super(parts);
+	}
+
+	public MessageIdentifier(String[] identifier) {
 		super(identifier);
-		this.value = value;
 	}
 
-	public Value getValue() {
-		return value;
+	public MessageIdentifier(String identifier) {
+		super(identifier);
 	}
+
 }

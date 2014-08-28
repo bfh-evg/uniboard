@@ -18,7 +18,7 @@ For the "grouped" property it's required that an attribute "group" is added to t
 ## Configuration
 
 This component uses the ConfigurationManager. It requests the properties for the "bfh-grouped-typed" key.
-The keys define the names of the groups. The values is a string representation of the json schema defining the type.
+The keys define the names of the groups. The values represents the filepath to the json schema defining the type.
 If only the grouped property is needed the value can be left empty.
 If only the typed property is needed create only one entry with group name set to "singleType".
 

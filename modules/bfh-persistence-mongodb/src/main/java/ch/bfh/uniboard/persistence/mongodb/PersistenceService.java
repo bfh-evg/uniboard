@@ -11,23 +11,7 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.Between;
-import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.Equal;
-import ch.bfh.uniboard.service.GetService;
-import ch.bfh.uniboard.service.Greater;
-import ch.bfh.uniboard.service.GreaterEqual;
-import ch.bfh.uniboard.service.In;
-import ch.bfh.uniboard.service.Less;
-import ch.bfh.uniboard.service.LessEqual;
-import ch.bfh.uniboard.service.NotEqual;
-import ch.bfh.uniboard.service.Post;
-import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.ResultContainer;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -120,25 +104,21 @@ public class PersistenceService implements PostService, GetService {
 
 				//constructs the key
 				String keyString = "";
-				switch (c.getPostElement()) {
-					case MESSAGE:
-						keyString += "message";
-						break;
-					case ALPHA:
-						keyString += "alpha";
-						break;
-					case BETA:
-						keyString += "beta";
-						break;
-					default:
-						Attributes gamma = new Attributes();
-						gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown post element"));
-						logger.log(Level.WARNING, "Syntax error: Unknown post element");
-						return new ResultContainer(new ArrayList<Post>(), gamma);
+				if (c.getIdentifier() instanceof MessageIdentifier) {
+					keyString += "message";
+				} else if (c.getIdentifier() instanceof AlphaIdentifier) {
+					keyString += "alpha";
+				} else if (c.getIdentifier() instanceof BetaIdentifier) {
+					keyString += "beta";
+				} else {
+					Attributes gamma = new Attributes();
+					gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown identifier"));
+					logger.log(Level.WARNING, "Syntax error: Unknown identifier");
+					return new ResultContainer(new ArrayList<Post>(), gamma);
 				}
 
 				//constructs the hierarchy of the keys
-				for (String key : c.getKeys()) {
+				for (String key : c.getIdentifier().getParts()) {
 					keyString += "." + key;
 				}
 
@@ -198,8 +178,45 @@ public class PersistenceService implements PostService, GetService {
 			DBObject completeQuery = new BasicDBObject();
 			completeQuery.put("$and", constraintsList);
 
-			//apply query on database
-			DBCursor cursor = this.connectionManager.getCollection().find(completeQuery);
+			DBCursor cursor;
+
+			if (query.getOrder().size() > 0) {
+
+				//Create orderBy
+				BasicDBObject orderBy = new BasicDBObject();
+
+				for (Order order : query.getOrder()) {
+					String identifier;
+					if (order.getIdentifier() instanceof MessageIdentifier) {
+						identifier = "message";
+					} else if (order.getIdentifier() instanceof AlphaIdentifier) {
+						identifier = "alpha";
+					} else if (order.getIdentifier() instanceof BetaIdentifier) {
+						identifier = "beta";
+					} else {
+						Attributes gamma = new Attributes();
+						gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown identifier"));
+						logger.log(Level.WARNING, "Syntax error: Unknown identifier");
+						return new ResultContainer(new ArrayList<Post>(), gamma);
+					}
+					for (String key : order.getIdentifier().getParts()) {
+						identifier += "." + key;
+					}
+					int ascDesc;
+					if (order.isAscDesc()) {
+						ascDesc = 1;
+					} else {
+						ascDesc = -1;
+					}
+					orderBy.append(identifier, ascDesc);
+					System.out.println(orderBy.toString());
+				}
+				cursor = this.connectionManager.getCollection()
+						.find(completeQuery).sort(orderBy).limit(query.getLimit());
+			} else {
+				//apply query on database
+				cursor = this.connectionManager.getCollection().find(completeQuery).limit(query.getLimit());
+			}
 
 			//creates the result container with the db result
 			List<Post> list = new ArrayList<>();
