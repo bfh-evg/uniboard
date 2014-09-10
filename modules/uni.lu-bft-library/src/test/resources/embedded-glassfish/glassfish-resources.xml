@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC
+    "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN"
+    "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+	<custom-resource res-type="java.util.Properties" jndi-name="/uniboard/configuration"
+					 factory-class="org.glassfish.resources.custom.factory.PropertiesFactory">
+		<property name="jndiTest.jndi" value="/uniboard/testProperties" />
+
+	</custom-resource>
+	<custom-resource res-type="java.util.Properties" jndi-name="/uniboard/testProperties"
+					 factory-class="org.glassfish.resources.custom.factory.PropertiesFactory">
+		<property name="testvalue" value="test" />
+	</custom-resource>
+</resources>
