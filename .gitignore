@@ -33,4 +33,6 @@
 /modules/bfh-sectioned/target/
 nb-configuration.xml
 /modules/bfh-grouped-typed/target
-/modules/bfh-chronological/target
+/modules/module/target/
+/modules/bft-replica/target/
+/modules/bft-uniboard-proxies/target//modules/bfh-chronological/target
