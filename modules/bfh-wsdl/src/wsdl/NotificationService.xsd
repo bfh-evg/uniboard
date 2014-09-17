@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://uniboard.bfh.ch/notification/" xmlns:ns1="http://uniboard.bfh.ch/data" xmlns:tns="http://uniboard.bfh.ch/notification/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:import namespace="http://uniboard.bfh.ch/data" schemaLocation="common.xsd"/>
+
+	<xs:element name="register" type="tns:register"/>
+
+	<xs:element name="registerResponse" type="tns:registerResponse"/>
+
+	<xs:element name="unregister" type="tns:unregister"/>
+
+	<xs:complexType name="unregister">
+		<xs:sequence>
+			<xs:element name="notificationCode" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="register">
+		<xs:sequence>
+			<xs:element name="url" type="xs:string"/>
+			<xs:element name="query" type="ns1:query"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="registerResponse">
+		<xs:sequence>
+			<xs:element name="notificationCode" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
+

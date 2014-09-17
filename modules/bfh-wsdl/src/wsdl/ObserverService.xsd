@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://uniboard.bfh.ch/notification/" xmlns:ns1="http://uniboard.bfh.ch/data" xmlns:tns="http://uniboard.bfh.ch/notification/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:import namespace="http://uniboard.bfh.ch/data" schemaLocation="common.xsd"/>
+
+	<xs:element name="notify" type="tns:notify"/>
+
+	<xs:element name="notifyResponse" type="tns:notifyResponse"/>
+
+	<xs:complexType name="notify">
+		<xs:sequence>
+			<xs:element name="post" type="ns1:post"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="notifyResponse">
+		<xs:sequence/>
+	</xs:complexType>
+</xs:schema>
+

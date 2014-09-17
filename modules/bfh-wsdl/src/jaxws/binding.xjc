@@ -4,7 +4,7 @@
 	xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
 	version="2.1">
 
-	<jxb:bindings schemaLocation="../wsdl/UniBoardService_schema2.xsd">
+	<jxb:bindings schemaLocation="../wsdl/common.xsd">
 		<jxb:schemaBindings>
 			<jxb:nameXmlTransform>
 				<jxb:typeName suffix="DTO"/>

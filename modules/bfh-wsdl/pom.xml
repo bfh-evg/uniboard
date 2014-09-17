@@ -45,6 +45,8 @@
 							</bindingFiles>
 							<wsdlFiles>
 								<wsdlFile>UniBoardService.wsdl</wsdlFile>
+								<wsdlFile>NotificationService.wsdl</wsdlFile>
+								<wsdlFile>ObserverService.wsdl</wsdlFile>
 							</wsdlFiles>
 							<vmArgs>
 								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>

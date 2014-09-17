@@ -41,4 +41,8 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 		this.correct = correct;
 	}
 
+	@Override
+	public void saveConfiguration(String key, Properties configuration) {
+	}
+
 }

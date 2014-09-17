@@ -56,4 +56,26 @@ public class ConfigurationManagerImplTest {
 		assertEquals(result, "test");
 	}
 
+	@Test
+	public void testReplaceJNDIProperty() {
+		Properties p = cm.getConfiguration("jndiReplace");
+		String result = p.getProperty("replacevalue");
+		assertEquals(result, "test");
+		p.put("replacevalue", "replaced");
+		cm.saveConfiguration("replaceTest", p);
+		Properties p2 = cm.getConfiguration("jndiReplace");
+		String result2 = p2.getProperty("replacevalue");
+		assertEquals(result2, "replaced");
+	}
+
+	@Test
+	public void testNewJNDIProperty() {
+		Properties p = new Properties();
+		p.put("newvalue", "newvalue");
+		cm.saveConfiguration("newConfig", p);
+		Properties p2 = cm.getConfiguration("newConfig");
+		String result2 = p2.getProperty("newvalue");
+		assertEquals(result2, "newvalue");
+	}
+
 }

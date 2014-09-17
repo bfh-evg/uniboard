@@ -36,3 +36,5 @@ nb-configuration.xml
 /modules/module/target/
 /modules/bft-replica/target/
 /modules/bft-uniboard-proxies/target//modules/bfh-chronological/target
+/modules/bfh-notification/target/
+/modules/bfh-chronological/target

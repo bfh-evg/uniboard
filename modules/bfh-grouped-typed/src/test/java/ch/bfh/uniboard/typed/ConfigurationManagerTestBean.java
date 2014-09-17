@@ -52,4 +52,8 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 		this.groupded = groupded;
 	}
 
+	@Override
+	public void saveConfiguration(String key, Properties configuration) {
+	}
+
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<definitions targetNamespace="http://uniboard.bfh.ch/" name="UniBoardService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:tns="http://uniboard.bfh.ch/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<definitions targetNamespace="http://uniboard.bfh.ch/" name="UniBoardService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://uniboard.bfh.ch/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 	<types>
 		<xsd:schema>
-			<xsd:import namespace="http://uniboard.bfh.ch/" schemaLocation="UniBoardService_schema1.xsd"/>
+			<xsd:import namespace="http://uniboard.bfh.ch/" schemaLocation="UniBoardService.xsd"/>
 		</xsd:schema>
 		<xsd:schema>
-			<xsd:import namespace="http://uniboard.bfh.ch/data" schemaLocation="UniBoardService_schema2.xsd"/>
+			<xsd:import namespace="http://uniboard.bfh.ch/data" schemaLocation="common.xsd"/>
 		</xsd:schema>
 	</types>
 	<message name="get">

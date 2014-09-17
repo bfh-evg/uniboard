@@ -91,4 +91,46 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 		return this.configurations.get(key);
 	}
 
+	@Override
+	public void saveConfiguration(String key, Properties configuration) {
+
+		Properties props;
+
+		try {
+			javax.naming.InitialContext ic = new javax.naming.InitialContext();
+			props = (Properties) ic.lookup(JNDI_URI);
+		} catch (NamingException ex) {
+			logger.log(Level.SEVERE, "JNDI lookup for '/uniboard/configuration' failed."
+					+ "ConfigurationManager could not be initialized. Exception: {0}",
+					new Object[]{ex});
+			return;
+		}
+		if (props.containsKey(key + ".jndi")) {
+			try {
+				javax.naming.InitialContext ic = new javax.naming.InitialContext();
+				ic.rebind(props.getProperty(key + ".jndi"), configuration);
+				this.configurations.put(key, configuration);
+			} catch (NamingException ex) {
+				logger.log(Level.SEVERE, "JCould not save configuration in the JNDI. Exception: {0}",
+						new Object[]{ex});
+			}
+		} else if (props.containsKey(key + ".external")) {
+			//TODO persist the change to file
+			this.configurations.put(key, configuration);
+		} else {
+			//Try to ceate a new entry in the JNDI
+			try {
+				javax.naming.InitialContext ic = new javax.naming.InitialContext();
+				ic.bind("/uniboard/" + key, configuration);
+				props.put(key + ".jndi", "/uniboard/" + key);
+				ic.rebind(JNDI_URI, props);
+				this.configurations.put(key, configuration);
+			} catch (NamingException ex) {
+				logger.log(Level.SEVERE, "JCould not save configuration in the JNDI. "
+						+ "Please configure a JNDI Entry for the component {0} Exception: {1}",
+						new Object[]{key, ex});
+			}
+		}
+	}
+
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema version="1.0" targetNamespace="http://uniboard.bfh.ch/" xmlns:ns1="http://uniboard.bfh.ch/data" xmlns:tns="http://uniboard.bfh.ch/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<xs:import namespace="http://uniboard.bfh.ch/data" schemaLocation="UniBoardService_schema2.xsd"/>
+	<xs:import namespace="http://uniboard.bfh.ch/data" schemaLocation="common.xsd"/>
 
 	<xs:element name="get" type="tns:get"/>
 

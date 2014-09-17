@@ -24,21 +24,25 @@ import javax.ejb.Singleton;
 @LocalBean
 public class ConfigurationManagerTestBean implements ConfigurationManager {
 
-    private boolean correct = true;
+	private boolean correct = true;
 
-    @Override
-    public Properties getConfiguration(String key) {
-        if (this.correct) {
-            Properties p = new Properties();
-            p.put("section1", "test");
-            p.put("section2", "test2");
-            return p;
-        }
-        return null;
-    }
+	@Override
+	public Properties getConfiguration(String key) {
+		if (this.correct) {
+			Properties p = new Properties();
+			p.put("section1", "test");
+			p.put("section2", "test2");
+			return p;
+		}
+		return null;
+	}
 
-    public void setCorrect(boolean correct) {
-        this.correct = correct;
-    }
+	public void setCorrect(boolean correct) {
+		this.correct = correct;
+	}
+
+	@Override
+	public void saveConfiguration(String key, Properties configuration) {
+	}
 
 }

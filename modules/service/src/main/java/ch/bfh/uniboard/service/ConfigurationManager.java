@@ -25,4 +25,6 @@ public interface ConfigurationManager {
 
 	public Properties getConfiguration(String key);
 
+	public void saveConfiguration(String key, Properties configuration);
+
 }

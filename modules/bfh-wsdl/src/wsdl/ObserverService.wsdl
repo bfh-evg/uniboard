@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions targetNamespace="http://uniboard.bfh.ch/notification/" name="ObserverService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://uniboard.bfh.ch/notification/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" >
+	<types>
+		<xsd:schema>
+			<xsd:import namespace="http://uniboard.bfh.ch/notification/" schemaLocation="ObserverService.xsd"/>
+		</xsd:schema>
+	</types>
+	<message name="notify">
+		<part name="parameters" element="tns:notify"/>
+	</message>
+	<message name="notifyResponse">
+		<part name="parameters" element="tns:notifyResponse"/>
+	</message>
+	<portType name="ObserverService">
+		<operation name="notify">
+			<input message="tns:notify"/>
+			<output message="tns:notifyResponse"/>
+		</operation>
+	</portType>
+	<binding name="ObserverServicePortBinding" type="tns:ObserverService">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+		<operation name="notify">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="ObserverService">
+		<port name="ObserverServicePort" binding="tns:ObserverServicePortBinding">
+			<soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+		</port>
+	</service>
+</definitions>
+
