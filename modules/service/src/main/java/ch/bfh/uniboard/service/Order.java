@@ -11,12 +11,14 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
+
 /**
  * Order allows to indicate the persistence layer what ordering one wishes for the result.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class Order {
+public class Order implements Serializable {
 
 	private final Identifier identifier;
 	//True indicates asc and false desc

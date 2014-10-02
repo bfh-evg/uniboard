@@ -11,8 +11,8 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.SortedSet;
 
 /**
  * A data container for the result of a query and some other attributes. Values should be immutable.
@@ -20,7 +20,7 @@ import java.util.SortedSet;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class ResultContainer {
+public class ResultContainer implements Serializable {
 
 	private final List<Post> result;
 	private Attributes gamma;

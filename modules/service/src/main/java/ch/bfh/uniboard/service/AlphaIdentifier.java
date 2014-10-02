@@ -11,9 +11,14 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class AlphaIdentifier extends Identifier {
+/**
+ *
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ */
+public class AlphaIdentifier extends Identifier implements Serializable {
 
 	public AlphaIdentifier(List<String> parts) {
 		super(parts);

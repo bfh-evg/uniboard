@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public abstract class Identifier {
+public abstract class Identifier implements Serializable {
 
 	private List<String> parts;
 

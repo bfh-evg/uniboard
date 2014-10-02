@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Objects;
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class StringValue implements Value<String> {
+public class StringValue implements Value<String>, Serializable {
 
 	private String value;
 

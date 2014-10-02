@@ -13,30 +13,12 @@ package ch.bfh.uniboard.webservice;
 
 import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.data.AttributesDTO;
-import ch.bfh.uniboard.data.BetweenDTO;
-import ch.bfh.uniboard.data.EqualDTO;
-import ch.bfh.uniboard.data.GreaterDTO;
-import ch.bfh.uniboard.data.GreaterEqualDTO;
-import ch.bfh.uniboard.data.InDTO;
-import ch.bfh.uniboard.data.LessDTO;
 import ch.bfh.uniboard.data.LessEqualDTO;
 import ch.bfh.uniboard.data.MessageIdentifierDTO;
-import ch.bfh.uniboard.data.NotEqualDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
 import ch.bfh.uniboard.data.StringValueDTO;
 import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.Between;
-import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.Equal;
-import ch.bfh.uniboard.service.Greater;
-import ch.bfh.uniboard.service.GreaterEqual;
-import ch.bfh.uniboard.service.In;
-import ch.bfh.uniboard.service.Less;
-import ch.bfh.uniboard.service.LessEqual;
-import ch.bfh.uniboard.service.MessageIdentifier;
-import ch.bfh.uniboard.service.NotEqual;
-import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.StringValue;
 import java.util.ArrayList;
@@ -56,6 +38,7 @@ import org.junit.runner.RunWith;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+//TODO Seperate Transformer Tests from UniBoardServiceTests
 @RunWith(Arquillian.class)
 public class UniBoardServiceImplTest {
 
@@ -82,14 +65,14 @@ public class UniBoardServiceImplTest {
 	@EJB(name = "PostServiceTestBean")
 	PostServiceTestBean postService;
 
-	@EJB(name = "GeterviceTestBean")
+	@EJB(name = "GetServiceTestBean")
 	GetServiceTestBean getService;
 
 	public UniBoardServiceImplTest() {
 	}
 
 	@Test
-	public void testPost1() {
+	public void testPost() {
 		byte[] message = new byte[1];
 		message[0] = 0x16;
 
@@ -119,300 +102,10 @@ public class UniBoardServiceImplTest {
 	}
 
 	/**
-	 * Test if a between constraint works
+	 * Test if the right resultcontainer is transfered
 	 */
 	@Test
-	public void testGet1() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		BetweenDTO constraint = new BetweenDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setLowerBound(string);
-		constraint.setUpperBound(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof Between)) {
-			Assert.fail();
-		}
-		Between bconstraint = (Between) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getStart()).getValue(), "test2");
-		assertEquals(((StringValue) bconstraint.getEnd()).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if a equals constraint works
-	 */
-	@Test
-	public void testGet2() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		EqualDTO constraint = new EqualDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setValue(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof Equal)) {
-			Assert.fail();
-		}
-		Equal bconstraint = (Equal) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if a greater constraint works
-	 */
-	@Test
-	public void testGet3() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		GreaterDTO constraint = new GreaterDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setValue(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof Greater)) {
-			Assert.fail();
-		}
-		Greater bconstraint = (Greater) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if a greaterequals constraint works
-	 */
-	@Test
-	public void testGet4() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		GreaterEqualDTO constraint = new GreaterEqualDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setValue(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof GreaterEqual)) {
-			Assert.fail();
-		}
-		GreaterEqual bconstraint = (GreaterEqual) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if a in constraint works
-	 */
-	@Test
-	public void testGet5() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		InDTO constraint = new InDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.getElement().add(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof In)) {
-			Assert.fail();
-		}
-		In bconstraint = (In) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getSet().get(0)).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if a less constraint works
-	 */
-	@Test
-	public void testGet6() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		LessDTO constraint = new LessDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setValue(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof Less)) {
-			Assert.fail();
-		}
-		Less bconstraint = (Less) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if a lessequals constraint works
-	 */
-	@Test
-	public void testGet7() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		LessEqualDTO constraint = new LessEqualDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setValue(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof LessEqual)) {
-			Assert.fail();
-		}
-		LessEqual bconstraint = (LessEqual) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if a notequal constraint works
-	 */
-	@Test
-	public void testGet8() {
-		//Set the input
-		QueryDTO query = new QueryDTO();
-		NotEqualDTO constraint = new NotEqualDTO();
-		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
-		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setValue(string);
-		query.getConstraint().add(constraint);
-
-		//Setup the expected result
-		ResultContainer expectedResult = new ResultContainer(new ArrayList<ch.bfh.uniboard.service.Post>(), new Attributes());
-		getService.setFeedback(expectedResult);
-
-		ResultContainerDTO result = service.get(query);
-
-		assertEquals(result.getGamma().getAttribute().size(), 0);
-		assertEquals(result.getResult().getPost().size(), 0);
-
-		Query resultingQuery = getService.getInput();
-		assertEquals(resultingQuery.getConstraints().size(), 1);
-		Constraint resultingConstraint = resultingQuery.getConstraints().get(0);
-		if (!(resultingConstraint instanceof NotEqual)) {
-			Assert.fail();
-		}
-		NotEqual bconstraint = (NotEqual) resultingConstraint;
-		assertEquals(((StringValue) bconstraint.getValue()).getValue(), "test2");
-		assertEquals(bconstraint.getIdentifier().getParts().get(0), "test");
-		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
-	}
-
-	/**
-	 * Test if the resultcontainer is translated correctly
-	 */
-	@Test
-	public void testGet9() {
+	public void testGet() {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		LessEqualDTO constraint = new LessEqualDTO();

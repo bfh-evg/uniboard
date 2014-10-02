@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Arrays;
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class ByteArrayValue implements Value<byte[]> {
+public class ByteArrayValue implements Value<byte[]>, Serializable {
 
 	private byte[] value;
 

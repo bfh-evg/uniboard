@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<definitions targetNamespace="http://uniboard.bfh.ch/notification/" name="NotficiationService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://uniboard.bfh.ch/notification/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<definitions targetNamespace="http://uniboard.bfh.ch/notification/" name="NotificationService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://uniboard.bfh.ch/notification/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 	<types>
 		<xsd:schema>
 			<xsd:import namespace="http://uniboard.bfh.ch/notification/" schemaLocation="NotificationService.xsd"/>
@@ -44,7 +44,7 @@
 			</input>
 		</operation>
 	</binding>
-	<service name="NotficiationService">
+	<service name="NotificationService">
 		<port name="NotificationServicePort" binding="tns:NotificationServicePortBinding">
 			<soap:address location="REPLACE_WITH_ACTUAL_URL"/>
 		</port>

@@ -11,6 +11,8 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
+
 /**
  * A constraint allows to restrict the result retrieved from the persistence layer. A constraint consists of an
  * identifier of the element to restrict and other elements depending on the type of constraint.
@@ -18,7 +20,7 @@ package ch.bfh.uniboard.service;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public abstract class Constraint {
+public abstract class Constraint implements Serializable {
 
 	private final Identifier identifier;
 

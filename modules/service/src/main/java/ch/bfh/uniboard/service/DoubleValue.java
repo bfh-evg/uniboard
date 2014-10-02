@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -18,14 +19,13 @@ import java.util.Objects;
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class DoubleValue implements Value<Double> {
+public class DoubleValue implements Value<Double>, Serializable {
 
 	private Double value;
 
 	public DoubleValue(Double value) {
 		this.value = value;
 	}
-
 
 	@Override
 	public Double getValue() {

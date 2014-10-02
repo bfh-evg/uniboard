@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ import java.util.Objects;
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class DateValue implements Value<Date> {
+public class DateValue implements Value<Date>, Serializable {
 
 	private Date value;
 

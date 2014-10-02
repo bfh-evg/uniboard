@@ -2,21 +2,37 @@
 
 ## Basic Description
 
-Describe in few words what can be achieved with this module.
-
+This component provides the "notifying" property for UniBoard. The registration/unregister is implemented as webservice.
+Every post that got accepted is checked if it fits for one of the registered queries and the user if necessary gets
+notified.
+To check if the post matches a registred query this component requires a beta attribute that assigns a unique value to
+each post(e.g. ordered, history).
 ## Services
 
-What services are implemented by this component?
+This component implements the PostService to check accepted posts for matching notifications.
 
 ### Attributes
 
-Document which attributes are added or required by this component.
+For this property are no additional properties needed.
 
 ## Configuration
 
-Describe how the configuration works. Does this component use the the ConfigurationManager or not?
-What are the required fields?
+This component uses the ConfigurationManager. It requires two configurations ("bfh-notification-persistence"
+and "bfh-notification").
+bfh-notification only has one option "unique" which allows to define the beta attribute that
+provides the unique identifier of the post.
+bfh-notification-persistence is used to store and retrieve the registred queries on shutdown/startup.
+This configuration is created automatically is not existent.
 
 ## Example EJB-Descriptor
 
-Give a example of EJB-Descriptor needed for this component.
+	<enterprise-beans>
+		<session>
+			<ejb-name>NotificationService</ejb-name>
+			<ejb-local-ref>
+				<ejb-ref-name>ch.bfh.uniboard.notification.NotificationService/postSuccessor</ejb-ref-name>
+				<local>ch.bfh.uniboard.service.PostService</local>
+				<ejb-link>POSTSERVICE_TO_USE</ejb-link>
+			</ejb-local-ref>
+		</session>
+	</enterprise-beans>

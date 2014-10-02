@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.naming.NamingException;
 
 /**
@@ -29,6 +30,7 @@ import javax.naming.NamingException;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @Singleton
+@Startup
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
 	private static final Logger logger = Logger.getLogger(ConfigurationManagerImpl.class.getName());
@@ -37,7 +39,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	public Map<String, Properties> configurations;
 
 	@PostConstruct
-	public void init() {
+	private void init() {
 		configurations = new HashMap<>();
 		Properties props;
 		try {

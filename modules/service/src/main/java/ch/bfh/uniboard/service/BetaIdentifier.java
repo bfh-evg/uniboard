@@ -11,9 +11,14 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BetaIdentifier extends Identifier {
+/**
+ *
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ */
+public class BetaIdentifier extends Identifier implements Serializable {
 
 	public BetaIdentifier(List<String> parts) {
 		super(parts);

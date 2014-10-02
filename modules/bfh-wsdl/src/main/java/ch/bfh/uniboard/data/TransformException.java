@@ -4,21 +4,21 @@
  * Research Institute for Security in the Information Society, E-Voting Group,
  * Biel, Switzerland.
  *
- * Project UniBoard.
+ * Project Univote.
  *
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard.data;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class UniBoardServiceException extends Exception {
+public class TransformException extends Exception {
 
-	public UniBoardServiceException(String message) {
-		super(message);
+	TransformException(String msg) {
+		super(msg);
 	}
 
 }

@@ -35,6 +35,7 @@
 							<artifactId>bfh-sectioned</artifactId>
 							<artifactId>bfh-grouped-typed</artifactId>
 							<artifactId>bfh-chronological-typed</artifactId>
+							<artifactId>bfh-notification</artifactId>
 						</ejbModule>
 					</modules>
 				</configuration>
@@ -84,6 +85,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bfh-chronological</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-notification</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>

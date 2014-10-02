@@ -11,12 +11,14 @@
  */
 package ch.bfh.uniboard.service;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class Between extends Constraint {
+public class Between extends Constraint implements Serializable {
 
 	private final Value start;
 	private final Value end;
