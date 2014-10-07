@@ -14,7 +14,6 @@ package ch.bfh.uniboard.persistence.mongodb;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.DoubleValue;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.Post;
 import ch.bfh.uniboard.service.StringValue;
@@ -159,8 +158,6 @@ public class PersistedPost extends Post {
 			return new DateValue((Date) o);
 		} else if (o instanceof byte[]) {
 			return new ByteArrayValue((byte[]) o);
-		} else if (o instanceof Double) {
-			return new DoubleValue((Double) o);
 		} else {
 			return null;
 		}

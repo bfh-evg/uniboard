@@ -93,7 +93,6 @@ public class PersistenceServiceTest {
 
 		beta = new Attributes();
 		beta.add("fifth", new StringValue("value5"));
-		beta.add("sixth", new DoubleValue(0.5));
 		beta.add("seventh", new IntegerValue(7));
 		beta.add("eighth", new ByteArrayValue(new byte[]{8, 8}));
 
@@ -113,7 +112,6 @@ public class PersistenceServiceTest {
 
 		beta2 = new Attributes();
 		beta2.add("fifth", new StringValue("value52"));
-		beta2.add("sixth", new DoubleValue(0.52));
 		beta2.add("seventh", new IntegerValue(72));
 		beta2.add("eighth", new ByteArrayValue(new byte[]{8, 8, 2}));
 
@@ -128,8 +126,9 @@ public class PersistenceServiceTest {
 	@After
 	public void tearDown() {
 		//empties the DB after each test
-		conManager.getCollection().remove(pp.toDBObject());
-		conManager.getCollection().remove(pp2.toDBObject());
+		//conManager.getCollection().remove(pp.toDBObject());
+		//conManager.getCollection().remove(pp2.toDBObject());
+		conManager.getCollection().drop();
 	}
 
 	/**
@@ -210,26 +209,6 @@ public class PersistenceServiceTest {
 		List<String> keys = new ArrayList<>();
 		keys.add("second");
 		constraints.add(new Equal(new AlphaIdentifier(keys), new IntegerValue(2)));
-
-		Query q = new Query(constraints);
-		ResultContainer rc = gs.get(q);
-
-		assertEquals(1, rc.getResult().size());
-		assertEquals(pp, rc.getResult().get(0));
-	}
-
-	/**
-	 * Test Equal constraint for Double Type
-	 */
-	@Test
-	public void equalsDoubleQueryTest() {
-		ps.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
-		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-
-		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("sixth");
-		constraints.add(new Equal(new BetaIdentifier(keys), new DoubleValue(0.5)));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -372,31 +351,6 @@ public class PersistenceServiceTest {
 	}
 
 	/**
-	 * Test In constraint for Double Type
-	 */
-	@Test
-	public void inDoubleQueryTest() {
-		ps.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
-		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-
-		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("sixth");
-		List<Value> values = new ArrayList<>();
-		values.add(new DoubleValue(0.5));
-		values.add(new DoubleValue(0.52));
-		values.add(new DoubleValue(0.22));
-		constraints.add(new In(new BetaIdentifier(keys), values));
-		Query q = new Query(constraints);
-		ResultContainer rc = gs.get(q);
-
-		assertEquals(2, rc.getResult().size());
-
-		assertTrue(rc.getResult().contains(pp));
-		assertTrue(rc.getResult().contains(pp2));
-	}
-
-	/**
 	 * Test In constraint for byte[] Type
 	 */
 	@Test
@@ -484,27 +438,6 @@ public class PersistenceServiceTest {
 		assertEquals(1, rc.getResult().size());
 
 		assertTrue(rc.getResult().contains(pp));
-	}
-
-	/**
-	 * Test Between constraint for Double Type
-	 */
-	@Test
-	public void betweenDoubleQueryTest() {
-		ps.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
-		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-
-		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("sixth");
-		constraints.add(new Between(new BetaIdentifier(keys), new DoubleValue(0.1), new DoubleValue(0.6)));
-		Query q = new Query(constraints);
-		ResultContainer rc = gs.get(q);
-
-		assertEquals(2, rc.getResult().size());
-
-		assertTrue(rc.getResult().contains(pp));
-		assertTrue(rc.getResult().contains(pp2));
 	}
 
 	/**
@@ -654,57 +587,6 @@ public class PersistenceServiceTest {
 	}
 
 	/**
-	 * Test Less, LessEqual, Greater, GreaterEqual queries for Double
-	 */
-	@Test
-	public void greaterLessDoubleQueryTest() {
-		ps.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
-		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-
-		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("sixth");
-
-		//test greater
-		constraints.add(new Greater(new BetaIdentifier(keys), new DoubleValue(0.5)));
-		Query q = new Query(constraints);
-		ResultContainer rc = gs.get(q);
-
-		assertEquals(1, rc.getResult().size());
-		assertTrue(rc.getResult().contains(pp2));
-
-		//test greater equals
-		constraints.clear();
-		constraints.add(new GreaterEqual(new BetaIdentifier(keys), new DoubleValue(0.5)));
-		q = new Query(constraints);
-		rc = gs.get(q);
-
-		assertEquals(2, rc.getResult().size());
-		assertTrue(rc.getResult().contains(pp));
-		assertTrue(rc.getResult().contains(pp2));
-
-		//test less
-		constraints.clear();
-		constraints.add(new Less(new BetaIdentifier(keys), new DoubleValue(0.52)));
-		q = new Query(constraints);
-		rc = gs.get(q);
-
-		assertEquals(1, rc.getResult().size());
-		assertTrue(rc.getResult().contains(pp));
-
-		//test less equals
-		constraints.clear();
-		constraints.add(new LessEqual(new BetaIdentifier(keys), new DoubleValue(0.52)));
-		q = new Query(constraints);
-		rc = gs.get(q);
-
-		assertEquals(2, rc.getResult().size());
-		assertTrue(rc.getResult().contains(pp));
-		assertTrue(rc.getResult().contains(pp2));
-
-	}
-
-	/**
 	 * Test Less, LessEqual, Greater, GreaterEqual queries for byte[]
 	 */
 	@Test
@@ -841,19 +723,6 @@ public class PersistenceServiceTest {
 		keys5.add("fifth");
 		constraints.add(new NotEqual(new BetaIdentifier(keys5), new StringValue("notthisstring")));
 
-		//Double In
-		List<String> keys6 = new ArrayList<>();
-		keys6.add("sixth");
-		List<Value> values = new ArrayList<>();
-		values.add(new DoubleValue(0.2));
-		values.add(new DoubleValue(0.5));
-		values.add(new DoubleValue(0.9));
-		values.add(new DoubleValue(1.2));
-		values.add(new DoubleValue(1.5));
-		values.add(new DoubleValue(1.8));
-		values.add(new DoubleValue(2.1));
-		constraints.add(new In(new BetaIdentifier(keys6), values));
-
 		//Integer Between
 		List<String> keys7 = new ArrayList<>();
 		keys7.add("seventh");
@@ -912,9 +781,7 @@ public class PersistenceServiceTest {
 		List<String> keys = new ArrayList<>();
 		keys.add("sixth");
 		List<Value> values = new ArrayList<>();
-		values.add(new DoubleValue(0.2));
 		values.add(new IntegerValue(5));
-		values.add(new DoubleValue(0.9));
 		values.add(new StringValue("1.5"));
 		constraints.add(new In(new BetaIdentifier(keys), values));
 

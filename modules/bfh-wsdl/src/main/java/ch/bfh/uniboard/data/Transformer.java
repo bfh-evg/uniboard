@@ -18,7 +18,6 @@ import ch.bfh.uniboard.service.Between;
 import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.DoubleValue;
 import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.Greater;
 import ch.bfh.uniboard.service.GreaterEqual;
@@ -73,9 +72,6 @@ public class Transformer {
 		} else if (valueDTO instanceof DateValueDTO) {
 			DateValueDTO tmpValue = (DateValueDTO) valueDTO;
 			return new DateValue(tmpValue.getValue().toGregorianCalendar().getTime());
-		} else if (valueDTO instanceof DoubleValueDTO) {
-			DoubleValueDTO tmpValue = (DoubleValueDTO) valueDTO;
-			return new DoubleValue(tmpValue.getValue());
 		} else if (valueDTO instanceof IntegerValueDTO) {
 			IntegerValueDTO tmpValue = (IntegerValueDTO) valueDTO;
 			return new IntegerValue(tmpValue.getValue());
@@ -106,9 +102,6 @@ public class Transformer {
 						tmpValue.getValue().toString());
 				throw new TransformException("Could not convert date to gregorian calendar");
 			}
-		} else if (value instanceof DoubleValue) {
-			DoubleValue tmpValue = (DoubleValue) value;
-			return new DoubleValueDTO(tmpValue.getValue());
 		} else if (value instanceof IntegerValue) {
 			IntegerValue tmpValue = (IntegerValue) value;
 			return new IntegerValueDTO(tmpValue.getValue());

@@ -18,7 +18,6 @@ import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.ConfigurationManager;
 import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.DoubleValue;
 import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.GetService;
 import ch.bfh.uniboard.service.IntegerValue;
@@ -43,6 +42,7 @@ import ch.bfh.unicrypt.helper.hash.HashMethod;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
+import ch.bfh.unicrypt.math.algebra.general.classes.Pair;
 import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import ch.bfh.unicrypt.math.algebra.multiplicative.classes.GStarModElement;
@@ -51,14 +51,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JsonLoader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -265,13 +267,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 		BigInteger generator = key.get("g").bigIntegerValue();
 		GStarModElement g = g_q.getElement(generator);
 
-		Element messageElement;
-		try {
-			messageElement = this.createMessageElement(message, alpha);
-		} catch (UnsupportedEncodingException ex) {
-			logger.log(Level.SEVERE, "Error could not convert message to an unicrypt element.", ex);
-			return false;
-		}
+		Element messageElement = this.createMessageElement(message, alpha);
 
 		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
 				messageElement.getSet(), g, HASH_METHOD);
@@ -288,15 +284,14 @@ public class AccessControlledService extends PostComponent implements PostServic
 		return false;
 	}
 
-	protected Element createMessageElement(byte[] message, Attributes alpha) throws UnsupportedEncodingException {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.LETTERS);
+	protected Element createMessageElement(byte[] message, Attributes alpha) {
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
 		Z z = Z.getInstance();
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-		List<Element> elements = new ArrayList<>();
 
 		Element messageElement = byteSpace.getElement(message);
-		elements.add(messageElement);
 
+		List<Element> alphaElements = new ArrayList<>();
 		//itterate over alpha until one reaches the property = signature
 		for (Map.Entry<String, Value> e : alpha.getEntries()) {
 			if (e.getKey().equals(ATTRIBUTE_NAME_SIG)) {
@@ -305,27 +300,27 @@ public class AccessControlledService extends PostComponent implements PostServic
 			Element tmp;
 			if (e.getValue() instanceof ByteArrayValue) {
 				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-				elements.add(tmp);
+				alphaElements.add(tmp);
 			} else if (e.getValue() instanceof DateValue) {
-				//TODO
-				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				elements.add(tmp);
-			} else if (e.getValue() instanceof DoubleValue) {
-				//TODO
-				//tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				//elements.add(tmp);
+				TimeZone timeZone = TimeZone.getTimeZone("UTC");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+				dateFormat.setTimeZone(timeZone);
+				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
+				tmp = stringSpace.getElement(stringDate);
+				alphaElements.add(tmp);
 			} else if (e.getValue() instanceof IntegerValue) {
 				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-				elements.add(tmp);
+				alphaElements.add(tmp);
 			} else if (e.getValue() instanceof StringValue) {
 				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				elements.add(tmp);
+				alphaElements.add(tmp);
 			} else {
 				logger.log(Level.SEVERE, "Unsupported Value type.");
 			}
 
 		}
-		ImmutableArray<Element> immuElements = ImmutableArray.getInstance(elements);
-		return Tuple.getInstance(immuElements);
+		ImmutableArray<Element> immuElements = ImmutableArray.getInstance(alphaElements);
+		Element alphaElement = Tuple.getInstance(immuElements);
+		return Pair.getInstance(messageElement, alphaElement);
 	}
 }

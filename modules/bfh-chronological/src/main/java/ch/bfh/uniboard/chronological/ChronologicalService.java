@@ -42,7 +42,9 @@ public class ChronologicalService extends PostComponent implements PostService {
 
 	@Override
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
-		beta.add(ATTRIBUTE_NAME, new DateValue(new Date()));
+		long time = new Date().getTime();
+		time = 1000 * (time / 1000);
+		beta.add(ATTRIBUTE_NAME, new DateValue(new Date(time)));
 		return beta;
 	}
 

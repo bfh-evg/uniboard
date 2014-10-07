@@ -15,6 +15,7 @@ import ch.bfh.uniboard.data.PostDTO;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -29,6 +30,7 @@ public class ObserverClientImpl implements ObserverClient {
 	private static final Logger logger = Logger.getLogger(ObserverClientImpl.class.getName());
 
 	@Override
+	@Asynchronous
 	public void notifyObserver(String endpointUrl, PostDTO post) {
 		ObserverService observer;
 		try {

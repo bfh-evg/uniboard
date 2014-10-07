@@ -15,7 +15,6 @@ import ch.bfh.uniboard.service.Between;
 import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.DoubleValue;
 import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.Greater;
 import ch.bfh.uniboard.service.GreaterEqual;
@@ -84,25 +83,6 @@ public class TransformerTest {
 			}
 			DateValueDTO dresult = (DateValueDTO) result;
 			assertEquals(dresult.getValue().toGregorianCalendar().getTime(), date);
-		} catch (TransformException ex) {
-			Assert.fail();
-		}
-	}
-
-	/**
-	 * Test for a double value
-	 */
-	@Test
-	public void testConvertValueToDTO3() {
-		try {
-			Double doubl = 1.0;
-			DoubleValue dvalue = new DoubleValue(doubl);
-			ValueDTO result = Transformer.convertValueToDTO(dvalue);
-			if (!(result instanceof DoubleValueDTO)) {
-				Assert.fail();
-			}
-			DoubleValueDTO dresult = (DoubleValueDTO) result;
-			assertEquals(dresult.getValue(), doubl, 0.0);
 		} catch (TransformException ex) {
 			Assert.fail();
 		}
@@ -196,25 +176,6 @@ public class TransformerTest {
 			DateValue dresult = (DateValue) result;
 			assertEquals(value.toGregorianCalendar().getTime(), dresult.getValue());
 		} catch (TransformException | DatatypeConfigurationException ex) {
-			Assert.fail();
-		}
-	}
-
-	/**
-	 * Transform a DoubleValueDTO
-	 */
-	@Test
-	public void testConvertValueDTOToValue3() {
-		try {
-			Double value = 1.9;
-			DoubleValueDTO bvalue = new DoubleValueDTO(value);
-			Value result = Transformer.convertValueDTOToValue(bvalue);
-			if (!(result instanceof DoubleValue)) {
-				Assert.fail();
-			}
-			DoubleValue dresult = (DoubleValue) result;
-			assertEquals(value, dresult.getValue(), 0.0);
-		} catch (TransformException ex) {
 			Assert.fail();
 		}
 	}

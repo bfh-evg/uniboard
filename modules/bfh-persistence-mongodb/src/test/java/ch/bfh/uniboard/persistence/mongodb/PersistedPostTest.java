@@ -14,7 +14,6 @@ package ch.bfh.uniboard.persistence.mongodb;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.DoubleValue;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;
 import com.mongodb.DBObject;
@@ -23,7 +22,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -57,7 +57,6 @@ public class PersistedPostTest {
 
 		beta = new Attributes();
 		beta.add("fifth", new StringValue("value5"));
-		beta.add("sixth", new DoubleValue(0.5));
 		beta.add("seventh", new IntegerValue(7));
 		beta.add("eighth", new ByteArrayValue(new byte[]{8, 8}));
 
@@ -129,12 +128,10 @@ public class PersistedPostTest {
 		assertEquals(alpha.getValue("fourth").getValue(), ((DBObject) dbObj.get("alpha")).get("fourth"));
 
 		assertTrue(((DBObject) dbObj.get("beta")).containsField("fifth"));
-		assertTrue(((DBObject) dbObj.get("beta")).containsField("sixth"));
 		assertTrue(((DBObject) dbObj.get("beta")).containsField("seventh"));
 		assertTrue(((DBObject) dbObj.get("beta")).containsField("eighth"));
 
 		assertEquals(beta.getValue("fifth").getValue(), ((DBObject) dbObj.get("beta")).get("fifth"));
-		assertEquals(beta.getValue("sixth").getValue(), ((DBObject) dbObj.get("beta")).get("sixth"));
 		assertEquals(beta.getValue("seventh").getValue(), ((DBObject) dbObj.get("beta")).get("seventh"));
 		assertEquals(beta.getValue("eighth").getValue(), ((DBObject) dbObj.get("beta")).get("eighth"));
 
@@ -160,7 +157,6 @@ public class PersistedPostTest {
 		assertEquals(this.alpha.getValue("fourth"), newPP.getAlpha().getValue("fourth"));
 
 		assertEquals(this.beta.getValue("fifth"), newPP.getBeta().getValue("fifth"));
-		assertEquals(this.beta.getValue("sixth"), newPP.getBeta().getValue("sixth"));
 		assertEquals(this.beta.getValue("seventh"), newPP.getBeta().getValue("seventh"));
 		assertEquals(this.beta.getValue("eighth"), newPP.getBeta().getValue("eighth"));
 	}

@@ -38,16 +38,6 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="doubleValue">
-		<xs:complexContent>
-			<xs:extension base="tns:value">
-				<xs:sequence>
-					<xs:element name="value" type="xs:double"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
 	<xs:complexType name="integerValue">
 		<xs:complexContent>
 			<xs:extension base="tns:value">
