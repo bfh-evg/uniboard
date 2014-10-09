@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
+		 version = "3.1"
+		 xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+    <enterprise-beans>
+        <session>
+            <ejb-name>OrderedServiceTestBean</ejb-name>
+            <session-type>Singleton</session-type>
+            <depends-on>
+                <ejb-name>ConfigurationManagerTestBean</ejb-name>
+            </depends-on>
+            <ejb-local-ref>
+                <ejb-ref-name>ch.bfh.uniboard.ordered.OrderedService/postSuccessor</ejb-ref-name>
+                <local>ch.bfh.uniboard.service.PostService</local>
+                <ejb-link>PostServiceTestBean</ejb-link>
+            </ejb-local-ref>
+        </session>
+    </enterprise-beans>
+</ejb-jar>
