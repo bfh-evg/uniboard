@@ -31,5 +31,18 @@
 			<artifactId>json-schema-validator</artifactId>
 			<version>2.2.5</version>
 		</dependency>
+		<!-- Needed due to a conflict of guava in gl 3.1.2.2 and the json-schema-validator -->
+		<dependency>
+			<groupId>org.glassfish.main.extras</groupId>
+			<artifactId>glassfish-embedded-all</artifactId>
+			<version>4.1-b12</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>java.net-promoted</id>
+			<url>https://maven.java.net/content/groups/promoted</url>
+		</repository>
+	</repositories>
 </project>

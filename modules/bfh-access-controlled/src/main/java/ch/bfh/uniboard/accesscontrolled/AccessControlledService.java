@@ -15,7 +15,6 @@ import ch.bfh.uniboard.service.AlphaIdentifier;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.BetaIdentifier;
 import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.ConfigurationManager;
 import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.Equal;
@@ -30,9 +29,11 @@ import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
+import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
 import ch.bfh.unicrypt.helper.Alphabet;
-import ch.bfh.unicrypt.helper.array.classes.ImmutableArray;
+import ch.bfh.unicrypt.helper.MathUtil;
+import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.ByteArrayToByteArray;
@@ -42,6 +43,7 @@ import ch.bfh.unicrypt.helper.hash.HashMethod;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
+import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZMod;
 import ch.bfh.unicrypt.math.algebra.general.classes.Pair;
 import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
@@ -74,17 +76,18 @@ import javax.ejb.Stateless;
 @Stateless
 public class AccessControlledService extends PostComponent implements PostService {
 
-	private static final String ATTRIBUTE_NAME_KEY = "key";
+	private static final String ATTRIBUTE_NAME_CRYPTO = "crypto";
+	private static final String ATTRIBUTE_NAME_PUBLICKEY = "publickey";
 	private static final String ATTRIBUTE_NAME_SIG = "signature";
 	private static final String GROUPED = "group";
 	private static final String SECTIONED = "section";
 	private static final String CHRONOLOGICAL = "timestamp";
 	private static final String STARTTIME = "startTime";
 	private static final String ENDTIME = "endTime";
-	private static final String AUTH = "authorization";
+	private static final String AUTH = "accessRight";
 	private static final String AMOUNT = "amount";
 
-	private static final HashMethod HASH_METHOD = HashMethod.getInstance(
+	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(
 			HashAlgorithm.SHA256,
 			ConvertMethod.getInstance(
 					BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
@@ -100,9 +103,6 @@ public class AccessControlledService extends PostComponent implements PostServic
 	@EJB
 	GetService getService;
 
-	@EJB
-	ConfigurationManager configurationManager;
-
 	@Override
 	protected PostService getPostSuccessor() {
 		return this.postSuccessor;
@@ -116,9 +116,9 @@ public class AccessControlledService extends PostComponent implements PostServic
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> sListKey = new ArrayList<>();
 		sListKey.add(AUTH);
-		sListKey.add(ATTRIBUTE_NAME_KEY);
-		sListKey.add("publickey");
-		Constraint cKey = new Equal(new MessageIdentifier(sListKey), alpha.getValue(ATTRIBUTE_NAME_KEY));
+		sListKey.add(ATTRIBUTE_NAME_CRYPTO);
+		sListKey.add(ATTRIBUTE_NAME_PUBLICKEY);
+		Constraint cKey = new Equal(new MessageIdentifier(sListKey), alpha.getValue(ATTRIBUTE_NAME_CRYPTO));
 		constraints.add(cKey);
 
 		//Contraint of the group in the message
@@ -151,8 +151,9 @@ public class AccessControlledService extends PostComponent implements PostServic
 		ResultContainer rc = this.getService.get(q);
 		if (rc.getResult().isEmpty() || rc.getResult().size() != 1) {
 			logger.log(Level.INFO, "No authorization for publickey {0}" + " section {1}" + " group {2}",
-					new Object[]{alpha.getValue(ATTRIBUTE_NAME_KEY), alpha.getValue(SECTIONED), alpha.getValue(GROUPED)});
-			beta.add(Attributes.ERROR,
+					new Object[]{alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY), alpha.getValue(SECTIONED),
+						alpha.getValue(GROUPED)});
+			beta.add(Attributes.REJECTED,
 					new StringValue("BAC-001 No authorization for this publickey."));
 			return beta;
 		}
@@ -163,8 +164,8 @@ public class AccessControlledService extends PostComponent implements PostServic
 			JsonNode data = JsonLoader.fromString(new String(authPost.getMessage(), Charset.forName("UTF-8")));
 			ObjectMapper mapper = new ObjectMapper();
 
-			//TODO Check the signature
-			JsonNode key = data.get(ATTRIBUTE_NAME_KEY);
+			//Check the signature
+			JsonNode key = data.get(ATTRIBUTE_NAME_CRYPTO);
 			String type = key.get("type").textValue();
 
 			boolean signature = false;
@@ -187,7 +188,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 				logger.log(Level.INFO,
 						"Signature for group {0} and key  {1} is not valid.",
 						new Object[]{alpha.getValue(GROUPED), key.get("publickey").asText()});
-				beta.add(Attributes.ERROR,
+				beta.add(Attributes.REJECTED,
 						new StringValue("BAC-002 Signature is not valid."));
 				return beta;
 			}
@@ -198,21 +199,21 @@ public class AccessControlledService extends PostComponent implements PostServic
 				if (startDate.after(currentPostTime.getValue())) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} is not active yet. Start at {3}",
-							new Object[]{alpha.getValue(ATTRIBUTE_NAME_KEY), alpha.getValue(SECTIONED),
+							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), startDate});
-					beta.add(Attributes.ERROR,
+					beta.add(Attributes.REJECTED,
 							new StringValue("BAC-003 Authorization is not active yet."));
 					return beta;
 				}
 			}
-			if (data.has(STARTTIME)) {
+			if (data.has(ENDTIME)) {
 				Date endDate = mapper.readValue(data.get(ENDTIME).traverse(), Date.class);
 				if (endDate.before(currentPostTime.getValue())) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} has expired at {3}.",
-							new Object[]{alpha.getValue(ATTRIBUTE_NAME_KEY), alpha.getValue(SECTIONED),
+							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), endDate});
-					beta.add(Attributes.ERROR,
+					beta.add(Attributes.REJECTED,
 							new StringValue("BAC-004 Authorization expired."));
 					return beta;
 				}
@@ -228,7 +229,8 @@ public class AccessControlledService extends PostComponent implements PostServic
 				Constraint cAGroup = new Equal(new AlphaIdentifier(GROUPED), alpha.getValue(GROUPED));
 				constraintsAmount.add(cAGroup);
 
-				Constraint cAKey = new Equal(new AlphaIdentifier(ATTRIBUTE_NAME_KEY), alpha.getValue(ATTRIBUTE_NAME_KEY));
+				Constraint cAKey = new Equal(new AlphaIdentifier(ATTRIBUTE_NAME_PUBLICKEY),
+						alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
 				constraintsAmount.add(cAKey);
 
 				Query qAmount = new Query(constraintsAmount);
@@ -237,9 +239,9 @@ public class AccessControlledService extends PostComponent implements PostServic
 				if (rcAmount.getResult().size() >= data.get(AMOUNT).asInt()) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} has used the allowed posts {3}.",
-							new Object[]{alpha.getValue(ATTRIBUTE_NAME_KEY), alpha.getValue(SECTIONED),
+							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), data.get("amount").asInt()});
-					beta.add(Attributes.ERROR,
+					beta.add(Attributes.REJECTED,
 							new StringValue("BAC-005 Amount of allowed posts used up."));
 					return beta;
 				}
@@ -257,14 +259,30 @@ public class AccessControlledService extends PostComponent implements PostServic
 	}
 
 	protected boolean checkRSASignature(JsonNode key, byte[] message, Attributes alpha) {
-		return false;
+		String rsaPublicKey = key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue();
+		BigInteger[] rsaPublicKeyBI = MathUtil.unpair(new BigInteger(rsaPublicKey));
+		if (rsaPublicKeyBI.length != 2) {
+			logger.log(Level.INFO, "RSA public key does not consist of 2 big integers.");
+			return false;
+		}
+		ZMod n = ZMod.getInstance(rsaPublicKeyBI[1]);
+
+		Element messageElement = this.createMessageElement(message, alpha);
+
+		RSASignatureScheme rsa = RSASignatureScheme.getInstance(messageElement.getSet(), n, HASH_METHOD);
+		Element rsaPublicKeyElement = rsa.getVerificationKeySpace().getElement(rsaPublicKeyBI[0]);
+
+		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
+		Element signatureElement = rsa.getSignatureSpace().getElementFrom(signature);
+
+		return rsa.verify(rsaPublicKeyElement, messageElement, signatureElement).getValue();
 	}
 
 	protected boolean checkDLSignature(JsonNode key, byte[] message, Attributes alpha) {
-		BigInteger modulus = key.get("p").bigIntegerValue();
-		BigInteger orderFactor = key.get("q").bigIntegerValue();
+		BigInteger modulus = new BigInteger(key.get("p").textValue());
+		BigInteger orderFactor = new BigInteger(key.get("q").textValue());
 		GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
-		BigInteger generator = key.get("g").bigIntegerValue();
+		BigInteger generator = new BigInteger(key.get("g").textValue());
 		GStarModElement g = g_q.getElement(generator);
 
 		Element messageElement = this.createMessageElement(message, alpha);
@@ -272,10 +290,11 @@ public class AccessControlledService extends PostComponent implements PostServic
 		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
 				messageElement.getSet(), g, HASH_METHOD);
 
-		Element publicKey = g;
+		Element publicKey = schnorr.getVerificationKeySpace()
+				.getElement(new BigInteger(key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue()));
 
 		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
-		Element signatureElement = schnorr.getSignatureKeySpace().getElementFrom(signature);
+		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
 
 		return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
 	}
@@ -319,7 +338,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 			}
 
 		}
-		ImmutableArray<Element> immuElements = ImmutableArray.getInstance(alphaElements);
+		DenseArray immuElements = DenseArray.getInstance(alphaElements);
 		Element alphaElement = Tuple.getInstance(immuElements);
 		return Pair.getInstance(messageElement, alphaElement);
 	}

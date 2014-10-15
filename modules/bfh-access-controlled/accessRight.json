@@ -1,13 +1,13 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema",
-	"title": "authorization",
+	"title": "accessRight",
 	"type": "object",
-	"id": "http://uniboard.bfh.ch/authorization",
+	"id": "http://uniboard.bfh.ch/accessRight",
 	"properties": {
 		"group": {
 			"type": "string"
 		},
-		"key": {
+		"crypto": {
 			"type": "object",
 			"oneOf": [
 				{

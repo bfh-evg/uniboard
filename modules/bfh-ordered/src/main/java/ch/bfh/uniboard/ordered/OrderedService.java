@@ -32,40 +32,40 @@ import javax.ejb.Singleton;
 @Singleton
 public class OrderedService implements PostService {
 
-    private static final String ATTRIBUTE_NAME = "order";
-    private static final String CONFIG_NAME = "bfh-ordered";
-    private static final String SECTIONED_NAME = "section";
-    protected Properties sectionHeads;
+	private static final String ATTRIBUTE_NAME = "rank";
+	private static final String CONFIG_NAME = "bfh-ordered";
+	private static final String SECTIONED_NAME = "section";
+	protected Properties sectionHeads;
 
-    @EJB
-    PostService postSuccessor;
+	@EJB
+	PostService postSuccessor;
 
-    @EJB
-    ConfigurationManager configurationManager;
+	@EJB
+	ConfigurationManager configurationManager;
 
-    @Override
-    public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
-        Value sectionValue = alpha.getValue(SECTIONED_NAME);
-        String section = ((StringValue) sectionValue).getValue();
-        String orderTmp = this.sectionHeads.getProperty(section, "0");
-        Integer order = new Integer(orderTmp);
-        order++;
-        beta.add(ATTRIBUTE_NAME, new IntegerValue(order));
-        Attributes newBeta = this.postSuccessor.post(message, alpha, beta);
-        //If no error happend further bellow safe the new head
-        if (!(newBeta.getKeys().contains(Attributes.ERROR) || newBeta.getKeys().contains(Attributes.REJECTED))) {
-            this.sectionHeads.put(section, Integer.toString(order));
-        }
-        return newBeta;
-    }
+	@Override
+	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
+		Value sectionValue = alpha.getValue(SECTIONED_NAME);
+		String section = ((StringValue) sectionValue).getValue();
+		String orderTmp = this.sectionHeads.getProperty(section, "0");
+		Integer order = new Integer(orderTmp);
+		order++;
+		beta.add(ATTRIBUTE_NAME, new IntegerValue(order));
+		Attributes newBeta = this.postSuccessor.post(message, alpha, beta);
+		//If no error happend further bellow safe the new head
+		if (!(newBeta.getKeys().contains(Attributes.ERROR) || newBeta.getKeys().contains(Attributes.REJECTED))) {
+			this.sectionHeads.put(section, Integer.toString(order));
+		}
+		return newBeta;
+	}
 
-    @PostConstruct
-    protected void init() {
-        this.sectionHeads = configurationManager.getConfiguration(CONFIG_NAME);
-    }
+	@PostConstruct
+	protected void init() {
+		this.sectionHeads = configurationManager.getConfiguration(CONFIG_NAME);
+	}
 
-    @PreDestroy
-    protected void save() {
-        configurationManager.saveConfiguration(CONFIG_NAME, sectionHeads);
-    }
+	@PreDestroy
+	protected void save() {
+		configurationManager.saveConfiguration(CONFIG_NAME, sectionHeads);
+	}
 }

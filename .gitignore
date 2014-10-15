@@ -39,3 +39,4 @@ nb-configuration.xml
 /modules/bfh-notification/target/
 /modules/bfh-chronological/target
 /modules/bfh-ordered/target/
+/modules/bfh-access-controlled/target/

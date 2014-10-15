@@ -40,7 +40,7 @@ public class NotifyingService extends PostComponent implements PostService {
 
 	private static final String CONFIG_NAME = "bfh-notification";
 	private static final Logger logger = Logger.getLogger(NotifyingService.class.getName());
-	private static final String UNIQUE_ATTRIBUTE = "unique";
+	private static final String UNIQUE_ATTRIBUTE = "rank";
 
 	@EJB
 	PostService postSuccessor;
