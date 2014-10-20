@@ -32,6 +32,12 @@ public class Post implements Serializable {
 	public Post() {
 	}
 
+	public Post(byte[] message, Attributes alpha, Attributes beta) {
+		this.message = message;
+		this.alpha = alpha;
+		this.beta = beta;
+	}
+
 	public byte[] getMessage() {
 		return message;
 	}

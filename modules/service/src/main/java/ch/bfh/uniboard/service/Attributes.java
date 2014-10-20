@@ -116,7 +116,13 @@ public class Attributes implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Attributes{" + "map=" + map + '}';
+		StringBuilder builder = new StringBuilder();
+		for (String key : map.keySet()) {
+			if (builder.length() > 0) {
+				builder.append(", ");
+			}
+			builder.append(key).append("=").append(map.get(key));
+		}
+		return "Attributes{" + builder + "}";
 	}
-
 }
