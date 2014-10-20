@@ -67,10 +67,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 	) {
 
 		try {
-			Attributes alphaIntern = new Attributes();
-			for (AttributeDTO e : alpha.getAttribute()) {
-				alphaIntern.add(e.getKey(), Transformer.convertValueDTOToValue(e.getValue()));
-			}
+			Attributes alphaIntern = Transformer.convertAttributesDTOtoAttributes(alpha);
 			Attributes betaIntern = new Attributes();
 
 			betaIntern = this.postSuccessor.post(message, alphaIntern, betaIntern);

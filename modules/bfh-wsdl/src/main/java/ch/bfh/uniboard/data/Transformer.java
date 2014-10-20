@@ -64,6 +64,15 @@ public class Transformer {
 		return aDTO;
 	}
 
+	static public Attributes convertAttributesDTOtoAttributes(AttributesDTO attributesDTO) throws TransformException {
+
+		Attributes attributes = new Attributes();
+		for (AttributesDTO.AttributeDTO attr : attributesDTO.getAttribute()) {
+			attributes.add(attr.getKey(), Transformer.convertValueDTOToValue(attr.getValue()));
+		}
+		return attributes;
+	}
+
 	static public Value convertValueDTOToValue(ValueDTO valueDTO) throws TransformException {
 
 		if (valueDTO instanceof ByteArrayValueDTO) {
@@ -197,12 +206,12 @@ public class Transformer {
 		return result2;
 	}
 
-	public static ResultContainerDTO convertResultContainertoResultContainerDTO(ResultContainer resultConatainer)
+	public static ResultContainerDTO convertResultContainertoResultContainerDTO(ResultContainer resultContainer)
 			throws TransformException {
 
 		ResultContainerDTO result = new ResultContainerDTO(
-				Transformer.convertResulttoResultDTO(resultConatainer.getResult()),
-				Transformer.convertAttributesToDTO(resultConatainer.getGamma()));
+				Transformer.convertResulttoResultDTO(resultContainer.getResult()),
+				Transformer.convertAttributesToDTO(resultContainer.getGamma()));
 		return result;
 	}
 }
