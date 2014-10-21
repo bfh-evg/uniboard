@@ -13,6 +13,7 @@ package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Wrapper for the byte array variables
@@ -56,7 +57,7 @@ public class ByteArrayValue implements Value<byte[]>, Serializable {
 
 	@Override
 	public String toString() {
-		return "ByteArrayValue{" + "value=" + value + '}';
+		return "ByteArrayValue{" + "value=" + DatatypeConverter.printBase64Binary(value) + '}';
 	}
 
 }
