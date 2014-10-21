@@ -61,7 +61,12 @@ public class OrderedService implements PostService {
 
 	@PostConstruct
 	protected void init() {
-		this.sectionHeads = configurationManager.getConfiguration(CONFIG_NAME);
+		Properties tmp = configurationManager.getConfiguration(CONFIG_NAME);
+		if (tmp == null) {
+			this.sectionHeads = new Properties();
+		} else {
+			this.sectionHeads = tmp;
+		}
 	}
 
 	@PreDestroy
