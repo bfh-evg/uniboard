@@ -74,4 +74,16 @@ public class Query implements Serializable {
 		return limit;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (Constraint constraint : constraints) {
+			if (builder.length() > 0) {
+				builder.append(", ");
+			}
+			builder.append(constraint.getIdentifier());
+		}
+		return "Query{" + "constraints=" + builder + ", limit=" + limit + "}";
+	}
+
 }

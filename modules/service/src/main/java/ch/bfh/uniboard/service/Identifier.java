@@ -58,4 +58,5 @@ public abstract class Identifier implements Serializable {
 		}
 		return builder.toString();
 	}
+
 }

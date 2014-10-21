@@ -14,6 +14,7 @@ package ch.bfh.uniboard.service;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * A post represents a posted message and all belonging attributes.
@@ -94,6 +95,8 @@ public class Post implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Post{" + "message=" + Arrays.toString(message) + ", alpha=" + alpha + ", beta=" + beta + '}';
+		return "Post{" + "message=" + DatatypeConverter.printBase64Binary(message)
+				+ ", alpha=" + alpha + ", beta=" + beta + '}';
 	}
+
 }
