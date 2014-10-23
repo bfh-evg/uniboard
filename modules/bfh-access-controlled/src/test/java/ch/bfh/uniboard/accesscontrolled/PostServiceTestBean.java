@@ -36,6 +36,8 @@ public class PostServiceTestBean implements PostService {
 	}
 
 	public ch.bfh.uniboard.service.Post getLastPost() {
-		return lastPost;
+		ch.bfh.uniboard.service.Post retunPost = this.lastPost;
+		this.lastPost = null;
+		return retunPost;
 	}
 }

@@ -24,6 +24,18 @@
 		<alt-dd>META-INF/chronological-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
+		<ejb>bfh-ordered-1.0.jar</ejb>
+		<alt-dd>META-INF/ordered-service-descriptor.xml</alt-dd>
+	</module>
+	<module>
+		<ejb>bfh-certified-posting-1.0.jar</ejb>
+		<alt-dd>META-INF/certified-posting-service-descriptor.xml</alt-dd>
+	</module>
+	<module>
+		<ejb>bfh-access-controlled-1.0.jar</ejb>
+		<alt-dd>META-INF/access-controlled-service-descriptor.xml</alt-dd>
+	</module>
+	<module>
 		<ejb>bfh-notification-1.0.jar</ejb>
 		<alt-dd>META-INF/notification-service-descriptor.xml</alt-dd>
 	</module>

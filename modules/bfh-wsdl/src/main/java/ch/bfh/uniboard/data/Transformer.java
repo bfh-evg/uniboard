@@ -108,7 +108,7 @@ public class Transformer {
 				return tmpValueDTO;
 			} catch (DatatypeConfigurationException ex) {
 				logger.log(Level.WARNING, "{0}Could not convert date to gregorian calendar: ",
-						tmpValue.getValue().toString());
+						ex.getMessage());
 				throw new TransformException("Could not convert date to gregorian calendar");
 			}
 		} else if (value instanceof IntegerValue) {

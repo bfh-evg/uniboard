@@ -36,6 +36,9 @@
 							<artifactId>bfh-grouped-typed</artifactId>
 							<artifactId>bfh-chronological-typed</artifactId>
 							<artifactId>bfh-notification</artifactId>
+							<artifactId>bfh-access-controlled</artifactId>
+							<artifactId>bfh-ordered</artifactId>
+							<artifactId>bfh-certified-posting</artifactId>
 						</ejbModule>
 					</modules>
 				</configuration>
@@ -91,6 +94,24 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bfh-notification</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-access-controlled</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-ordered</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-certified-posting</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>
