@@ -150,7 +150,6 @@ public class PersistedPost extends Post {
 	 * @return an object of the corresponding Type or null if the type of o is unknown
 	 */
 	private static Value inflateType(Object o) {
-		Logger.getLogger(PersistedPost.class.getName()).log(Level.SEVERE, o.toString());
 		if (o instanceof Integer) {
 			return new IntegerValue((int) o);
 		} else if (o instanceof Double) {
