@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.webservice;
+package ch.bfh.uniboard.restservice;
 
 import ch.bfh.uniboard.service.GetService;
 import ch.bfh.uniboard.service.Query;

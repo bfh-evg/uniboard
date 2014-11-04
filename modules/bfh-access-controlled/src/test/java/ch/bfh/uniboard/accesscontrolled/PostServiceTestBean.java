@@ -12,6 +12,7 @@
 package ch.bfh.uniboard.accesscontrolled;
 
 import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.Post;
 import ch.bfh.uniboard.service.PostService;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
@@ -35,9 +36,10 @@ public class PostServiceTestBean implements PostService {
 		return beta;
 	}
 
-	public ch.bfh.uniboard.service.Post getLastPost() {
-		ch.bfh.uniboard.service.Post retunPost = this.lastPost;
-		this.lastPost = null;
-		return retunPost;
+	public Post getLastPost() {
+                Post retunValue = this.lastPost;
+                this.lastPost = null;
+		return retunValue; 
+
 	}
 }
