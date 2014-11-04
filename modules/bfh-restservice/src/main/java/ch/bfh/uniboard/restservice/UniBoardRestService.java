@@ -44,10 +44,10 @@ public class UniBoardRestService {
 
 	protected static final Logger logger = Logger.getLogger(UniBoardRestService.class.getName());
 
-	@EJB(beanName = "MockService")
+	@EJB
 	private GetService getService;
 
-	@EJB(beanName = "MockService")
+	@EJB
 	private PostService postService;
 
 //	@GET
@@ -90,7 +90,8 @@ public class UniBoardRestService {
 			byte[] message = DatatypeConverter.parseBase64Binary(postContainer.getMessage());
 			Attributes alpha = Transformer.convertAttributesDTOtoAttributes(postContainer.getAlpha());
 			Attributes beta = new Attributes();
-			logger.info("Post message=" + DatatypeConverter.printBase64Binary(message) + ", alpha=" + alpha + ", beta=" + beta);
+			logger.log(Level.INFO, "Post message={0}, alpha={1}, beta={2}", 
+					new Object[]{DatatypeConverter.printBase64Binary(message), alpha, beta});
 			beta = postService.post(message, alpha, beta);
 			return Transformer.convertAttributesToDTO(beta);
 		} catch (TransformException ex) {

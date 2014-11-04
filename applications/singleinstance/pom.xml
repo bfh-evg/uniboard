@@ -30,13 +30,35 @@
 						<ejbModule>
 							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-webservice</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-persistence-mongodb</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-configuration</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-sectioned</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-grouped-typed</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-chronological-typed</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-notification</artifactId>
 						</ejbModule>
+						<webModule>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>bfh-restservice</artifactId>
+						</webModule>
 					</modules>
 				</configuration>
 			</plugin>
@@ -93,6 +115,12 @@
 			<artifactId>bfh-notification</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-restservice</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
 		</dependency>
 	</dependencies>
 </project>

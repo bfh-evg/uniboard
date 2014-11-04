@@ -40,3 +40,5 @@ nb-configuration.xml
 /modules/bfh-chronological/target
 /modules/bfh-ordered/target/
 /modules/bfh-access-controlled/target/
+/modules/bfh-restservice/target/
+/modules/bfh-certified-posting/target/
