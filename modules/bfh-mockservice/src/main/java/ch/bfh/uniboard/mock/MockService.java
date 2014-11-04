@@ -38,7 +38,7 @@ public class MockService implements GetService, PostService {
 
 	@PostConstruct
 	public void init() {
-		message = DatatypeConverter.parseBase64Binary("Hello+Springfield");
+		message = DatatypeConverter.parseBase64Binary("HelloSpringfield");
 		alpha = new Attributes();
 		alpha.add("name", new StringValue("Homer Simpson"));
 		alpha.add("age", new IntegerValue(35));
@@ -46,7 +46,7 @@ public class MockService implements GetService, PostService {
 
 	@Override
 	public ResultContainer get(Query query) {
-		logger.info("Get posts, query=" + query);
+		logger.info("Retrieve posts using " + query);
 		Post post = new Post(message, alpha, alpha);
 		return new ResultContainer(Collections.singletonList(post), alpha);
 	}
