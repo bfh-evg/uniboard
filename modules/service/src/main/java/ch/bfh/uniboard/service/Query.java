@@ -83,7 +83,7 @@ public class Query implements Serializable {
 			}
 			builder.append(constraint.getIdentifier());
 		}
-		return "Query{" + "constraints=" + builder + ", limit=" + limit + "}";
+		return "Query{" + "constraints=[" + builder + "], limit=" + limit + "}";
 	}
 
 }

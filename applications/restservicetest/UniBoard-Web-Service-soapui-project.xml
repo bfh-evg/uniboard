@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="UniBoard Web Service" resourceRoot="" soapui-version="5.0.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="UniBoardServicePortBinding" type="wsdl" bindingName="{http://uniboard.bfh.ch/}UniBoardServicePortBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/UniBoardService/UniBoardServiceImpl?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/UniBoardService/UniBoardServiceImpl?wsdl"><con:part><con:url>http://localhost:8080/UniBoardService/UniBoardServiceImpl?wsdl</con:url><con:content><![CDATA[<!--Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is Metro/2.3 (tags/2.3-7528; 2013-04-29T19:34:10+0000) JAXWS-RI/2.2.8 JAXWS/2.2 svn-revision#unknown.-->
+<definitions targetNamespace="http://uniboard.bfh.ch/" name="UniBoardService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://uniboard.bfh.ch/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://uniboard.bfh.ch/" schemaLocation="http://localhost:8080/UniBoardService/UniBoardServiceImpl?xsd=1"/>
+    </xsd:schema>
+    <xsd:schema>
+      <xsd:import namespace="http://uniboard.bfh.ch/data" schemaLocation="http://localhost:8080/UniBoardService/UniBoardServiceImpl?xsd=2"/>
+    </xsd:schema>
+  </types>
+  <message name="get">
+    <part name="parameters" element="tns:get"/>
+  </message>
+  <message name="getResponse">
+    <part name="parameters" element="tns:getResponse"/>
+  </message>
+  <message name="post">
+    <part name="parameters" element="tns:post"/>
+  </message>
+  <message name="postResponse">
+    <part name="parameters" element="tns:postResponse"/>
+  </message>
+  <portType name="UniBoardService">
+    <operation name="get">
+      <input message="tns:get"/>
+      <output message="tns:getResponse"/>
+    </operation>
+    <operation name="post">
+      <input message="tns:post"/>
+      <output message="tns:postResponse"/>
+    </operation>
+  </portType>
+  <binding name="UniBoardServicePortBinding" type="tns:UniBoardService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="get">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="post">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="UniBoardService">
+    <port name="UniBoardServicePort" binding="tns:UniBoardServicePortBinding">
+      <soap:address location="http://localhost:8080/UniBoardService/UniBoardServiceImpl"/>
+    </port>
+  </service>
+</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/UniBoardService/UniBoardServiceImpl?xsd=1</con:url><con:content><![CDATA[<!--Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is Metro/2.3 (tags/2.3-7528; 2013-04-29T19:34:10+0000) JAXWS-RI/2.2.8 JAXWS/2.2 svn-revision#unknown.-->
+<xs:schema version="1.0" targetNamespace="http://uniboard.bfh.ch/" xmlns:ns1="http://uniboard.bfh.ch/data" xmlns:tns="http://uniboard.bfh.ch/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://uniboard.bfh.ch/data" schemaLocation="http://localhost:8080/UniBoardService/UniBoardServiceImpl?xsd=2"/>
+  <xs:element name="get" type="tns:get"/>
+  <xs:element name="getResponse" type="tns:getResponse"/>
+  <xs:element name="post" type="tns:post"/>
+  <xs:element name="postResponse" type="tns:postResponse"/>
+  <xs:complexType name="post">
+    <xs:sequence>
+      <xs:element name="message" type="xs:base64Binary"/>
+      <xs:element name="alpha" type="ns1:attributes"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="postResponse">
+    <xs:sequence>
+      <xs:element name="beta" type="ns1:attributes"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="get">
+    <xs:sequence>
+      <xs:element name="query" type="ns1:query"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="getResponse">
+    <xs:sequence>
+      <xs:element name="resultContainer" type="ns1:resultContainer"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/UniBoardService/UniBoardServiceImpl?xsd=2</con:url><con:content><![CDATA[<!--Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is Metro/2.3 (tags/2.3-7528; 2013-04-29T19:34:10+0000) JAXWS-RI/2.2.8 JAXWS/2.2 svn-revision#unknown.-->
+<xs:schema version="1.0" targetNamespace="http://uniboard.bfh.ch/data" xmlns:tns="http://uniboard.bfh.ch/data" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="attributes">
+    <xs:sequence>
+      <xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="key" type="xs:string"/>
+            <xs:element name="value" type="tns:value"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="value" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+  <xs:complexType name="byteArrayValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:base64Binary"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="dateValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="integerValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:int"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="stringValue">
+    <xs:complexContent>
+      <xs:extension base="tns:value">
+        <xs:sequence>
+          <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="query">
+    <xs:sequence>
+      <xs:element name="constraint" type="tns:constraint" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="order" type="tns:order" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="limit" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="constraint" abstract="true">
+    <xs:sequence>
+      <xs:element name="identifier" type="tns:identifier"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="identifier" abstract="true">
+    <xs:sequence>
+      <xs:element name="part" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="alphaIdentifier">
+    <xs:complexContent>
+      <xs:extension base="tns:identifier">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="betaIdentifier">
+    <xs:complexContent>
+      <xs:extension base="tns:identifier">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="messageIdentifier">
+    <xs:complexContent>
+      <xs:extension base="tns:identifier">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="between">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="lowerBound" type="tns:value"/>
+          <xs:element name="upperBound" type="tns:value"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="in">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="element" type="tns:value" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="less">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="value" type="tns:value"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="lessEqual">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="value" type="tns:value"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="greater">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="value" type="tns:value"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="greaterEqual">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="value" type="tns:value"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="equal">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="value" type="tns:value"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="notEqual">
+    <xs:complexContent>
+      <xs:extension base="tns:constraint">
+        <xs:sequence>
+          <xs:element name="value" type="tns:value"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="order">
+    <xs:sequence>
+      <xs:element name="identifier" type="tns:identifier"/>
+      <xs:element name="ascDesc" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="resultContainer">
+    <xs:sequence>
+      <xs:element name="result" type="tns:result"/>
+      <xs:element name="gamma" type="tns:attributes"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="result">
+    <xs:sequence>
+      <xs:element name="post" type="tns:post" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="post">
+    <xs:sequence>
+      <xs:element name="message" type="xs:base64Binary"/>
+      <xs:element name="alpha" type="tns:attributes"/>
+      <xs:element name="beta" type="tns:attributes"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/UniBoardService/UniBoardServiceImpl</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="get" bindingOperationName="get" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/UniBoardService/UniBoardServiceImpl</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:unib="http://uniboard.bfh.ch/"
+                  xmlns:data="http://uniboard.bfh.ch/data">
+   <soapenv:Body>
+      <unib:get>
+         <query>
+            <constraint xsi:type="data:equal">
+               <identifier xsi:type="data:alphaIdentifier">
+                  <part>key1</part>
+               </identifier>
+               <value xsi:type="data:byteArrayValue">
+                  <value>718788798986868879746765706669838683748879699085</value>
+               </value>
+            </constraint>
+            <limit>0</limit>
+         </query>
+      </unib:get>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://uniboard.bfh.ch/UniBoardService/getRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="post" bindingOperationName="post" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/UniBoardService/UniBoardServiceImpl</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:unib="http://uniboard.bfh.ch/"
+                  xmlns:data="http://uniboard.bfh.ch/data">
+   <soapenv:Body>
+      <unib:post>
+         <message>UG9seWZvbiB6d2l0c2NoZXJuZCBhw59lbiBNw6R4Y2hlbnMgVsO2Z2VsIFLDvGJlbiwgSm9naHVydCB1bmQgUXVhcms=</message>
+         <alpha>
+            <attribute>
+               <key>key1</key>
+               <value xsi:type="data:byteArrayValue">
+                  <value>718788798986868879746765706669838683748879699085</value>
+               </value>
+            </attribute>
+         </alpha>
+      </unib:post>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://uniboard.bfh.ch/UniBoardService/postRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>

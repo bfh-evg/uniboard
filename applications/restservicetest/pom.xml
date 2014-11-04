@@ -50,7 +50,6 @@
 						</webModule>
 						<ejbModule>
 							<groupId>${project.groupId}</groupId>
-							<artifactId>bfh-delegate</artifactId>
 							<artifactId>bfh-mockservice</artifactId>
 						</ejbModule>
 					</modules>

@@ -1,0 +1,25 @@
+POST /uniboard/messages/post HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+	"message": "HelloSpringfield",
+	"alpha": {
+		"attribute": [
+			{
+				"key": "name",
+				"value": {
+					"type": "stringValue",
+					"value": "Homer Simpson"
+				}
+			},
+			{
+				"key": "age",
+				"value": {
+					"type": "integerValue",
+					"value": 35
+				}
+			}
+		]
+	}
+}
