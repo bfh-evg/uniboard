@@ -11,12 +11,12 @@
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.restservice.UniBoardRestServiceBean/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>MockService</ejb-link>
+				<ejb-link>SectionedService</ejb-link>
 			</ejb-local-ref>
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.restservice.UniBoardRestServiceBean/getSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.GetService</local>
-				<ejb-link>MockService</ejb-link>
+				<ejb-link>PersistenceService</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>
