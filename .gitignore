@@ -31,11 +31,12 @@
 /modules/bfh-configuration/nb-configuration.xml
 /modules/bfh-configuration/target
 /modules/bfh-sectioned/target/
-nb-configuration.xml
+*nb-configuration.xml
 /modules/bfh-grouped-typed/target
 /modules/module/target/
 /modules/bft-replica/target/
-/modules/bft-uniboard-proxies/target//modules/bfh-chronological/target
+/modules/bft-uniboard-proxies/target/
+/modules/bfh-chronological/target
 /modules/bfh-notification/target/
 /modules/bfh-chronological/target
 /modules/bfh-ordered/target/
@@ -43,3 +44,4 @@ nb-configuration.xml
 /modules/bfh-restservice/target/
 /modules/bfh-certified-posting/target/
 /modules/bfh-timed-get/target/
+/modules/bfh-certified-get/target/
