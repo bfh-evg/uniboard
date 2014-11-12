@@ -42,3 +42,4 @@ nb-configuration.xml
 /modules/bfh-access-controlled/target/
 /modules/bfh-restservice/target/
 /modules/bfh-certified-posting/target/
+/modules/bfh-timed-get/target/
