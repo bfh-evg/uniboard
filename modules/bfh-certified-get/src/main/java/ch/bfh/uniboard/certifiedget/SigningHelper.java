@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.certifiedposting;
+package ch.bfh.uniboard.certifiedget;
 
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 

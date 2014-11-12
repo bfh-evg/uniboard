@@ -66,6 +66,14 @@
 						<ejbModule>
 							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-certified-posting</artifactId>
+						</ejbModule>					
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>bfh-certified-get</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>bfh-timed-get</artifactId>
 						</ejbModule>
 						<webModule>
 							<groupId>${project.groupId}</groupId>
@@ -149,6 +157,18 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bfh-certified-posting</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-timed-get</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-certified-get</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>

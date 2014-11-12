@@ -9,17 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.certifiedposting;
+package ch.bfh.uniboard.certifiedget;
 
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.ConfigurationManager;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.PostComponent;
-import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.*;
 import ch.bfh.unicrypt.helper.Alphabet;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
@@ -64,10 +56,10 @@ import javax.ejb.Stateless;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @Stateless
-public class CertifiedPostingService extends PostComponent implements PostService {
+public class CertifiedGetService extends GetComponent implements GetService {
 
 	private static final String ATTRIBUTE_NAME = "boardSignature";
-	private static final String CONFIG_NAME = "bfh-certified-posting";
+	private static final String CONFIG_NAME = "bfh-certified-get";
 	private static final String CONFIG_KEYSTORE_PATH = "keystore-path";
 	private static final String CONFIG_KEYSTORE_PASS = "keystore-pass";
 	private static final String CONFIG_ID = "id";
@@ -81,68 +73,49 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 					StringToByteArray.getInstance(Charset.forName("UTF-8"))),
 			HashMethod.Mode.RECURSIVE);
 
-	private static final Logger logger = Logger.getLogger(CertifiedPostingService.class.getName());
+	private static final StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+
+	private static final Logger logger = Logger.getLogger(CertifiedGetService.class.getName());
 
 	private SigningHelper signer = null;
 
 	@EJB
-	PostService postSuccessor;
+	GetService getSuccessor;
 
 	@EJB
 	ConfigurationManager configurationManager;
 
 	@Override
-	protected PostService getPostSuccessor() {
-		return this.postSuccessor;
+	protected GetService getGetSuccessor() {
+		return this.getSuccessor;
 	}
 
 	@Override
-	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
+	protected Attributes afterGet(Query query, ResultContainer resultContainer) {
+		Attributes gamma = resultContainer.getGamma();
 		if (this.signer == null) {
 			logger.log(Level.SEVERE,
 					"Signer is not set. Check the configuration.");
-			beta.add(Attributes.REJECTED,
-					new StringValue("BCP-001 Internal server error."));
-			return beta;
+			gamma.add(Attributes.REJECTED,
+					new StringValue("BCG-001 Internal server error."));
+			return gamma;
 		}
-		Element messageElement = this.createMessageElement(message, alpha, beta);
+		Element messageElement = this.createMessageElement(query,resultContainer);
 		Element signature = this.signer.sign(messageElement);
 		String signatureString = signature.getBigInteger().toString(10);
-		beta.add(ATTRIBUTE_NAME, new StringValue(signatureString));
-		return beta;
+		gamma.add(ATTRIBUTE_NAME, new StringValue(signatureString));
+		return gamma;
+
 	}
 
-	protected Element createMessageElement(byte[] message, Attributes alpha, Attributes beta) {
-		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+	protected Element createMessageElement(Query query, ResultContainer resultContainer) {
 
-		Element messageElement = byteSpace.getElement(message);
-
-		List<Element> alphaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-			Element element = this.createValueElement(e.getValue());
-			if (element != null) {
-				alphaElements.add(element);
-
-			}
-		}
-		DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
-		Element alphaElement = Tuple.getInstance(alphaDenseElements);
-
-		List<Element> betaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : beta.getEntries()) {
-			Element element = this.createValueElement(e.getValue());
-			if (element != null) {
-				betaElements.add(element);
-			}
-		}
-		DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
-		Element betaElement = Tuple.getInstance(beteDenseElements);
-
-		return Tuple.getInstance(messageElement, alphaElement, betaElement);
+		Element queryElement = this.createQueryElement(query);
+		Element resultContainerElement = this.createResultContainerElement(resultContainer);
+		return Tuple.getInstance(queryElement,resultContainerElement);
 	}
 
 	protected Element createValueElement(Value value) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
 		Z z = Z.getInstance();
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 		if (value instanceof ByteArrayValue) {
@@ -162,6 +135,163 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 			logger.log(Level.SEVERE, "Unsupported Value type.");
 			return null;
 		}
+	}
+
+	protected Element createIdentifierElement(Identifier identifier) {
+		List<Element> identifierElements = new ArrayList<>();
+
+		if (identifier instanceof AlphaIdentifier) {
+			identifierElements.add(stringSpace.getElement("alpha"));
+		} else if (identifier instanceof BetaIdentifier) {
+			identifierElements.add(stringSpace.getElement("beta"));
+		} else if (identifier instanceof MessageIdentifier) {
+			identifierElements.add(stringSpace.getElement("message"));
+		} else {
+			logger.log(Level.SEVERE, "Unsupported Identifier type.");
+			return null;
+		}
+
+		for (String part : identifier.getParts()) {
+			identifierElements.add(stringSpace.getElement(part));
+		}
+		DenseArray identifierDenseElements = DenseArray.getInstance(identifierElements);
+		return Tuple.getInstance(identifierDenseElements);
+	}
+
+	protected Element createConstraintElement(Constraint constraint) {
+		List<Element> constraintElements = new ArrayList<>();
+		if (constraint instanceof Between) {
+			constraintElements.add(stringSpace.getElement("between"));
+			Between between = (Between) constraint;
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			constraintElements.add(this.createValueElement(between.getStart()));
+			constraintElements.add(this.createValueElement(between.getEnd()));
+		} else if (constraint instanceof Equal) {
+			constraintElements.add(stringSpace.getElement("equal"));
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			Equal equal = (Equal) constraint;
+			constraintElements.add(this.createValueElement(equal.getValue()));
+		} else if (constraint instanceof Greater) {
+			constraintElements.add(stringSpace.getElement("greater"));
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			Greater greater = (Greater) constraint;
+			constraintElements.add(this.createValueElement(greater.getValue()));
+		} else if (constraint instanceof GreaterEqual) {
+			constraintElements.add(stringSpace.getElement("greaterEqual"));
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			GreaterEqual greaterEqual = (GreaterEqual) constraint;
+			constraintElements.add(this.createValueElement(greaterEqual.getValue()));
+		} else if (constraint instanceof In) {
+			constraintElements.add(stringSpace.getElement("in"));
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			In in = (In) constraint;
+			List<Element> inELements = new ArrayList<>();
+			for (Value v : in.getSet()) {
+				inELements.add(this.createValueElement(v));
+			}
+			DenseArray inDenseElements = DenseArray.getInstance(inELements);
+			constraintElements.add(Tuple.getInstance(inDenseElements));
+		} else if (constraint instanceof Less) {
+			constraintElements.add(stringSpace.getElement("less"));
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			Less less = (Less) constraint;
+			constraintElements.add(this.createValueElement(less.getValue()));
+		} else if (constraint instanceof LessEqual) {
+			constraintElements.add(stringSpace.getElement("lessEqual"));
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			LessEqual lessEqual = (LessEqual) constraint;
+			constraintElements.add(this.createValueElement(lessEqual.getValue()));
+		} else if (constraint instanceof NotEqual) {
+			constraintElements.add(stringSpace.getElement("notEqual"));
+			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+			NotEqual notEqual = (NotEqual) constraint;
+			constraintElements.add(this.createValueElement(notEqual.getValue()));
+		} else {
+			logger.log(Level.SEVERE, "Unsupported constraint type.");
+		}
+		DenseArray constraintDenseElements = DenseArray.getInstance(constraintElements);
+		return Tuple.getInstance(constraintDenseElements);
+	}
+
+	protected Element createOrderElement(Order order) {
+		List<Element> orderElements = new ArrayList<>();
+		orderElements.add(this.createIdentifierElement(order.getIdentifier()));
+		orderElements.add(stringSpace.getElement(Boolean.toString(order.isAscDesc())));
+		DenseArray orderDenseElements = DenseArray.getInstance(orderElements);
+		return Tuple.getInstance(orderDenseElements);
+	}
+
+	protected Element createQueryElement(Query query) {
+
+		List<Element> constraintsElements = new ArrayList<>();
+		for (Constraint c : query.getConstraints()) {
+			constraintsElements.add(this.createConstraintElement(c));
+		}
+		DenseArray constraintsDenseElements = DenseArray.getInstance(constraintsElements);
+		Element contraints = Tuple.getInstance(constraintsDenseElements);
+
+		List<Element> orderElements = new ArrayList<>();
+		for (Order o : query.getOrder()) {
+			orderElements.add(this.createOrderElement(o));
+		}
+		DenseArray orderDenseElements = DenseArray.getInstance(orderElements);
+		Element orders = Tuple.getInstance(orderDenseElements);
+
+		Z z = Z.getInstance();
+		Element limit = z.getElement(query.getLimit());
+
+		return Tuple.getInstance(contraints,orders,limit);
+	}
+
+	protected Element createPostElement(Post post) {
+		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+
+		Element messageElement = byteSpace.getElement(post.getMessage());
+
+		List<Element> alphaElements = new ArrayList<>();
+		for (Map.Entry<String, Value> e : post.getAlpha().getEntries()) {
+			Element element = this.createValueElement(e.getValue());
+			if (element != null) {
+				alphaElements.add(element);
+
+			}
+		}
+		DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
+		Element alphaElement = Tuple.getInstance(alphaDenseElements);
+
+		List<Element> betaElements = new ArrayList<>();
+		for (Map.Entry<String, Value> e : post.getBeta().getEntries()) {
+			Element element = this.createValueElement(e.getValue());
+			if (element != null) {
+				betaElements.add(element);
+			}
+		}
+		DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
+		Element betaElement = Tuple.getInstance(beteDenseElements);
+
+		return Tuple.getInstance(messageElement, alphaElement, betaElement);
+	}
+
+	protected Element createResultContainerElement(ResultContainer resultContainer) {
+
+		List<Element> postElements = new ArrayList<>();
+		for (Post p : resultContainer.getResult()) {
+			postElements.add(this.createPostElement(p));
+		}
+		DenseArray postDenseElements = DenseArray.getInstance(postElements);
+		Element postElement = Tuple.getInstance(postDenseElements);
+
+		List<Element> gammaElements = new ArrayList<>();
+		for (Map.Entry<String, Value> e : resultContainer.getGamma().getEntries()) {
+			Element element = this.createValueElement(e.getValue());
+			if (element != null) {
+				gammaElements.add(element);
+			}
+		}
+		DenseArray gammaDenseElements = DenseArray.getInstance(gammaElements);
+		Element gammeElement = Tuple.getInstance(gammaDenseElements);
+
+		return Tuple.getInstance(postElement, gammeElement);
 	}
 
 	@PostConstruct
@@ -187,7 +317,7 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 		InputStream in;
 		try {
 
-			in = CertifiedPostingService.class.getResourceAsStream("/" + keyStorePath);
+			in = CertifiedGetService.class.getResourceAsStream("/" + keyStorePath);
 		} catch (RuntimeException ex) {
 			return;
 		}

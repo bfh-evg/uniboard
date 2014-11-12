@@ -42,8 +42,16 @@
 		<alt-dd>META-INF/notification-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
+		<ejb>bfh-timed-get-1.0.jar</ejb>
+		<alt-dd>META-INF/timed-get-service-descriptor.xml</alt-dd>
+	</module>
+	<module>
+		<ejb>bfh-certified-get-1.0.jar</ejb>
+		<alt-dd>META-INF/certified-get-service-descriptor.xml</alt-dd>
+	</module>
+	<module>
 		<!--For this module the injection is configured in the ejb-jar.xml inside the project.
-			This is because it is not possible to provide an ejb-jar.xml for a web module here		-->
+		This is because it is not possible to provide an ejb-jar.xml for a web module here		-->
 		<web>
 			<web-uri>bfh-restservice-1.0.war</web-uri>
 			<context-root>/uniboard</context-root>

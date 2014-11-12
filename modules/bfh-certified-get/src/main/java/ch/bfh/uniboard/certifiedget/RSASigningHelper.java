@@ -9,9 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.certifiedposting;
+package ch.bfh.uniboard.certifiedget;
 
-import static ch.bfh.uniboard.certifiedposting.CertifiedPostingService.HASH_METHOD;
+import static ch.bfh.uniboard.certifiedget.CertifiedGetService.HASH_METHOD;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZMod;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;

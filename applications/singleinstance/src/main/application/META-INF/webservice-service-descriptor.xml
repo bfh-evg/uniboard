@@ -14,7 +14,7 @@
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.webservice.UniBoardServiceImpl/getSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.GetService</local>
-				<ejb-link>PersistenceService</ejb-link>
+				<ejb-link>CertifiedGetService</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>
