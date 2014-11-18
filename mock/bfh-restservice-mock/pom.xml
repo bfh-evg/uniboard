@@ -15,7 +15,7 @@
     <version>1.0</version>
     <packaging>war</packaging>
 
-    <name>bfh-restservice</name>
+    <name>bfh-restservice-mock</name>
     <dependencies>
 	<dependency>
 	    <groupId>${project.groupId}</groupId>
@@ -40,7 +40,7 @@
 	<dependency>
 	    <groupId>ch.bfh.unicrypt</groupId>
 	    <artifactId>unicrypt2</artifactId>
-	    <version>2.0.1-SNAPSHOT</version>
+	    <version>2.0.1</version>
 	    <type>jar</type>
 	</dependency>
     </dependencies>

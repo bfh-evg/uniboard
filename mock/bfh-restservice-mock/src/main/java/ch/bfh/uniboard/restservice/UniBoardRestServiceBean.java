@@ -100,13 +100,14 @@ public class UniBoardRestServiceBean implements UniBoardRestService {
 
     @PostConstruct
     public void init() {
-	prepare();
 	try {
 	    logger.info("Using JAXB provider " + JAXBContext.newInstance(QueryDTO.class).getClass().getPackage().
 		    getName());
 	} catch (JAXBException ex) {
 	    logger.severe(ex.toString());
 	}
+		prepare();
+	logger.info("init finished");
     }
 
     @Override
@@ -413,6 +414,7 @@ public class UniBoardRestServiceBean implements UniBoardRestService {
 		messageElement.getSet(), g, HASH_METHOD);
 	Element publicKey = schnorr.getVerificationKeySpace()
 		.getElement(new BigInteger(yStr));
+	System.out.println("alpha "+alpha);
 	String signature = ((StringValue) alpha.getValue("signature")).getValue();
 	System.out.println("signature: " + signature);
 	Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
