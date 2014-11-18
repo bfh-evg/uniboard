@@ -15,8 +15,12 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
+/**
+ * The class ApplicationConfig is used to configure the path and the classes of the REST service.
+ *
+ * @author Stephan Fischli &lt;stephan.fischli@bfh.ch&gt;
+ */
 @ApplicationPath("messages")
 public class ApplicationConfig extends Application {
 
@@ -24,7 +28,6 @@ public class ApplicationConfig extends Application {
 	public Set<Class<?>> getClasses() {
 		Set<Class<?>> classes = new HashSet<>();
 		classes.add(UniBoardRestService.class);
-		classes.add(MOXyJsonProvider.class);
 		return classes;
 	}
 }

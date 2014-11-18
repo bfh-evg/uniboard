@@ -15,23 +15,18 @@ import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
+ * The interface UniBoardRestService defines a RESTful interface of the UniBoard.
  *
  * @author Stephan Fischli &lt;stephan.fischli@bfh.ch&gt;
  */
 @Path("")
 public interface UniBoardRestService {
-
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public QueryDTO get();
 
 	@POST
 	@Path("query")
@@ -44,5 +39,4 @@ public interface UniBoardRestService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public AttributesDTO post(PostContainerDTO postContainer);
-
 }
