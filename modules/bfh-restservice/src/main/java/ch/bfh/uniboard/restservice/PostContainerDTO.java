@@ -14,13 +14,13 @@ package ch.bfh.uniboard.restservice;
 import ch.bfh.uniboard.data.AttributesDTO;
 
 /**
+ * The class PostContainerDTO implements a container of a post request.
  *
  * @author Stephan Fischli &lt;stephan.fischli@bfh.ch&gt;
  */
 public class PostContainerDTO {
 
-	// Base64 encoded message
-	private String message;
+	private String message; // Base64 encoded
 	private AttributesDTO alpha;
 
 	public PostContainerDTO() {

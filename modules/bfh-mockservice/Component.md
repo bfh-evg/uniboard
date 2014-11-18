@@ -1,22 +1,21 @@
-# NAME_OF_THE_MODULE
+# BFH-MOCKSERVICE
 
 ## Basic Description
 
-Describe in few words what can be achieved with this module.
+This component provides a mock service for testing purposes.
 
 ## Services
 
-What services are implemented by this component?
+This component implements the GetService and the PostService using dummy data.
 
-### Attributes
+## Attributes
 
-Document which attributes are added or required by this component.
+This component does not add any attributes.
 
 ## Configuration
 
-Describe how the configuration works. Does this component use the the ConfigurationManager or not?
-What are the required fields?
+This component does not have any configuration possibilities.
 
 ## Example EJB-Descriptor
 
-Give a example of EJB-Descriptor needed for this component.
+This component does not have a deployment descriptor.
