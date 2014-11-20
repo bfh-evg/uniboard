@@ -12,7 +12,6 @@
 package ch.bfh.uniboard.chronological;
 
 import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.ConfigurationManager;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
@@ -31,9 +30,6 @@ public class ChronologicalService extends PostComponent implements PostService {
 
 	@EJB
 	PostService postSuccessor;
-
-	@EJB
-	ConfigurationManager configurationManager;
 
 	@Override
 	protected PostService getPostSuccessor() {

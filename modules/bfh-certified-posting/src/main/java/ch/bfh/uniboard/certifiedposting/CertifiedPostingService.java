@@ -33,6 +33,9 @@ import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
 import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
@@ -174,8 +177,8 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 
 		String keyStorePath = configuration.getProperty(CONFIG_KEYSTORE_PATH);
 		String keyStorePass = configuration.getProperty(CONFIG_KEYSTORE_PASS);
-		String privateKeyPass = configuration.getProperty(CONFIG_ID);
-		String id = configuration.getProperty(CONFIG_PRIVATEKEY_PASS);
+		String privateKeyPass = configuration.getProperty(CONFIG_PRIVATEKEY_PASS);
+		String id = configuration.getProperty(CONFIG_ID);
 
 		KeyStore caKs;
 
@@ -186,12 +189,9 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 		}
 		InputStream in;
 		try {
-
-			in = CertifiedPostingService.class.getResourceAsStream("/" + keyStorePath);
-		} catch (RuntimeException ex) {
-			return;
-		}
-		if (in == null) {
+			File file = new File(keyStorePath);
+			in = new FileInputStream(file);
+		} catch (FileNotFoundException | RuntimeException ex) {
 			return;
 		}
 		try {

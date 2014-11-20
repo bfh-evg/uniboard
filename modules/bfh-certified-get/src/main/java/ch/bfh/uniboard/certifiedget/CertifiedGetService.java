@@ -25,6 +25,9 @@ import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
 import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
@@ -100,7 +103,7 @@ public class CertifiedGetService extends GetComponent implements GetService {
 					new StringValue("BCG-001 Internal server error."));
 			return gamma;
 		}
-		Element messageElement = this.createMessageElement(query,resultContainer);
+		Element messageElement = this.createMessageElement(query, resultContainer);
 		Element signature = this.signer.sign(messageElement);
 		String signatureString = signature.getBigInteger().toString(10);
 		gamma.add(ATTRIBUTE_NAME, new StringValue(signatureString));
@@ -112,7 +115,7 @@ public class CertifiedGetService extends GetComponent implements GetService {
 
 		Element queryElement = this.createQueryElement(query);
 		Element resultContainerElement = this.createResultContainerElement(resultContainer);
-		return Tuple.getInstance(queryElement,resultContainerElement);
+		return Tuple.getInstance(queryElement, resultContainerElement);
 	}
 
 	protected Element createValueElement(Value value) {
@@ -240,7 +243,7 @@ public class CertifiedGetService extends GetComponent implements GetService {
 		Z z = Z.getInstance();
 		Element limit = z.getElement(query.getLimit());
 
-		return Tuple.getInstance(contraints,orders,limit);
+		return Tuple.getInstance(contraints, orders, limit);
 	}
 
 	protected Element createPostElement(Post post) {
@@ -304,8 +307,8 @@ public class CertifiedGetService extends GetComponent implements GetService {
 
 		String keyStorePath = configuration.getProperty(CONFIG_KEYSTORE_PATH);
 		String keyStorePass = configuration.getProperty(CONFIG_KEYSTORE_PASS);
-		String privateKeyPass = configuration.getProperty(CONFIG_ID);
-		String id = configuration.getProperty(CONFIG_PRIVATEKEY_PASS);
+		String privateKeyPass = configuration.getProperty(CONFIG_PRIVATEKEY_PASS);
+		String id = configuration.getProperty(CONFIG_ID);
 
 		KeyStore caKs;
 
@@ -316,12 +319,9 @@ public class CertifiedGetService extends GetComponent implements GetService {
 		}
 		InputStream in;
 		try {
-
-			in = CertifiedGetService.class.getResourceAsStream("/" + keyStorePath);
-		} catch (RuntimeException ex) {
-			return;
-		}
-		if (in == null) {
+			File file = new File(keyStorePath);
+			in = new FileInputStream(file);
+		} catch (FileNotFoundException | RuntimeException ex) {
 			return;
 		}
 		try {
