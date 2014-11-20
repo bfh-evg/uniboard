@@ -66,7 +66,7 @@ public class ObserverManagerTest {
 
 	@Test
 	public void testEmpty() {
-		configurationManager.saveConfiguration(null, null);
+		configurationManager.saveState(null, null);
 		observerManager.init();
 		Map<String, Observer> observers = observerManager.getObservers();
 		assertTrue(observers.isEmpty());
@@ -88,7 +88,7 @@ public class ObserverManagerTest {
 		String tmp = Base64.getEncoder().encodeToString(baos.toByteArray());
 		config.put("test3", tmp);
 
-		configurationManager.saveConfiguration(null, config);
+		configurationManager.saveState(null, config);
 		observerManager.init();
 		Map<String, Observer> observers = observerManager.getObservers();
 		assertFalse(observers.isEmpty());
@@ -106,7 +106,7 @@ public class ObserverManagerTest {
 		observers.put("testKey", obs);
 		observerManager.stop();
 
-		Properties config = configurationManager.getConfiguration("");
+		Properties config = configurationManager.loadState("");
 		assertEquals(config.size(), 1);
 		String b64String = config.getProperty("testKey");
 		byte[] data = Base64.getDecoder().decode(b64String);

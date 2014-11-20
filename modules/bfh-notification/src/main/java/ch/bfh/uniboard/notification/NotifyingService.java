@@ -40,7 +40,7 @@ public class NotifyingService extends PostComponent implements PostService {
 
 	private static final String CONFIG_NAME = "bfh-notification";
 	private static final Logger logger = Logger.getLogger(NotifyingService.class.getName());
-	private static final String UNIQUE_ATTRIBUTE = "rank";
+	private static final String UNIQUE_ATTRIBUTE = "unique";
 
 	@EJB
 	PostService postSuccessor;
@@ -87,7 +87,7 @@ public class NotifyingService extends PostComponent implements PostService {
 				query.getConstraints().add(c);
 				ResultContainer result = getService.get(query);
 				if (!result.getResult().isEmpty()) {
-					this.observerClient.notifyObserver(entry.getValue().getUrl(), post);
+					this.observerClient.notifyObserver(entry.getValue().getUrl(), entry.getKey(), post);
 				}
 			}
 		} catch (TransformException ex) {

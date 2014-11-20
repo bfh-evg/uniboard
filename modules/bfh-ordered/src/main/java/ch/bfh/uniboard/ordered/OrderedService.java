@@ -33,7 +33,7 @@ import javax.ejb.Singleton;
 public class OrderedService implements PostService {
 
 	private static final String ATTRIBUTE_NAME = "rank";
-	private static final String CONFIG_NAME = "bfh-ordered";
+	private static final String STATE_NAME = "bfh-ordered";
 	private static final String SECTIONED_NAME = "section";
 	protected Properties sectionHeads;
 
@@ -52,7 +52,7 @@ public class OrderedService implements PostService {
 		order++;
 		beta.add(ATTRIBUTE_NAME, new IntegerValue(order));
 		Attributes newBeta = this.postSuccessor.post(message, alpha, beta);
-		//If no error happend further bellow safe the new head
+		//If no error happend further below safe the new head
 		if (!(newBeta.getKeys().contains(Attributes.ERROR) || newBeta.getKeys().contains(Attributes.REJECTED))) {
 			this.sectionHeads.put(section, Integer.toString(order));
 		}
@@ -61,7 +61,7 @@ public class OrderedService implements PostService {
 
 	@PostConstruct
 	protected void init() {
-		Properties tmp = configurationManager.getConfiguration(CONFIG_NAME);
+		Properties tmp = configurationManager.loadState(STATE_NAME);
 		if (tmp == null) {
 			this.sectionHeads = new Properties();
 		} else {
@@ -71,6 +71,6 @@ public class OrderedService implements PostService {
 
 	@PreDestroy
 	protected void save() {
-		configurationManager.saveConfiguration(CONFIG_NAME, sectionHeads);
+		configurationManager.saveState(STATE_NAME, sectionHeads);
 	}
 }

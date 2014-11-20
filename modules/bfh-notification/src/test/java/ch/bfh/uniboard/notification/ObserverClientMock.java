@@ -26,7 +26,7 @@ public class ObserverClientMock implements ObserverClient {
 	private PostDTO post;
 
 	@Override
-	public void notifyObserver(String url, PostDTO post) {
+	public void notifyObserver(String url, String nc, PostDTO post) {
 		this.post = post;
 	}
 

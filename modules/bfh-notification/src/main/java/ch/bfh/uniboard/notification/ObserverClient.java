@@ -21,5 +21,5 @@ import javax.ejb.Local;
 @Local
 public interface ObserverClient {
 
-	public void notifyObserver(String url, PostDTO post);
+	public void notifyObserver(String url, String notificationCode, PostDTO post);
 }

@@ -86,8 +86,8 @@ public class NotifyingServiceTest {
 	@Test
 	public void testNotFittingQuery() {
 		Properties config = new Properties();
-		config.put("rank", "section");
-		configurationManager.saveConfiguration(null, config);
+		config.put("unique", "section");
+		configurationManager.saveState(null, config);
 		this.setContraint();
 		this.observerClient.reset();
 		this.postGetService.correctRunning(false);
@@ -102,8 +102,8 @@ public class NotifyingServiceTest {
 	@Test
 	public void testFittingQuery() {
 		Properties config = new Properties();
-		config.put("rank", "section");
-		configurationManager.saveConfiguration(null, config);
+		config.put("unique", "section");
+		configurationManager.saveState(null, config);
 		this.setContraint();
 		this.observerClient.reset();
 		this.postGetService.correctRunning(true);

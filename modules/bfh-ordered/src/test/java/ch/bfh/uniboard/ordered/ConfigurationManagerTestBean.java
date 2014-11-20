@@ -24,23 +24,28 @@ import javax.ejb.Singleton;
 @LocalBean
 public class ConfigurationManagerTestBean implements ConfigurationManager {
 
-    private Properties saved;
+	private Properties saved;
 
-    @Override
-    public Properties getConfiguration(String key) {
-        Properties p = new Properties();
-        p.put("section1", "1");
-        p.put("section2", "26");
-        return p;
-    }
+	@Override
+	public Properties getConfiguration(String key) {
+		return null;
+	}
 
-    @Override
-    public void saveConfiguration(String key, Properties configuration) {
-        this.saved = configuration;
-    }
+	@Override
+	public void saveState(String key, Properties configuration) {
+		this.saved = configuration;
+	}
 
-    public Properties getSaved() {
-        return this.saved;
-    }
+	public Properties getSaved() {
+		return this.saved;
+	}
+
+	@Override
+	public Properties loadState(String key) {
+		Properties p = new Properties();
+		p.put("section1", "1");
+		p.put("section2", "26");
+		return p;
+	}
 
 }

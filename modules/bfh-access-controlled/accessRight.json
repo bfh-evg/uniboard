@@ -33,7 +33,7 @@
 			"type": "string"
 		}
 	},
-	"required": ["group", "key"],
+	"required": ["group", "crypto"],
 	"definitions": {
 		"RSA": {
 			"properties": {

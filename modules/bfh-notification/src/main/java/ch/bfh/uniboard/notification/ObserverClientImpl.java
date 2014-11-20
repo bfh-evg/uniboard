@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -28,10 +29,12 @@ import javax.xml.ws.BindingProvider;
 public class ObserverClientImpl implements ObserverClient {
 
 	private static final Logger logger = Logger.getLogger(ObserverClientImpl.class.getName());
+	@EJB
+	ObserverManager observerManager;
 
 	@Override
 	@Asynchronous
-	public void notifyObserver(String endpointUrl, PostDTO post) {
+	public void notifyObserver(String endpointUrl, String notificationCode, PostDTO post) {
 		ObserverService observer;
 		try {
 			URL wsdlLocation = new URL(endpointUrl);
@@ -42,6 +45,7 @@ public class ObserverClientImpl implements ObserverClient {
 			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointUrl);
 			observer.notify(post);
 		} catch (Exception ex) {
+			observerManager.getObservers().remove(notificationCode);
 			logger.log(Level.SEVERE, "Unable to notify Observer: {0}, exception: {1}",
 					new Object[]{endpointUrl, ex});
 		}

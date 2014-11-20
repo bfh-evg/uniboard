@@ -41,18 +41,18 @@ public class ObserverManagerImpl implements ObserverManager {
 	@EJB
 	ConfigurationManager configurationManager;
 
-	private static final String CONFIG_NAME = "bfh-notification-persistence";
+	private static final String STATE_NAME = "bfh-notification-observer";
 	private static final Logger logger = Logger.getLogger(ObserverManagerImpl.class.getName());
 	private Map<String, Observer> observers;
 
 	@PostConstruct
 	protected void init() {
-		Properties config = configurationManager.getConfiguration(CONFIG_NAME);
+		Properties state = configurationManager.loadState(STATE_NAME);
 		this.observers = new HashMap<>();
-		if (config == null) {
+		if (state == null) {
 			return;
 		}
-		for (Entry e : config.entrySet()) {
+		for (Entry e : state.entrySet()) {
 			String key = (String) e.getKey();
 			String s = (String) e.getValue();
 
@@ -85,7 +85,7 @@ public class ObserverManagerImpl implements ObserverManager {
 				logger.log(Level.SEVERE, "Could not persist observer to configuraiton.", ex);
 			}
 		}
-		configurationManager.saveConfiguration(CONFIG_NAME, config);
+		configurationManager.saveState(STATE_NAME, config);
 	}
 
 	@Override

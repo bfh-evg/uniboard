@@ -111,6 +111,13 @@ public class AccessControlledService extends PostComponent implements PostServic
 	@Override
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
 
+		//TODO Check if ATTRIBUTE_NAME_PUBLICKEY and ATTRIBUTE_NAME_SIG are set in alpha
+		if (!alpha.containsKey(ATTRIBUTE_NAME_PUBLICKEY)) {
+			logger.log(Level.INFO, "Publickey missing in alpha.");
+			beta.add(Attributes.REJECTED,
+					new StringValue("BAC-001 Publickey missing in alpha."));
+			return beta;
+		}
 		//Get the latest authorization with key and group in the current section in the authorization group
 		//Contraint for the publickey
 		List<Constraint> constraints = new ArrayList<>();
@@ -118,20 +125,20 @@ public class AccessControlledService extends PostComponent implements PostServic
 		sListKey.add(AUTH);
 		sListKey.add(ATTRIBUTE_NAME_CRYPTO);
 		sListKey.add(ATTRIBUTE_NAME_PUBLICKEY);
-		Constraint cKey = new Equal(new MessageIdentifier(sListKey), alpha.getValue(ATTRIBUTE_NAME_CRYPTO));
+		Constraint cKey = new Equal(new MessageIdentifier(sListKey), alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
 		constraints.add(cKey);
 
 		//Contraint of the group in the message
 		List<String> sListGroup = new ArrayList<>();
 		sListGroup.add(AUTH);
 		sListGroup.add(GROUPED);
-		Constraint cGroup = new Equal(new MessageIdentifier(sListGroup), beta.getValue(GROUPED));
+		Constraint cGroup = new Equal(new MessageIdentifier(sListGroup), alpha.getValue(GROUPED));
 		constraints.add(cGroup);
 
 		//Constraint of the section
 		List<String> sListSection = new ArrayList<>();
 		sListSection.add(SECTIONED);
-		Constraint cSection = new Equal(new AlphaIdentifier(sListSection), beta.getValue(SECTIONED));
+		Constraint cSection = new Equal(new AlphaIdentifier(sListSection), alpha.getValue(SECTIONED));
 		constraints.add(cSection);
 
 		//Constraint of the group
@@ -154,7 +161,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 					new Object[]{alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY), alpha.getValue(SECTIONED),
 						alpha.getValue(GROUPED)});
 			beta.add(Attributes.REJECTED,
-					new StringValue("BAC-001 No authorization for this publickey."));
+					new StringValue("BAC-002 No authorization for this publickey."));
 			return beta;
 		}
 		Post authPost = rc.getResult().get(0);
@@ -189,7 +196,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 						"Signature for group {0} and key  {1} is not valid.",
 						new Object[]{alpha.getValue(GROUPED), key.get("publickey").asText()});
 				beta.add(Attributes.REJECTED,
-						new StringValue("BAC-002 Signature is not valid."));
+						new StringValue("BAC-003 Signature is not valid."));
 				return beta;
 			}
 
@@ -202,7 +209,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), startDate});
 					beta.add(Attributes.REJECTED,
-							new StringValue("BAC-003 Authorization is not active yet."));
+							new StringValue("BAC-004 Authorization is not active yet."));
 					return beta;
 				}
 			}
@@ -214,7 +221,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), endDate});
 					beta.add(Attributes.REJECTED,
-							new StringValue("BAC-004 Authorization expired."));
+							new StringValue("BAC-005 Authorization expired."));
 					return beta;
 				}
 			}

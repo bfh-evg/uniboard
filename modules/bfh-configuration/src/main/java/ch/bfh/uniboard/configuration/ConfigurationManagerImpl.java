@@ -13,8 +13,10 @@ package ch.bfh.uniboard.configuration;
 
 import ch.bfh.uniboard.service.ConfigurationManager;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,10 +39,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	private static final String JNDI_URI = "/uniboard/configuration";
 
 	public Map<String, Properties> configurations;
+	public Map<String, Properties> states;
 
 	@PostConstruct
 	private void init() {
 		configurations = new HashMap<>();
+		states = new HashMap<>();
 		Properties props;
 		try {
 			javax.naming.InitialContext ic = new javax.naming.InitialContext();
@@ -57,19 +61,19 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 			String key = split[0];
 
 			switch (type) {
-				case "external":
+				case "state":
 					try {
 						InputStream in = new FileInputStream(props.getProperty(componentKey));
 						Properties tmpProperties = new Properties();
 						tmpProperties.load(in);
-						this.configurations.put(key, tmpProperties);
+						this.states.put(key, tmpProperties);
 					} catch (IOException ex) {
 						logger.log(Level.WARNING, "File not found {0}",
 								new Object[]{props.getProperty(componentKey), ex});
 					}
 
 					break;
-				case "jndi":
+				case "config":
 					Properties tmpProperties;
 					try {
 						javax.naming.InitialContext ic = new javax.naming.InitialContext();
@@ -94,7 +98,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	}
 
 	@Override
-	public void saveConfiguration(String key, Properties configuration) {
+	public void saveState(String key, Properties configuration) {
 
 		Properties props;
 
@@ -107,32 +111,27 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 					new Object[]{ex});
 			return;
 		}
-		if (props.containsKey(key + ".jndi")) {
+		if (props.containsKey(key + ".state")) {
 			try {
-				javax.naming.InitialContext ic = new javax.naming.InitialContext();
-				ic.rebind(props.getProperty(key + ".jndi"), configuration);
-				this.configurations.put(key, configuration);
-			} catch (NamingException ex) {
-				logger.log(Level.SEVERE, "JCould not save configuration in the JNDI. Exception: {0}",
-						new Object[]{ex});
-			}
-		} else if (props.containsKey(key + ".external")) {
-			//TODO persist the change to file
-			this.configurations.put(key, configuration);
-		} else {
-			//Try to ceate a new entry in the JNDI
-			try {
-				javax.naming.InitialContext ic = new javax.naming.InitialContext();
-				ic.bind("/uniboard/" + key, configuration);
-				props.put(key + ".jndi", "/uniboard/" + key);
-				ic.rebind(JNDI_URI, props);
-				this.configurations.put(key, configuration);
-			} catch (NamingException ex) {
-				logger.log(Level.SEVERE, "JCould not save configuration in the JNDI. "
-						+ "Please configure a JNDI Entry for the component {0} Exception: {1}",
+				OutputStream out = new FileOutputStream(props.getProperty(key + ".state"));
+				configuration.store(out, key);
+			} catch (IOException ex) {
+				logger.log(Level.SEVERE, "Could not save configuration in the File "
+						+ "Please check access rights for {0} Exception: {1}",
 						new Object[]{key, ex});
 			}
+
+			this.states.put(key, configuration);
+		} else {
+			logger.log(Level.SEVERE, "Could not save configuration in the File "
+					+ "Please configure a path to save state {0}",
+					new Object[]{key});
 		}
+	}
+
+	@Override
+	public Properties loadState(String key) {
+		return this.states.get(key);
 	}
 
 }

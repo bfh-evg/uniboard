@@ -53,7 +53,12 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 	}
 
 	@Override
-	public void saveConfiguration(String key, Properties configuration) {
+	public void saveState(String key, Properties configuration) {
+	}
+
+	@Override
+	public Properties loadState(String key) {
+		return null;
 	}
 
 }

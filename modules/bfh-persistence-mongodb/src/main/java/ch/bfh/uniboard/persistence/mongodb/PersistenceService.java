@@ -209,7 +209,6 @@ public class PersistenceService implements PostService, GetService {
 						ascDesc = -1;
 					}
 					orderBy.append(identifier, ascDesc);
-					System.out.println(orderBy.toString());
 				}
 				cursor = this.connectionManager.getCollection()
 						.find(completeQuery).sort(orderBy).limit(query.getLimit());
@@ -217,7 +216,7 @@ public class PersistenceService implements PostService, GetService {
 				//apply query on database
 				cursor = this.connectionManager.getCollection().find(completeQuery).limit(query.getLimit());
 			}
-
+			logger.log(Level.INFO, completeQuery.toString());
 			//creates the result container with the db result
 			List<Post> list = new ArrayList<>();
 			while (cursor.hasNext()) {

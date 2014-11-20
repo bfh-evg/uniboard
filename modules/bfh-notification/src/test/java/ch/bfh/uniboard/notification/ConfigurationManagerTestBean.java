@@ -28,12 +28,18 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 
 	@Override
 	public Properties getConfiguration(String key) {
+		//Rewired for test
 		return config;
 	}
 
 	@Override
-	public void saveConfiguration(String key, Properties configuration) {
+	public void saveState(String key, Properties configuration) {
 		this.config = configuration;
+	}
+
+	@Override
+	public Properties loadState(String key) {
+		return config;
 	}
 
 }
