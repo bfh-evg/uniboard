@@ -26,10 +26,11 @@ import javax.ejb.Stateless;
 import javax.xml.bind.DatatypeConverter;
 
 /**
+ * The class MockService implements a mock service for testing purposes.
  *
  * @author Stephan Fischli &lt;stephan.fischli@bfh.ch&gt;
  */
-@Stateless
+@Stateless(name = "MockService")
 public class MockService implements GetService, PostService {
 
 	protected static final Logger logger = Logger.getLogger(MockService.class.getName());
