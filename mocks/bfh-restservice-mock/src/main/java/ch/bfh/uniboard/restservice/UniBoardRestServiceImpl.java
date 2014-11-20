@@ -190,6 +190,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 
 	@PostConstruct
 	public void init() {
+		logger.info("Initializing");
 		try {
 			Map<String, Object> properties = new HashMap<String, Object>(2);
 			properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
@@ -236,7 +237,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 			Attributes betaEDa = new Attributes();
 			alphaEDa.add("section", new StringValue("electionid"));
 			alphaEDa.add("group", new StringValue("electionData"));
-			Element messageElement = this.createMessageElement(messageEDa, alphaEDa, betaEDa);
+			Element messageElement = this.createMessageElement(messageEDa, alphaEDa);
 //	    logger.log(Level.SEVERE, "direct hash: " + messageElement.getHashValue(HASH_METHOD));
 			Pair signature = (Pair) this.sign(messageElement);
 			String signatureString = signature.getBigInteger().toString(10);//signature.getAt(0).getBigInteger().toString(10) + "," + signature.getAt(1).getBigInteger().toString(10);
@@ -301,7 +302,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 			Attributes betaEDe1 = new Attributes();
 			alphaEDe1.add("section", new StringValue("electionid"));
 			alphaEDe1.add("group", new StringValue("electionDefinition"));
-			messageElement = this.createMessageElement(messageEDe1, alphaEDe1, betaEDe1);
+			messageElement = this.createMessageElement(messageEDe1, alphaEDe1);
 			signature = (Pair) this.sign(messageElement);
 			signatureString = signature.getBigInteger().toString(10);
 			alphaEDe1.add("signature", new StringValue(signatureString));
@@ -321,7 +322,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 			Attributes betaEDe2 = new Attributes();
 			alphaEDe2.add("section", new StringValue("electionid2"));
 			alphaEDe2.add("group", new StringValue("electionDefinition"));
-			messageElement = this.createMessageElement(messageEDe2, alphaEDe2, betaEDe2);
+			messageElement = this.createMessageElement(messageEDe2, alphaEDe2);
 			signature = (Pair) this.sign(messageElement);
 			signatureString = signature.getBigInteger().toString(10);
 			alphaEDe2.add("signature", new StringValue(signatureString));
@@ -341,7 +342,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 			Attributes betaEDe3 = new Attributes();
 			alphaEDe3.add("section", new StringValue("electionid3"));
 			alphaEDe3.add("group", new StringValue("electionDefinition"));
-			messageElement = this.createMessageElement(messageEDe3, alphaEDe3, betaEDe3);
+			messageElement = this.createMessageElement(messageEDe3, alphaEDe3);
 			signature = (Pair) this.sign(messageElement);
 			signatureString = signature.getBigInteger().toString(10);
 			alphaEDe3.add("signature", new StringValue(signatureString));
@@ -369,49 +370,93 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	}
 
 	public Element sign(Element message) {
-		String pStr
-				= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
-		String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
-		String gStr
-				= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
+	String pStr
+		= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
+	String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
+	String gStr
+		= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
 
-		GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
-		GStarModElement g = g_q.getElement(new BigInteger(gStr));
-
-		String xStr
-				= "51516542789660752564970758874585026766797080570786905454441989426850471029242";
-		String yStr
-				= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, HASH_METHOD);
-		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(new BigInteger(xStr));
+	GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
+	GStarModElement g = g_q.getElement(new BigInteger(gStr));
+	
+	String xStr
+		= "51516542789660752564970758874585026766797080570786905454441989426850471029242";
+	String yStr
+		= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
+	SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, HASH_METHOD);
+	Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(new BigInteger(xStr));
 //	new BigInteger(yStr)), message, schnorr.sign(privateKeyElement, message)));
-		return schnorr.sign(privateKeyElement, message);
-	}
+	return schnorr.sign(privateKeyElement, message);
+    }
 
-	protected boolean checkDLSignature(byte[] message, Attributes alpha) {
-		String pStr
-				= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
-		String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
-		String gStr
-				= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
+    protected boolean checkDLSignature(byte[] message, Attributes alpha) {
+	String pStr
+		= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
+	String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
+	String gStr
+		= sigSetup.getGhat();//"109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
 
-		GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
-		GStarModElement g = g_q.getElement(new BigInteger(gStr));
+	GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
+	GStarModElement g = g_q.getElement(new BigInteger(gStr));
 
-		String yStr = ((StringValue) alpha.getValue("publickey")).getValue();
-		//= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
+	String yStr = ((StringValue) alpha.getValue("publickey")).getValue();
+	String ystr2 = "30818902818102D0F7695E25E6F3C1029E3F3C18933A9EAA2014C89B102567F0F050FBB3FE0048D6E73CF594241F51E6313BA26A71CB9FE6484E3E507D6EE257A0FE5B535D3517EE53CF21BAAD476CF8645E751FFE0ABEF0E317730154C26E63D498A488BD05BD43D6164932FD2CE27327CDD154808485639EC779DDCBE472FA2E04E13019F6690203010001";
+	String signature = ((StringValue) alpha.getValue("signature")).getValue();
 
-		Element messageElement = this.createMessageElement(message, alpha);
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
-				messageElement.getSet(), g, HASH_METHOD);
-		Element publicKey = schnorr.getVerificationKeySpace()
-				.getElement(new BigInteger(yStr));
-		System.out.println("alpha " + alpha);
-		String signature = ((StringValue) alpha.getValue("signature")).getValue();
-		System.out.println("signature: " + signature);
-		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
-		return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
-	}
+	Element messageElement = this.createMessageElement(message, alpha);
+	SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
+		messageElement.getSet(), g, HASH_METHOD);
+	Element publicKey = schnorr.getVerificationKeySpace()
+		.getElement(new BigInteger(yStr));
+	System.out.println("alpha "+alpha);
+	System.out.println("signature: " + signature);
+	Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
+	return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
+    }
+//	public Element sign(Element message) {
+//		String pStr
+//				= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
+//		String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
+//		String gStr
+//				= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
+//
+//		GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
+//		GStarModElement g = g_q.getElement(new BigInteger(gStr));
+//
+//		String xStr
+//				= "51516542789660752564970758874585026766797080570786905454441989426850471029242";
+//		String yStr
+//				= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
+//		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, HASH_METHOD);
+//		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(new BigInteger(xStr));
+////	new BigInteger(yStr)), message, schnorr.sign(privateKeyElement, message)));
+//		return schnorr.sign(privateKeyElement, message);
+//	}
+//
+//	protected boolean checkDLSignature(byte[] message, Attributes alpha) {
+//		String pStr
+//				= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
+//		String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
+//		String gStr
+//				= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
+//
+//		GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
+//		GStarModElement g = g_q.getElement(new BigInteger(gStr));
+//
+//		String yStr = ((StringValue) alpha.getValue("publickey")).getValue();
+//		//= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
+//
+//		Element messageElement = this.createMessageElement(message, alpha);
+//		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
+//				messageElement.getSet(), g, HASH_METHOD);
+//		Element publicKey = schnorr.getVerificationKeySpace()
+//				.getElement(new BigInteger(yStr));
+//		System.out.println("alpha " + alpha);
+//		String signature = ((StringValue) alpha.getValue("signature")).getValue();
+//		System.out.println("signature: " + signature);
+//		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
+//		return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
+//	}
 
 //    public boolean verify(Element message, String signature) {
 //	String[] sigValues = signature.split(",");
@@ -473,93 +518,185 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 		return new String(hexChars);
 	}
 
+//	protected Element createMessageElement(byte[] message, Attributes alpha) {
+//		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+//		Z z = Z.getInstance();
+//		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+//		Element messageElement = byteSpace.getElement(message);
+//		List<Element> alphaElements = new ArrayList<>();
+//		//itterate over alpha until one reaches the property = signature
+//		for (Map.Entry<String, Value> e : alpha.getEntries()) {
+//			if (e.getKey().equals("signature")) {
+//				break;
+//			}
+//			Element tmp;
+//			if (e.getValue() instanceof ByteArrayValue) {
+//				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
+//				alphaElements.add(tmp);
+//			} else if (e.getValue() instanceof DateValue) {
+//				TimeZone timeZone = TimeZone.getTimeZone("UTC");
+//				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//				dateFormat.setTimeZone(timeZone);
+//				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
+//				tmp = stringSpace.getElement(stringDate);
+//				alphaElements.add(tmp);
+//			} else if (e.getValue() instanceof IntegerValue) {
+//				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
+//				alphaElements.add(tmp);
+//			} else if (e.getValue() instanceof StringValue) {
+//				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
+//				alphaElements.add(tmp);
+//			} else {
+//				logger.log(Level.SEVERE, "Unsupported Value type.");
+//			}
+//		}
+//		DenseArray immuElements = DenseArray.getInstance(alphaElements);
+//		Element alphaElement = Tuple.getInstance(immuElements);
+//		return Pair.getInstance(messageElement, alphaElement);
+//	}
+//
+//	protected Element createMessageElement(byte[] message, Attributes alpha, Attributes beta) {
+//		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+//		Element messageElement = byteSpace.getElement(message);
+//		List<Element> alphaElements = new ArrayList<>();
+//		for (Map.Entry<String, Value> e : alpha.getEntries()) {
+//			Element element = this.createValueElement(e.getValue());
+//			if (element != null) {
+//				alphaElements.add(element);
+//			}
+//		}
+//		DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
+//		Element alphaElement = Tuple.getInstance(alphaDenseElements);
+//		List<Element> betaElements = new ArrayList<>();
+//		for (Map.Entry<String, Value> e : beta.getEntries()) {
+//			if (e.getKey().equals("boardSignature")) {
+//				continue;
+//			}
+//
+//			Element element = this.createValueElement(e.getValue());
+//			if (element != null) {
+//				betaElements.add(element);
+//			}
+//		}
+//		DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
+//		Element betaElement = Tuple.getInstance(beteDenseElements);
+//
+//		return Tuple.getInstance(messageElement, alphaElement, betaElement);
+//	}
+//
+//	protected Element createValueElement(Value value) {
+//		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+//		Z z = Z.getInstance();
+//		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+//		if (value instanceof ByteArrayValue) {
+//			return byteSpace.getElement(((ByteArrayValue) value).getValue());
+//		} else if (value instanceof DateValue) {
+//			TimeZone timeZone = TimeZone.getTimeZone("UTC");
+//			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//			dateFormat.setTimeZone(timeZone);
+//			String stringDate = dateFormat.format(((DateValue) value).getValue());
+//			return stringSpace.getElement(stringDate);
+//		} else if (value instanceof IntegerValue) {
+//			return z.getElement(((IntegerValue) value).getValue());
+//		} else if (value instanceof StringValue) {
+//			return stringSpace.getElement(((StringValue) value).getValue());
+//		} else {
+//			logger.log(Level.SEVERE, "Unsupported Value type.");
+//			return null;
+//		}
+//	}
+	
 	protected Element createMessageElement(byte[] message, Attributes alpha) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
-		Z z = Z.getInstance();
-		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-		Element messageElement = byteSpace.getElement(message);
-		List<Element> alphaElements = new ArrayList<>();
-		//itterate over alpha until one reaches the property = signature
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-			if (e.getKey().equals("signature")) {
-				break;
-			}
-			Element tmp;
-			if (e.getValue() instanceof ByteArrayValue) {
-				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof DateValue) {
-				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				dateFormat.setTimeZone(timeZone);
-				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
-				tmp = stringSpace.getElement(stringDate);
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof IntegerValue) {
-				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof StringValue) {
-				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else {
-				logger.log(Level.SEVERE, "Unsupported Value type.");
-			}
-		}
-		DenseArray immuElements = DenseArray.getInstance(alphaElements);
-		Element alphaElement = Tuple.getInstance(immuElements);
-		return Pair.getInstance(messageElement, alphaElement);
+	StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+	Z z = Z.getInstance();
+	ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+	Element messageElement = byteSpace.getElement(message);
+	List<Element> alphaElements = new ArrayList<>();
+	//itterate over alpha until one reaches the property = signature
+	for (Map.Entry<String, Value> e : alpha.getEntries()) {
+	    if (e.getKey().equals("signature")) {
+		break;
+	    }
+	    Element tmp;
+	    if (e.getValue() instanceof ByteArrayValue) {
+		tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
+		alphaElements.add(tmp);
+	    } else if (e.getValue() instanceof DateValue) {
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		dateFormat.setTimeZone(timeZone);
+		String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
+		tmp = stringSpace.getElement(stringDate);
+		alphaElements.add(tmp);
+	    } else if (e.getValue() instanceof IntegerValue) {
+		tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
+		alphaElements.add(tmp);
+	    } else if (e.getValue() instanceof StringValue) {
+		tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
+		alphaElements.add(tmp);
+	    } else {
+		logger.log(Level.SEVERE, "Unsupported Value type.");
+	    }
 	}
+	DenseArray immuElements = DenseArray.getInstance(alphaElements);
+	Element alphaElement = Tuple.getInstance(immuElements);
+	System.out.println("message hash: "+messageElement.getHashValue(HASH_METHOD));
+	System.out.println("alpha hash: "+alphaElement.getHashValue(HASH_METHOD));
+	System.out.println("post element: "+Pair.getInstance(messageElement, alphaElement));
+	System.out.println("post hash: "+Pair.getInstance(messageElement, alphaElement).getHashValue(HASH_METHOD));
+	return Pair.getInstance(messageElement, alphaElement);
+    }
 
-	protected Element createMessageElement(byte[] message, Attributes alpha, Attributes beta) {
-		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-		Element messageElement = byteSpace.getElement(message);
-		List<Element> alphaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-			Element element = this.createValueElement(e.getValue());
-			if (element != null) {
-				alphaElements.add(element);
-			}
-		}
-		DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
-		Element alphaElement = Tuple.getInstance(alphaDenseElements);
-		List<Element> betaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : beta.getEntries()) {
-			if (e.getKey().equals("boardSignature")) {
-				continue;
-			}
-
-			Element element = this.createValueElement(e.getValue());
-			if (element != null) {
-				betaElements.add(element);
-			}
-		}
-		DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
-		Element betaElement = Tuple.getInstance(beteDenseElements);
-
-		return Tuple.getInstance(messageElement, alphaElement, betaElement);
+    protected Element createMessageElement(byte[] message, Attributes alpha, Attributes beta) {
+	ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+	Element messageElement = byteSpace.getElement(message);
+	List<Element> alphaElements = new ArrayList<>();
+	for (Map.Entry<String, Value> e : alpha.getEntries()) {
+	    Element element = this.createValueElement(e.getValue());
+	    if (element != null) {
+		alphaElements.add(element);
+	    }
 	}
+	DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
+	Element alphaElement = Tuple.getInstance(alphaDenseElements);
+	List<Element> betaElements = new ArrayList<>();
+	for (Map.Entry<String, Value> e : beta.getEntries()) {
+	    if (e.getKey().equals("boardSignature")) {
+		continue;
+	    }
 
-	protected Element createValueElement(Value value) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
-		Z z = Z.getInstance();
-		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-		if (value instanceof ByteArrayValue) {
-			return byteSpace.getElement(((ByteArrayValue) value).getValue());
-		} else if (value instanceof DateValue) {
-			TimeZone timeZone = TimeZone.getTimeZone("UTC");
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-			dateFormat.setTimeZone(timeZone);
-			String stringDate = dateFormat.format(((DateValue) value).getValue());
-			return stringSpace.getElement(stringDate);
-		} else if (value instanceof IntegerValue) {
-			return z.getElement(((IntegerValue) value).getValue());
-		} else if (value instanceof StringValue) {
-			return stringSpace.getElement(((StringValue) value).getValue());
-		} else {
-			logger.log(Level.SEVERE, "Unsupported Value type.");
-			return null;
-		}
+	    Element element = this.createValueElement(e.getValue());
+	    if (element != null) {
+		betaElements.add(element);
+	    }
 	}
+	DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
+	Element betaElement = Tuple.getInstance(beteDenseElements);
+
+	return Tuple.getInstance(messageElement, alphaElement, betaElement);
+    }
+
+    protected Element createValueElement(Value value) {
+	StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+	Z z = Z.getInstance();
+	ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
+	if (value instanceof ByteArrayValue) {
+	    return byteSpace.getElement(((ByteArrayValue) value).getValue());
+	} else if (value instanceof DateValue) {
+	    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	    dateFormat.setTimeZone(timeZone);
+	    String stringDate = dateFormat.format(((DateValue) value).getValue());
+	    return stringSpace.getElement(stringDate);
+	} else if (value instanceof IntegerValue) {
+	    return z.getElement(((IntegerValue) value).getValue());
+	} else if (value instanceof StringValue) {
+	    return stringSpace.getElement(((StringValue) value).getValue());
+	} else {
+	    logger.log(Level.SEVERE, "Unsupported Value type.");
+	    return null;
+	}
+    }
 
 	private List<LocalizedText> createLocalizedText(String english, String german, String french) {
 		List<LocalizedText> texts = new ArrayList<>();
