@@ -122,7 +122,6 @@ public class AccessControlledService extends PostComponent implements PostServic
 		//Contraint for the publickey
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> sListKey = new ArrayList<>();
-		sListKey.add(AUTH);
 		sListKey.add(ATTRIBUTE_NAME_CRYPTO);
 		sListKey.add(ATTRIBUTE_NAME_PUBLICKEY);
 		Constraint cKey = new Equal(new MessageIdentifier(sListKey), alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
@@ -130,7 +129,6 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 		//Contraint of the group in the message
 		List<String> sListGroup = new ArrayList<>();
-		sListGroup.add(AUTH);
 		sListGroup.add(GROUPED);
 		Constraint cGroup = new Equal(new MessageIdentifier(sListGroup), alpha.getValue(GROUPED));
 		constraints.add(cGroup);
@@ -168,19 +166,11 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 		DateValue currentPostTime = (DateValue) beta.getValue(CHRONOLOGICAL);
 		try {
-			logger.info("message: " + JsonLoader.fromString(new String(authPost.getMessage(), Charset.forName("UTF-8"))));
 			JsonNode data = JsonLoader.fromString(new String(authPost.getMessage(), Charset.forName("UTF-8")));
 			ObjectMapper mapper = new ObjectMapper();
 
 			//Check the signature
-//			JsonNode key = data.get(ATTRIBUTE_NAME_CRYPTO);
-			//TODO @Sevi: in the db you manually inserted a message message { group: "...", crypto: {...}}
-			//But the query expects a message in the form  { accessRight:  { group: "...", crypto: {...} } }
-			//However, here, again you expect an object without { accessRight: { ... } }
-			//I temporarily solve this with folowwing line, but please check this again and adapt it as 
-			//you want to have it
-			//I also commented out the tests in ServiceTest!!
-			JsonNode key = data.get(AUTH).get(ATTRIBUTE_NAME_CRYPTO);
+			JsonNode key = data.get(ATTRIBUTE_NAME_CRYPTO);
 			
 			String type = key.get("type").textValue();
 
