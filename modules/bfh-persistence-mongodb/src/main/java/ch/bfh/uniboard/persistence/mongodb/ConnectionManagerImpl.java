@@ -62,7 +62,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 		Properties props = cm.getConfiguration(CONFIG_NAME);
 
 		if (props == null) {
-			logger.log(Level.SEVERE, "Confiugration could not be loaded.");
+			logger.log(Level.SEVERE, "Configuration could not be loaded.");
 			return;
 		}
 		//DB Connection Information

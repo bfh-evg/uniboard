@@ -22,6 +22,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Map.Entry;
@@ -66,7 +67,7 @@ public class PersistedPost extends Post {
 		BasicDBObject doc = new BasicDBObject();
 
 		//Save raw message
-		doc.put("message", message);
+		doc.put("message", Base64.encode(message));
 
 		//Check if message is a JSON message
 		DBObject jsonMessageContent = null;
@@ -109,7 +110,14 @@ public class PersistedPost extends Post {
 	public static PersistedPost fromDBObject(DBObject doc) {
 		PersistedPost pp = new PersistedPost();
 
-		pp.message = (byte[]) doc.get("message");
+		//TODO remove try catch when DB will be cleaned
+		//this is only needed since some messages in MongoDB are not byte array
+		//but string (historical reasons
+		try{
+		    pp.message = Base64.decode((String) doc.get("message"));
+		} catch(ClassCastException e){
+		    pp.message = JSON.serialize(doc.get("message")).getBytes();
+		}
 
 		//fill alpha attributes
 		Attributes alpha = new Attributes();
