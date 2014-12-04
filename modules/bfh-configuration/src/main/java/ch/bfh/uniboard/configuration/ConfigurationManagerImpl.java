@@ -50,7 +50,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 			javax.naming.InitialContext ic = new javax.naming.InitialContext();
 			props = (Properties) ic.lookup(JNDI_URI);
 		} catch (NamingException ex) {
-			logger.log(Level.SEVERE, "JNDI lookup for '/uniboard/configuration' failed."
+			logger.log(Level.SEVERE, "JNDI lookup for " + JNDI_URI + " failed."
 					+ "ConfigurationManager could not be initialized. Exception: {0}",
 					new Object[]{ex});
 			return;

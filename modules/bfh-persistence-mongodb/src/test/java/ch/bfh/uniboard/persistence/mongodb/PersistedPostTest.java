@@ -174,7 +174,7 @@ public class PersistedPostTest {
 
 		DBObject dbObj = pp2.toDBObject();
 
-		assertEquals(jsonMessage, JSON.serialize(dbObj.get("message")));
+		assertEquals(jsonMessage, JSON.serialize(dbObj.get("searchable-message")));
 
 		PersistedPost pp3 = PersistedPost.fromDBObject(dbObj);
 

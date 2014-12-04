@@ -105,7 +105,8 @@ public class PersistenceService implements PostService, GetService {
 				//constructs the key
 				String keyString = "";
 				if (c.getIdentifier() instanceof MessageIdentifier) {
-					keyString += "message";
+					//TODO constraint that wants to compare the raw byte[]
+					keyString += "searchable-message";
 				} else if (c.getIdentifier() instanceof AlphaIdentifier) {
 					keyString += "alpha";
 				} else if (c.getIdentifier() instanceof BetaIdentifier) {

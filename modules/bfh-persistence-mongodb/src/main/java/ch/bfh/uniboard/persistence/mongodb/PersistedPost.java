@@ -65,6 +65,9 @@ public class PersistedPost extends Post {
     public BasicDBObject toDBObject() {
 		BasicDBObject doc = new BasicDBObject();
 
+		//Save raw message
+		doc.put("message", message);
+
 		//Check if message is a JSON message
 		DBObject jsonMessageContent = null;
 		try {
@@ -75,11 +78,8 @@ public class PersistedPost extends Post {
 
 		if (jsonMessageContent != null) {
 			//save message as JSON content
-			DBObject jsonMessage = new BasicDBObject("message", jsonMessageContent);
+			DBObject jsonMessage = new BasicDBObject("searchable-message", jsonMessageContent);
 			doc.putAll(jsonMessage);
-		} else {
-			//save message as byte[]
-			doc.put("message", message);
 		}
 
 		//Prepares the Alpha attributes
@@ -109,18 +109,7 @@ public class PersistedPost extends Post {
 	public static PersistedPost fromDBObject(DBObject doc) {
 		PersistedPost pp = new PersistedPost();
 
-		//Check if message is a JSON message
-		if (doc.get("message") instanceof BasicDBObject) {
-			//is a JSON string
-			try {
-				pp.message = JSON.serialize(doc.get("message")).getBytes("UTF-8");
-			} catch (UnsupportedEncodingException ex) {
-				Logger.getLogger(PersistedPost.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		} else {
-			//otherwise is a byte[]
-			pp.message = (byte[]) doc.get("message");
-		}
+		pp.message = (byte[]) doc.get("message");
 
 		//fill alpha attributes
 		Attributes alpha = new Attributes();
