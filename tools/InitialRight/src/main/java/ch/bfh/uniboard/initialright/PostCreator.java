@@ -81,7 +81,7 @@ public class PostCreator {
 		Z z = Z.getInstance();
 
 		Element messageElement = byteSpace.getElement(message);
-
+		
 		List<Element> alphaElements = new ArrayList<>();
 		for (Map.Entry<String, Value> e : alpha.getEntries()) {
 			Element tmp;
@@ -106,6 +106,7 @@ public class PostCreator {
 		}
 		DenseArray immuElements = DenseArray.getInstance(alphaElements);
 		Element alphaElement = Tuple.getInstance(immuElements);
+				
 		return Pair.getInstance(messageElement, alphaElement);
 	}
 
@@ -148,27 +149,27 @@ public class PostCreator {
 			Element tmp;
 			if (e.getValue() instanceof ByteArrayValue) {
 				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
+				betaElements.add(tmp);
 			} else if (e.getValue() instanceof DateValue) {
 				TimeZone timeZone = TimeZone.getTimeZone("UTC");
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 				dateFormat.setTimeZone(timeZone);
 				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
 				tmp = stringSpace.getElement(stringDate);
-				alphaElements.add(tmp);
+				betaElements.add(tmp);
 			} else if (e.getValue() instanceof IntegerValue) {
 				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
+				betaElements.add(tmp);
 			} else if (e.getValue() instanceof StringValue) {
 				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
+				betaElements.add(tmp);
 			}
 
 		}
 		DenseArray immuElements2 = DenseArray.getInstance(betaElements);
 		Element betaElement = Tuple.getInstance(immuElements2);
 		Element toSign = Tuple.getInstance(messageElement, alphaElement, betaElement);
-
+		
 		GStarModPrime g_q = GStarModPrime.getInstance(dsaPrivKey.getParams().getP(), dsaPrivKey.getParams().getQ());
 		GStarModElement g = g_q.getElement(dsaPrivKey.getParams().getG());
 		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(toSign.getSet(), g, HASH_METHOD);

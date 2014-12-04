@@ -39,7 +39,7 @@ public class MainUVRight {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String keyStorePath = "/home/hss3/Documents/UniVote.jks";
+		String keyStorePath = "/home/phil/UniVote.jks";
 		String keyStorePass = "123456";
 		String boardAlias = "uniboardvote";
 		String boardPKPass = "123456";
@@ -91,7 +91,7 @@ public class MainUVRight {
 		alpha.add("group", new StringValue("accessRight"));
 		Element ubMsgSig = PostCreator.createAlphaSignatureWithDL(message1, alpha, dsaPrivKey);
 		alpha.add("signature", new StringValue(ubMsgSig.getBigInteger().toString(10)));
-		alpha.add("key", new StringValue(uniboardPublicKey.toString(10)));
+		alpha.add("publickey", new StringValue(uniboardPublicKey.toString(10)));
 
 		Attributes beta = new Attributes();
 		beta.add("timestamp", new DateValue(new Date()));
@@ -118,7 +118,7 @@ public class MainUVRight {
 		alpha2.add("group", new StringValue("accessRight"));
 		Element ucMsgSig = PostCreator.createAlphaSignatureWithDL(message2, alpha2, dsaPrivKey);
 		alpha2.add("signature", new StringValue(ucMsgSig.getBigInteger().toString(10)));
-		alpha2.add("key", new StringValue(electionCoordinatorPublicKey.toString(10)));
+		alpha2.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta2 = new Attributes();
 		beta2.add("timestamp", new DateValue(new Date()));

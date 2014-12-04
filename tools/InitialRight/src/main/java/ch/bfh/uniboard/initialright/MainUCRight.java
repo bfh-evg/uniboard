@@ -84,7 +84,7 @@ public class MainUCRight {
 		alpha.add("group", new StringValue("accessRight"));
 		Element ubMsgSig = PostCreator.createAlphaSignatureWithDL(authorization, alpha, dsaPrivKey);
 		alpha.add("signature", new StringValue(ubMsgSig.getBigInteger().toString(10)));
-		alpha.add("key", new StringValue(uniboardPublicKey.toString(10)));
+		alpha.add("publickey", new StringValue(uniboardPublicKey.toString(10)));
 
 		Attributes beta = new Attributes();
 		beta.add("timestamp", new DateValue(new Date()));
@@ -105,7 +105,7 @@ public class MainUCRight {
 		alpha2.add("group", new StringValue("accessRight"));
 		Element ucMsgSig = PostCreator.createAlphaSignatureWithRSA(authorization2, alpha2, rsaPrivKey);
 		alpha2.add("signature", new StringValue(ucMsgSig.getBigInteger().toString(10)));
-		alpha2.add("key", new StringValue(unicertPublicKey.toString(10)));
+		alpha2.add("publickey", new StringValue(unicertPublicKey.toString(10)));
 
 		Attributes beta2 = new Attributes();
 		beta2.add("timestamp", new DateValue(new Date()));
