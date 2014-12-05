@@ -248,7 +248,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), data.get("amount").asInt()});
 					beta.add(Attributes.REJECTED,
-							new StringValue("BAC-005 Amount of allowed posts used up."));
+							new StringValue("BAC-007 Amount of allowed posts used up."));
 					return beta;
 				}
 			}
