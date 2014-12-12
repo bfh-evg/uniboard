@@ -45,7 +45,6 @@ class Tester {
 
     private static final String uniBoardUrl = "http://urd.bfh.ch:10080/UniBoardService/UniBoardServiceImpl";
     private static final String uniBoardWSDLurl = "http://urd.bfh.ch:10080/UniBoardService/UniBoardServiceImpl?wsdl";
-    private static final String section = "unicert";
 
     //keystore is available in SVN
     private static final String keystorePath = "/home/phil/UniVote.jks";
