@@ -138,19 +138,19 @@ public class PostHelper {
 	if (beta.getAttribute().get(0).getKey().contains("rejected") || beta.getAttribute().get(0).getKey().contains("error")) {
 	    String errorKey = beta.getAttribute().get(0).getKey();
 	    String error = ((StringValueDTO) beta.getAttribute().get(0).getValue()).getValue();
-	    logger.log(Level.SEVERE, "Error on posting: UniBoard response was {0}, description: {1}", new Object[]{
+	    logger.log(Level.SEVERE, "UniBoard response was {0}, description: {1}", new Object[]{
 		errorKey, error});
 	    throw new BoardErrorException(error);
 	} else {
 	    AttributeDTO attr = AttributeHelper.searchAttribute(beta, UniBoardAttributesName.BOARD_SIGNATURE.getName());
 	    if(attr==null){
-		logger.log(Level.SEVERE, "Error on posting: no board signature found");
-		throw new PostException("Error on posting: no board signature found");
+		logger.log(Level.SEVERE, "No board signature found");
+		throw new PostException("No board signature found");
 	    } else {
 		String boardSig = ((StringValueDTO)attr.getValue()).getValue();
 		if(!this.signatureVerificatorHelper.verify(message, alpha, beta, new BigInteger(boardSig, 10))){
-		    logger.log(Level.SEVERE, "Error on posting: UniBoard signature is wrong");
-		    throw new PostException("Error on posting: UniBoard signature is wrong");
+		    logger.log(Level.SEVERE, "UniBoard signature is invalid");
+		    throw new PostException("UniBoard signature is invalid");
 		} else {
 		    return beta;
 		}

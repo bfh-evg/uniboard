@@ -112,6 +112,20 @@ public abstract class SignatureHelper {
     }
 
     /**
+     * Verify poster signature containing message and user attributes
+     * @param message message posted
+     * @param alpha user attributes that must also be signed
+     * @param signature signature to verify
+     * @return true if signature is valid, false otherwise
+     * @throws SignatureException when error occured during signature verification
+     */
+    public boolean verify(byte[] message, AttributesDTO alpha, BigInteger signature) throws
+	    SignatureException {
+	Element messageElement = prepareElement(message, alpha);
+	return verify(messageElement, signature);
+    }
+    
+    /**
      * Verify board signature containing message, user attributes and board attributes
      *
      * @param message posted message
@@ -263,18 +277,23 @@ public abstract class SignatureHelper {
     }
 
     /**
-     * 
-     * @param query
-     * @param resultContainer
-     * @return 
+     * Helper method generating an UniCrypt element for a query and its results
+     * @param query the query
+     * @param resultContainer its results
+     * @return the UniCrypt element reprensenting the query and its results
      */
-    protected Element prepareElement(QueryDTO query, ResultContainerDTO resultContainer) {
+    private Element prepareElement(QueryDTO query, ResultContainerDTO resultContainer) {
 	Element queryElement = this.prepareQueryElement(query);
 	Element resultContainerElement = this.prepareResultContainerElement(resultContainer);
 	return Tuple.getInstance(queryElement, resultContainerElement);
     }
 
-    protected Element prepareIdentifierElement(IdentifierDTO identifier) {
+    /**
+     * Helper method generating an UniCrypt element for an Identifier
+     * @param identifier the identifier object to represent
+     * @return the UniCrypt element reprensenting the identifier
+     */
+    private Element prepareIdentifierElement(IdentifierDTO identifier) {
 	List<Element> identifierElements = new ArrayList<>();
 
 	if (identifier instanceof AlphaIdentifierDTO) {
@@ -295,7 +314,12 @@ public abstract class SignatureHelper {
 	return Tuple.getInstance(identifierDenseElements);
     }
 
-    protected Element prepareConstraintElement(ConstraintDTO constraint) {
+    /**
+     * Helper method generating an UniCrypt element for all types of Constraints
+     * @param constraint the constraint to represent
+     * @return the UniCrypt element reprensenting the constraint
+     */
+    private Element prepareConstraintElement(ConstraintDTO constraint) {
 	List<Element> constraintElements = new ArrayList<>();
 	if (constraint instanceof BetweenDTO) {
 	    constraintElements.add(STRING_SPACE.getElement("between"));
@@ -350,7 +374,12 @@ public abstract class SignatureHelper {
 	return Tuple.getInstance(constraintDenseElements);
     }
 
-    protected Element prepareOrderElement(OrderDTO order) {
+    /**
+     * Helper method generating an UniCrypt element for an Order object
+     * @param order the Order to represent
+     * @return the UniCrypt element reprensenting the Order
+     */
+    private Element prepareOrderElement(OrderDTO order) {
 	List<Element> orderElements = new ArrayList<>();
 	orderElements.add(this.prepareIdentifierElement(order.getIdentifier()));
 	orderElements.add(STRING_SPACE.getElement(Boolean.toString(order.isAscDesc())));
@@ -358,7 +387,12 @@ public abstract class SignatureHelper {
 	return Tuple.getInstance(orderDenseElements);
     }
 
-    protected Element prepareQueryElement(QueryDTO query) {
+    /**
+     * Helper method generating an UniCrypt element for a Query
+     * @param query the Query to represent
+     * @return the UniCrypt element reprensenting the Query
+     */
+    private Element prepareQueryElement(QueryDTO query) {
 
 	List<Element> constraintsElements = new ArrayList<>();
 	for (ConstraintDTO c : query.getConstraint()) {
@@ -380,43 +414,16 @@ public abstract class SignatureHelper {
 	return Tuple.getInstance(contraints, orders, limit);
     }
 
-    
-    
-//    protected Element preparePostElement(PostDTO post) {
-//	ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-//
-//	Element messageElement = byteSpace.getElement(post.getMessage());
-//
-//	List<Element> alphaElements = new ArrayList<>();
-//	for (AttributeDTO e : post.getAlpha().getAttribute()) {
-//	    Element element = this.prepareValueElement(e.getValue());
-//	    if (element != null) {
-//		alphaElements.add(element);
-//
-//	    }
-//	}
-//	DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
-//	Element alphaElement = Tuple.getInstance(alphaDenseElements);
-//
-//	List<Element> betaElements = new ArrayList<>();
-//	for (AttributeDTO e : post.getBeta().getAttribute()) {
-//	    Element element = this.prepareValueElement(e.getValue());
-//	    if (element != null) {
-//		betaElements.add(element);
-//	    }
-//	}
-//	DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
-//	Element betaElement = Tuple.getInstance(beteDenseElements);
-//
-//	return Tuple.getInstance(messageElement, alphaElement, betaElement);
-//    }
-
-    protected Element prepareResultContainerElement(ResultContainerDTO resultContainer) {
+    /**
+     * Helper method generating an UniCrypt element for a ResultContainer
+     * @param resultContainer the ResultContainer to represent
+     * @return the UniCrypt element reprensenting the ResultContainer
+     */
+    private Element prepareResultContainerElement(ResultContainerDTO resultContainer) {
 
 	List<Element> postElements = new ArrayList<>();
 	for (PostDTO p : resultContainer.getResult().getPost()) {
 	    postElements.add(this.prepareElement(p.getMessage(), p.getAlpha(), p.getBeta(), null));
-//	    postElements.add(this.preparePostElement(p));
 	}
 	DenseArray postDenseElements = DenseArray.getInstance(postElements);
 	Element postElement = Tuple.getInstance(postDenseElements);

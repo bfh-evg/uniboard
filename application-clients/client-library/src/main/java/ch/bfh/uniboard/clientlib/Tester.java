@@ -15,9 +15,11 @@ import ch.bfh.uniboard.data.AlphaIdentifierDTO;
 import ch.bfh.uniboard.data.ConstraintDTO;
 import ch.bfh.uniboard.data.EqualDTO;
 import ch.bfh.uniboard.data.OrderDTO;
+import ch.bfh.uniboard.data.PostDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
 import ch.bfh.uniboard.data.StringValueDTO;
+import ch.bfh.unicrypt.helper.MathUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -65,10 +67,15 @@ class Tester {
      */
     public static void main(String[] args) throws Exception {
 
+	/**************************************************************************************************************
+	 *  POST
+	 *************************************************************************************************************/
 	KeyStore ks = loadKeyStore(keystorePath, keystorePass);
 
 	PrivateKey privKey = (RSAPrivateCrtKey) ks.getKey("test", privKeyPass.toCharArray());
 	RSAPublicKey pubKey = (RSAPublicKey)ks.getCertificate("test").getPublicKey();
+	
+	String posterPublicKey = MathUtil.pair(pubKey.getPublicExponent(), pubKey.getModulus()).toString(10);
 		
 	PostHelper ph = new PostHelper(pubKey, privKey, ks.getCertificate(
 		"uniboardvote").getPublicKey(), uniBoardWSDLurl, uniBoardUrl);
@@ -80,11 +87,18 @@ class Tester {
 	    System.out.println("Error during posting: " + e.getMessage());
 	}
 	
+	/**************************************************************************************************************
+	 *  GET
+	 *************************************************************************************************************/
+	
 	GetHelper gh = new GetHelper(ks.getCertificate(
 		"uniboardvote").getPublicKey(), uniBoardWSDLurl, uniBoardUrl);
 	
 	List<ConstraintDTO> contraints = new ArrayList<>();
-	contraints.add(new EqualDTO(new AlphaIdentifierDTO(Collections.singletonList("group")), new StringValueDTO("ballot")));
+	contraints.add(new EqualDTO(new AlphaIdentifierDTO(Collections.singletonList(UniBoardAttributesName.GROUP
+		.getName())), new StringValueDTO("ballot")));
+	contraints.add(new EqualDTO(new AlphaIdentifierDTO(Collections.singletonList(UniBoardAttributesName.PUBLIC_KEY
+		.getName())), new StringValueDTO(posterPublicKey)));
 	
 	List<OrderDTO> orders = new ArrayList<>();
 	orders.add(new OrderDTO(new AlphaIdentifierDTO(Collections.singletonList("group")), true));
@@ -93,6 +107,14 @@ class Tester {
 	    QueryDTO q = new QueryDTO(contraints, orders, 0);
 	    ResultContainerDTO rc =  gh.get(q);
 	    System.out.println("Query returned "+rc.getResult().getPost().size()+" posts");
+	    
+	    //VERIFICATION OF POSTER SIGNATURES
+	    for(PostDTO p: rc.getResult().getPost()){
+		if(!gh.verifyPosterSignature(p, pubKey)){
+		    System.out.println("Poster signature for post "+ p+" is invalid");
+		}
+	    }
+	    System.out.println("Poster signatures verified");
 	} catch (GetException e) {
 	    System.out.println("Error during get: " + e.getMessage());
 	}
