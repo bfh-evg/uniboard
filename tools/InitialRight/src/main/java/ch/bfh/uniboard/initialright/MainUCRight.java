@@ -42,7 +42,7 @@ public class MainUCRight {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String keyStorePath = "/home/hss3/Documents/UniCert.jks";
+		String keyStorePath = "/home/phil/UniCert.jks";
 		String keyStorePass = "123456";
 		String boardAlias = "uniboardcert";
 		String boardPKPass = "123456";
