@@ -41,7 +41,7 @@ import java.util.List;
  *
  * @author Philémon von Bergen
  */
-class Tester {
+class Example {
 
     private static final String uniBoardUrl = "http://urd.bfh.ch:10080/UniBoardService/UniBoardServiceImpl";
     private static final String uniBoardWSDLurl = "http://urd.bfh.ch:10080/UniBoardService/UniBoardServiceImpl?wsdl";

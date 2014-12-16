@@ -67,8 +67,8 @@ public class GetHelper {
 	try {
 	    URL wsdlLocation = new URL(boardWSDLLocation);
 	    QName qname = new QName("http://uniboard.bfh.ch/", "UniBoardService");
-	    UniBoardService_Service mixingService = new UniBoardService_Service(wsdlLocation, qname);
-	    board = mixingService.getUniBoardServicePort();
+	    UniBoardService_Service ubService = new UniBoardService_Service(wsdlLocation, qname);
+	    board = ubService.getUniBoardServicePort();
 	    BindingProvider bp = (BindingProvider) board;
 	    bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, boardEndpointURL);
 	} catch (Exception ex) {
@@ -78,6 +78,7 @@ public class GetHelper {
 
     /**
      * Execute a query on UniBoard
+     *
      * @param query the query to execute
      * @return the result container containing the result and the gamma attributes
      * @throws GetException thrown when a signature is not valid
@@ -121,6 +122,7 @@ public class GetHelper {
 
     /**
      * Helper method to verify poster's signature of a post
+     *
      * @param post the post to verify
      * @param posterPublicKey the public key of the poster
      * @return true if signature is valid, false otherwise
@@ -144,7 +146,7 @@ public class GetHelper {
 	}
 
 	String posterSig = ((StringValueDTO) attr.getValue()).getValue();
-	return sigHelper.verify(post.getMessage(), post.getAlpha(), new BigInteger(posterSig,10));
+	return sigHelper.verify(post.getMessage(), post.getAlpha(), new BigInteger(posterSig, 10));
     }
 
 }
