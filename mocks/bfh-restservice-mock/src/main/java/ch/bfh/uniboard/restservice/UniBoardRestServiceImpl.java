@@ -11,6 +11,9 @@
  */
 package ch.bfh.uniboard.restservice;
 
+import ch.bfh.uniboard.clientlib.KeyHelper;
+import ch.bfh.uniboard.clientlib.signaturehelper.SchnorrSignatureHelper;
+import ch.bfh.uniboard.clientlib.signaturehelper.SignatureException;
 import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
@@ -37,7 +40,6 @@ import ch.bfh.uniboard.restservice.mock.election.Vote;
 import ch.bfh.uniboard.restservice.mock.election.crypto.DLEncryptionSetting;
 import ch.bfh.uniboard.restservice.mock.election.crypto.DLSignatureSetting;
 import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.IntegerValue;
@@ -45,39 +47,24 @@ import ch.bfh.uniboard.service.Post;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
 import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
-import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
-import ch.bfh.unicrypt.helper.Alphabet;
-import ch.bfh.unicrypt.helper.MathUtil;
-import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.ByteArrayToByteArray;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.StringToByteArray;
 import ch.bfh.unicrypt.helper.hash.HashAlgorithm;
 import ch.bfh.unicrypt.helper.hash.HashMethod;
-import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
-import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
-import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
-import ch.bfh.unicrypt.math.algebra.general.classes.Pair;
-import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
-import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
-import ch.bfh.unicrypt.math.algebra.multiplicative.classes.GStarModElement;
-import ch.bfh.unicrypt.math.algebra.multiplicative.classes.GStarModPrime;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -101,92 +88,15 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 
     protected static final Logger logger = Logger.getLogger(UniBoardRestServiceImpl.class.getName());
 
-    @Override
-    public ResultContainerDTO query(QueryDTO queryDTO) {
-
-//	     try {
-//		Thread.sleep(5000);
-//	    } catch (InterruptedException ex) {
-//		Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-//	    }
-	Query query = null;
-	try {
-	    query = Transformer.convertQueryDTOtoQuery(queryDTO);
-	} catch (TransformException ex) {
-	    logger.log(Level.SEVERE, null, ex);
-	    throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-	}
-
-	logger.info("Retrieve posts using " + query);
-	logger.info(query.getConstraints().get(0).getIdentifier().getParts().get(0));
-
-	if (((Equal) query.getConstraints().get(0)).getValue().getValue().equals("electionDefinition")) {
-	    try {
-		//TODO gamma
-		Attributes gamma = new Attributes();
-		long time = new Date().getTime();
-		time = 1000 * (time / 1000);
-		gamma.add("timestamp", new DateValue(new Date(time)));
-
-		String signatureString = "signature";
-		gamma.add("boardSignature", new StringValue(signatureString));
-		return Transformer.convertResultContainertoResultContainerDTO(new ResultContainer(
-			electionDefinitionPosts, gamma));
-	    } catch (TransformException ex) {
-		Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-	    }
-	} else {
-	    try {
-		Attributes gamma = new Attributes();
-		long time = new Date().getTime();
-		time = 1000 * (time / 1000);
-		gamma.add("timestamp", new DateValue(new Date(time)));
-		Element rcElement = createMessageElement(electionDataPost.getMessage(), electionDataPost.
-			getAlpha(), electionDataPost.getBeta());
-		logger.log(Level.SEVERE, "RC element: " + rcElement);
-		logger.log(Level.SEVERE, "RC hash: " + rcElement.getHashValue(HASH_METHOD));
-		Pair signature = (Pair) this.sign(rcElement);
-		String signatureString = signature.getBigInteger().toString(10);
-		gamma.add("boardSignature", new StringValue(signatureString));
-
-		//TODO gamma
-		return Transformer.convertResultContainertoResultContainerDTO(new ResultContainer(Collections.
-			singletonList(electionDataPost), gamma));
-	    } catch (TransformException ex) {
-		Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-	    }
-	}
-
-	return null;
-    }
-
-    @Override
-    public AttributesDTO post(PostContainerDTO postContainer) {
-//	    try {
-//		Thread.sleep(5000);
-//	    } catch (InterruptedException ex) {
-//		Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-//	    }
-	try {
-	    byte[] message = DatatypeConverter.parseBase64Binary(postContainer.getMessage());
-	    Attributes alpha = Transformer.convertAttributesDTOtoAttributes(postContainer.getAlpha());
-	    Attributes beta = new Attributes();
-	    logger.info("Post message=" + DatatypeConverter.printBase64Binary(message) + ", alpha=" + alpha + ", beta="
-		    + beta);
-	    logger.info("Poster signature=" + checkDLSignature(message, alpha));
-	    beta.add("timestamp", new DateValue(new Date(System.currentTimeMillis())));
-	    beta.add("rank", new IntegerValue(1));
-
-	    Element messageElement = this.createMessageElement(message, alpha, beta);
-	    Pair signature = (Pair) this.sign(messageElement);
-	    String signatureString = signature.getBigInteger().toString(10);
-	    beta.add("boardSignature", new StringValue(signatureString));
-	    return Transformer.convertAttributesToDTO(beta);
-	} catch (TransformException ex) {
-	    logger.log(Level.SEVERE, null, ex);
-	    throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-	}
-    }
+    protected String pStr
+	    = "178011905478542266528237562450159990145232156369120674273274450314442865788737020770612695252123463079567156784778466449970650770920727857050009668388144034129745221171818506047231150039301079959358067395348717066319802262019714966524135060945913707594956514672855690606794135837542707371727429551343320695239";
+    protected String qStr = "864205495604807476120572616017955259175325408501";
+    protected String gStr
+	    = "174068207532402095185811980123523436538604490794561350978495831040599953488455823147851597408940950725307797094915759492368300574252438761037084473467180148876118103083043754985190983472601550494691329488083395492313850000361646482644608492304078721818959999056496097769368017749273708962006689187956744210730";
+    protected String xStr
+	    = "385077846528260480586609350949913694517105833486";
+    protected String yStr
+	    = "56046417983892736553802144126938027620541527748149798291772741324585401896629333631946067035048636852193599009683854669888084829275709016527803283969382064059277595434720007311044291973015468412076193860820267069585136814954876118357235567344941207775471304204747723868227800093861417983672494051114178304212";
 
     protected static final HashMethod HASH_METHOD = HashMethod.getInstance(
 	    HashAlgorithm.SHA256,
@@ -205,7 +115,81 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 
     private Post electionDataPost;
     private List<Post> electionDefinitionPosts;
+    private SchnorrSignatureHelper ecSignHelper;
+    private BoardSignatureHelper boardSignHelper;
 
+    @Override
+    public ResultContainerDTO query(QueryDTO queryDTO) {
+
+	Query query = null;
+	try {
+	    query = Transformer.convertQueryDTOtoQuery(queryDTO);
+	} catch (TransformException ex) {
+	    logger.log(Level.SEVERE, null, ex);
+	    throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+	}
+
+	logger.info("Retrieve posts using " + query);
+	logger.info(query.getConstraints().get(0).getIdentifier().getParts().get(0));
+
+	if (((Equal) query.getConstraints().get(0)).getValue().getValue().equals("electionDefinition")) {
+	    try {
+
+		Attributes gamma = new Attributes();
+		long time = new Date().getTime();
+		time = 1000 * (time / 1000);
+		gamma.add("timestamp", new DateValue(new Date(time)));
+
+		//TODO gamma: signature of query and result
+		String signatureString = "signature";
+		gamma.add("boardSignature", new StringValue(signatureString));
+		return Transformer.convertResultContainertoResultContainerDTO(new ResultContainer(
+			electionDefinitionPosts, gamma));
+	    } catch (TransformException ex) {
+		Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+	    }
+	} else {
+	    try {
+		Attributes gamma = new Attributes();
+		long time = new Date().getTime();
+		time = 1000 * (time / 1000);
+		gamma.add("timestamp", new DateValue(new Date(time)));
+		//TODO gamma: signature of query and result
+		String signatureString = "signature";
+
+		gamma.add("boardSignature", new StringValue(signatureString));
+		return Transformer.convertResultContainertoResultContainerDTO(new ResultContainer(Collections.
+			singletonList(electionDataPost), gamma));
+	    } catch (TransformException ex) {
+		Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+	    }
+	}
+
+	return null;
+    }
+
+    @Override
+    public AttributesDTO post(PostContainerDTO postContainer) {
+
+	try {
+	    byte[] message = DatatypeConverter.parseBase64Binary(postContainer.getMessage());
+	    Attributes alpha = Transformer.convertAttributesDTOtoAttributes(postContainer.getAlpha());
+	    Attributes beta = new Attributes();
+	    beta.add("timestamp", new DateValue(new Date(System.currentTimeMillis())));
+	    beta.add("rank", new IntegerValue(1));
+
+	    String signatureString = this.boardSignHelper.sign(message, alpha, beta).toString(10);
+	    beta.add("boardSignature", new StringValue(signatureString));
+	    return Transformer.convertAttributesToDTO(beta);
+	} catch (TransformException ex) {
+	    logger.log(Level.SEVERE, null, ex);
+	    throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+	}
+    }
+
+    /**
+     * Initialisation of data
+     */
     @PostConstruct
     public void init() {
 	logger.info("Initializing");
@@ -218,10 +202,6 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 		    properties);
 	    Marshaller marshallerElectionData = jc.createMarshaller();
 	    marshallerElectionData.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-//	    GsonBuilder builder = new GsonBuilder();
-//	    gson = builder.create();
-	    //standard g is used as ghat for this exampel => alpha = 1 => g^alpha=g
 	    sigSetup = new DLSignatureSetting(
 		    "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709",
 		    "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297",
@@ -232,13 +212,36 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 		    "63778655428513125263077645358087860829750849575795899638300113688358252648786809647305017749482821355817043121643934944930105619938822999454386535705240859928414246506025878579256825607988843162373903237853290588877390945745517094218992724334379382846080064427262839362532531673063144727863811101662670976313",
 		    "4", "1048576");
 
+	    try {
+		ecSignHelper = new SchnorrSignatureHelper(KeyHelper.
+			createDSAPrivateKey(new BigInteger(pStr), new BigInteger(qStr), new BigInteger(gStr),
+				new BigInteger(xStr)));
+		boardSignHelper = new BoardSignatureHelper();
+	    } catch (InvalidKeySpecException ex) {
+		logger.log(Level.SEVERE, null, ex);
+	    }
+
+	    /**
+	     * ***********************************************************************************
+	     */
+	    // Election Data
+	    /**
+	     * ***********************************************************************************
+	     */
 	    CandidateElection e = createCandidateElection();
 	    Vote v = createVote();
 	    PartyElection pe = createPartyElection2();
 
 	    List<Election> electionList = new ArrayList<>();
+	    /**
+	     * Data returned can be changed here. Client currently only supports one election at a time, so only one
+	     * line can be uncommented. Client currently does not support Votes.
+	     */
+	    //Candidate election (lists not selectable)
 //	    electionList.add(e);
+	    //Vote (yes/no/blank answer)
 //	    electionList.add(v);
+	    //Party election (lists and candidates are selectable)
 	    electionList.add(pe);
 	    MultiElection me = new MultiElection(electionList);
 
@@ -255,10 +258,8 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	    Attributes betaEDa = new Attributes();
 	    alphaEDa.add("section", new StringValue("electionid"));
 	    alphaEDa.add("group", new StringValue("electionData"));
-	    Element messageElement = this.createMessageElement(messageEDa, alphaEDa);
-//	    logger.log(Level.SEVERE, "direct hash: " + messageElement.getHashValue(HASH_METHOD));
-	    Pair signature = (Pair) this.sign(messageElement);
-	    String signatureString = signature.getBigInteger().toString(10);//signature.getAt(0).getBigInteger().toString(10) + "," + signature.getAt(1).getBigInteger().toString(10);
+	    String signatureString = this.ecSignHelper.sign(messageEDa, Transformer.convertAttributesToDTO(alphaEDa)).
+		    toString(10);
 	    alphaEDa.add("signature", new StringValue(signatureString));
 	    alphaEDa.add("publickey", new StringValue("ElectionCoordinatorKey"));
 
@@ -266,14 +267,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	    time = 1000 * (time / 1000);
 	    betaEDa.add("timestamp", new DateValue(new Date(time)));
 	    betaEDa.add("rank", new IntegerValue(1));
-
-	    messageElement = this.createMessageElement(messageEDa, alphaEDa, betaEDa);
-	    signature = (Pair) this.sign(messageElement);
-	    signatureString = signature.getBigInteger().toString(10);//signature.getAt(0).getBigInteger().toString(10) + "," + signature.getAt(1).getBigInteger().toString(10);
-//	    logger.log(Level.SEVERE, "sig string: "+signatureString);
-//	    logger.log(Level.SEVERE, "sig a: "+signature.getAt(0).getBigInteger().toString(10));
-//	    logger.log(Level.SEVERE, "sig b: "+signature.getAt(1).getBigInteger().toString(10));
-//	    logger.log(Level.SEVERE, "sig string: "+Arrays.deepToString(MathUtil.unpair(new BigInteger(signatureString))));
+	    signatureString = this.boardSignHelper.sign(messageEDa, alphaEDa, betaEDa).toString(10);
 	    betaEDa.add("boardSignature", new StringValue(signatureString));
 
 	    electionDataPost = new Post(messageEDa, alphaEDa, betaEDa);
@@ -320,9 +314,8 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	    Attributes betaEDe1 = new Attributes();
 	    alphaEDe1.add("section", new StringValue("electionid"));
 	    alphaEDe1.add("group", new StringValue("electionDefinition"));
-	    messageElement = this.createMessageElement(messageEDe1, alphaEDe1);
-	    signature = (Pair) this.sign(messageElement);
-	    signatureString = signature.getBigInteger().toString(10);
+	    signatureString = this.ecSignHelper.sign(messageEDe1, Transformer.convertAttributesToDTO(alphaEDe1)).
+		    toString(10);
 	    alphaEDe1.add("signature", new StringValue(signatureString));
 	    alphaEDe1.add("publickey", new StringValue("ElectionAdministratorKey"));
 
@@ -330,19 +323,15 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	    time = 1000 * (time / 1000);
 	    betaEDe1.add("timestamp", new DateValue(new Date(time)));
 	    betaEDe1.add("rank", new IntegerValue(1));
-
-	    messageElement = this.createMessageElement(messageEDe1, alphaEDe1, betaEDe1);
-	    signature = (Pair) this.sign(messageElement);
-	    signatureString = signature.getBigInteger().toString(10);
+	    signatureString = this.boardSignHelper.sign(messageEDe1, alphaEDe1, betaEDe1).toString(10);
 	    betaEDe1.add("boardSignature", new StringValue(signatureString));
 
 	    Attributes alphaEDe2 = new Attributes();
 	    Attributes betaEDe2 = new Attributes();
 	    alphaEDe2.add("section", new StringValue("electionid2"));
 	    alphaEDe2.add("group", new StringValue("electionDefinition"));
-	    messageElement = this.createMessageElement(messageEDe2, alphaEDe2);
-	    signature = (Pair) this.sign(messageElement);
-	    signatureString = signature.getBigInteger().toString(10);
+	    signatureString = this.ecSignHelper.sign(messageEDe2, Transformer.convertAttributesToDTO(alphaEDe2)).
+		    toString(10);
 	    alphaEDe2.add("signature", new StringValue(signatureString));
 	    alphaEDe2.add("publickey", new StringValue("ElectionAdministratorKey"));
 
@@ -350,19 +339,15 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	    time = 1000 * (time / 1000);
 	    betaEDe2.add("timestamp", new DateValue(new Date(time)));
 	    betaEDe2.add("rank", new IntegerValue(1));
-
-	    messageElement = this.createMessageElement(messageEDe2, alphaEDe2, betaEDe2);
-	    signature = (Pair) this.sign(messageElement);
-	    signatureString = signature.getBigInteger().toString(10);
+	    signatureString = this.boardSignHelper.sign(messageEDe2, alphaEDe2, betaEDe2).toString(10);
 	    betaEDe2.add("boardSignature", new StringValue(signatureString));
 
 	    Attributes alphaEDe3 = new Attributes();
 	    Attributes betaEDe3 = new Attributes();
 	    alphaEDe3.add("section", new StringValue("electionid3"));
 	    alphaEDe3.add("group", new StringValue("electionDefinition"));
-	    messageElement = this.createMessageElement(messageEDe3, alphaEDe3);
-	    signature = (Pair) this.sign(messageElement);
-	    signatureString = signature.getBigInteger().toString(10);
+	    signatureString = this.ecSignHelper.sign(messageEDe3, Transformer.convertAttributesToDTO(alphaEDe3)).
+		    toString(10);
 	    alphaEDe3.add("signature", new StringValue(signatureString));
 	    alphaEDe3.add("publickey", new StringValue("ElectionAdministratorKey"));
 
@@ -370,10 +355,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	    time = 1000 * (time / 1000);
 	    betaEDe3.add("timestamp", new DateValue(new Date(time)));
 	    betaEDe3.add("rank", new IntegerValue(1));
-
-	    messageElement = this.createMessageElement(messageEDe3, alphaEDe3, betaEDe3);
-	    signature = (Pair) this.sign(messageElement);
-	    signatureString = signature.getBigInteger().toString(10);
+	    signatureString = this.boardSignHelper.sign(messageEDe3, alphaEDe3, betaEDe3).toString(10);
 	    betaEDe3.add("boardSignature", new StringValue(signatureString));
 
 	    electionDefinitionPosts = new ArrayList<>();
@@ -384,338 +366,10 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	    logger.info("init finished");
 	} catch (JAXBException ex) {
 	    logger.log(Level.SEVERE, null, ex);
-	}
-    }
-
-    public Element sign(Element message) {
-	String pStr
-		= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
-	String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
-	String gStr
-		= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
-
-	GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
-	GStarModElement g = g_q.getElement(new BigInteger(gStr));
-
-	String xStr
-		= "51516542789660752564970758874585026766797080570786905454441989426850471029242";
-	String yStr
-		= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
-	SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, HASH_METHOD);
-	Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(new BigInteger(xStr));
-//	new BigInteger(yStr)), message, schnorr.sign(privateKeyElement, message)));
-	return schnorr.sign(privateKeyElement, message);
-    }
-
-    protected boolean checkDLSignature(byte[] message, Attributes alpha) {
-	String pStr
-		= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
-	String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
-	String gStr
-		= sigSetup.getGhat();//"109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
-
-	GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
-	GStarModElement g = g_q.getElement(new BigInteger(gStr));
-
-	String yStr = ((StringValue) alpha.getValue("publickey")).getValue();
-	String ystr2
-		= "30818902818102D0F7695E25E6F3C1029E3F3C18933A9EAA2014C89B102567F0F050FBB3FE0048D6E73CF594241F51E6313BA26A71CB9FE6484E3E507D6EE257A0FE5B535D3517EE53CF21BAAD476CF8645E751FFE0ABEF0E317730154C26E63D498A488BD05BD43D6164932FD2CE27327CDD154808485639EC779DDCBE472FA2E04E13019F6690203010001";
-	String signature = ((StringValue) alpha.getValue("signature")).getValue();
-
-	Element messageElement = this.createMessageElement(message, alpha);
-	SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
-		messageElement.getSet(), g, HASH_METHOD);
-	Element publicKey = schnorr.getVerificationKeySpace()
-		.getElement(new BigInteger(yStr));
-	System.out.println("alpha " + alpha);
-	System.out.println("signature: " + signature);
-	BigInteger[] unpaired = MathUtil.unpair(new BigInteger(signature, 10));
-	System.out.println("unpaired[0]: " + unpaired[0]);
-	System.out.println("unpaired[1]: " + unpaired[1]);
-	Element signatureElement = schnorr.getSignatureSpace().getElementFrom(new BigInteger(signature, 10));
-	return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
-    }
-//	public Element sign(Element message) {
-//		String pStr
-//				= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
-//		String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
-//		String gStr
-//				= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
-//
-//		GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
-//		GStarModElement g = g_q.getElement(new BigInteger(gStr));
-//
-//		String xStr
-//				= "51516542789660752564970758874585026766797080570786905454441989426850471029242";
-//		String yStr
-//				= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
-//		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, HASH_METHOD);
-//		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(new BigInteger(xStr));
-////	new BigInteger(yStr)), message, schnorr.sign(privateKeyElement, message)));
-//		return schnorr.sign(privateKeyElement, message);
-//	}
-//
-//	protected boolean checkDLSignature(byte[] message, Attributes alpha) {
-//		String pStr
-//				= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
-//		String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
-//		String gStr
-//				= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
-//
-//		GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
-//		GStarModElement g = g_q.getElement(new BigInteger(gStr));
-//
-//		String yStr = ((StringValue) alpha.getValue("publickey")).getValue();
-//		//= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
-//
-//		Element messageElement = this.createMessageElement(message, alpha);
-//		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
-//				messageElement.getSet(), g, HASH_METHOD);
-//		Element publicKey = schnorr.getVerificationKeySpace()
-//				.getElement(new BigInteger(yStr));
-//		System.out.println("alpha " + alpha);
-//		String signature = ((StringValue) alpha.getValue("signature")).getValue();
-//		System.out.println("signature: " + signature);
-//		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
-//		return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
-//	}
-
-//    public boolean verify(Element message, String signature) {
-//	String[] sigValues = signature.split(",");
-//
-//	String pStr
-//		= "161931481198080639220214033595931441094586304918402813506510547237223787775475425991443924977419330663170224569788019900180050114468430413908687329871251101280878786588515668012772798298511621634145464600626619548823238185390034868354933050128115662663653841842699535282987363300852550784188180264807606304297";
-//	String qStr = "65133683824381501983523684796057614145070427752690897588060462960319251776021";
-//	String gStr
-//		= "109291242937709414881219423205417309207119127359359243049468707782004862682441897432780127734395596275377218236442035534825283725782836026439537687695084410797228793004739671835061419040912157583607422965551428749149162882960112513332411954585778903685207256083057895070357159920203407651236651002676481874709";
-//
-//	GStarModPrime g_q = GStarModPrime.getInstance(new BigInteger(pStr), new BigInteger(qStr));
-//	GStarModElement g = g_q.getElement(new BigInteger(gStr));
-//
-//	SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, HASH_METHOD);
-//
-//	String xStr
-//		= "51516542789660752564970758874585026766797080570786905454441989426850471029242";
-//	String yStr
-//		= "155751513570869228260439384867241770655307495308374243153609793138899116622831741452119851346987003110901710955537759710017986742227890863909207286976163651279893171147044975311392911280219209156950267453786814037865924781368598641596911942039733700968941983269218092942368253177801756957171582556425236939612";
-//	Element publicKeyElement = schnorr.getVerificationKeySpace().getElement(new BigInteger(yStr));
-//
-//	Element[] sigValue = new Element[2];
-//	sigValue[0] = ZMod.getInstance(new BigInteger(qStr)).getElement(new BigInteger(sigValues[0]));
-//	sigValue[1] = ZMod.getInstance(new BigInteger(qStr)).getElement(new BigInteger(sigValues[1]));
-//
-//	DenseArray<Element> da = DenseArray.getInstance(sigValue[0], sigValue[1]);
-//	Element sig = schnorr.getSignatureSpace().getElement(da);
-//	logger.log(Level.SEVERE, "UniCrypt verification: "+schnorr.verify(publicKeyElement, message, sig).getValue());
-//
-//
-//	logger.log(Level.SEVERE, "a: "+sigValue[0]);
-//	logger.log(Level.SEVERE, "b: "+sigValue[1]);
-//	Element c = g.selfApply(sigValue[1]); //Mod q
-//	Element d = publicKeyElement.selfApply(sigValue[0]); //mod p
-//	logger.log(Level.SEVERE, "c: "+c);
-//	logger.log(Level.SEVERE, "d: "+d);
-//	Element a2Verif = c.apply(d.invert()); //mod q //TODO invert !!!
-//	logger.log(Level.SEVERE, "a2Verif: "+a2Verif);
-//	Pair p = Pair.getInstance(message, a2Verif);
-//	logger.log(Level.SEVERE, "b verif hash: "+this.bytesToHex(p.getHashValue(HASH_METHOD).getBytes()));
-//	BigInteger bVerif = new BigInteger(p.getHashValue(HASH_METHOD).getBytes()).mod(new BigInteger(qStr));//ZMod.getInstance(new BigInteger(qStr)).getElement(new BigInteger(p.getHashValue(HASH_METHOD).getBytes()).mod(new BigInteger(qStr)));
-//	Element bVerif2 = ZMod.getInstance(new BigInteger(qStr)).getElement(bVerif);
-//	logger.log(Level.SEVERE, "b: "+sigValue[1]);
-//	logger.log(Level.SEVERE, "sig: "+sig);
-//	logger.log(Level.SEVERE, "bVerif: "+bVerif);
-//	logger.log(Level.SEVERE, "bVerif2: "+bVerif2);
-//	logger.log(Level.SEVERE, "Is equivalent: "+sigValue[0].isEquivalent(bVerif2));
-//
-//	return schnorr.verify(publicKeyElement, message, sig).getValue();
-//    }
-    public String bytesToHex(byte[] bytes) {
-	char[] hexArray = "0123456789ABCDEF".toCharArray();
-	char[] hexChars = new char[bytes.length * 2];
-	for (int j = 0; j < bytes.length; j++) {
-	    int v = bytes[j] & 0xFF;
-	    hexChars[j * 2] = hexArray[v >>> 4];
-	    hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-	}
-	return new String(hexChars);
-    }
-
-//	protected Element createMessageElement(byte[] message, Attributes alpha) {
-//		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
-//		Z z = Z.getInstance();
-//		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-//		Element messageElement = byteSpace.getElement(message);
-//		List<Element> alphaElements = new ArrayList<>();
-//		//itterate over alpha until one reaches the property = signature
-//		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-//			if (e.getKey().equals("signature")) {
-//				break;
-//			}
-//			Element tmp;
-//			if (e.getValue() instanceof ByteArrayValue) {
-//				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-//				alphaElements.add(tmp);
-//			} else if (e.getValue() instanceof DateValue) {
-//				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-//				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-//				dateFormat.setTimeZone(timeZone);
-//				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
-//				tmp = stringSpace.getElement(stringDate);
-//				alphaElements.add(tmp);
-//			} else if (e.getValue() instanceof IntegerValue) {
-//				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-//				alphaElements.add(tmp);
-//			} else if (e.getValue() instanceof StringValue) {
-//				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-//				alphaElements.add(tmp);
-//			} else {
-//				logger.log(Level.SEVERE, "Unsupported Value type.");
-//			}
-//		}
-//		DenseArray immuElements = DenseArray.getInstance(alphaElements);
-//		Element alphaElement = Tuple.getInstance(immuElements);
-//		return Pair.getInstance(messageElement, alphaElement);
-//	}
-//
-//	protected Element createMessageElement(byte[] message, Attributes alpha, Attributes beta) {
-//		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-//		Element messageElement = byteSpace.getElement(message);
-//		List<Element> alphaElements = new ArrayList<>();
-//		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-//			Element element = this.createValueElement(e.getValue());
-//			if (element != null) {
-//				alphaElements.add(element);
-//			}
-//		}
-//		DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
-//		Element alphaElement = Tuple.getInstance(alphaDenseElements);
-//		List<Element> betaElements = new ArrayList<>();
-//		for (Map.Entry<String, Value> e : beta.getEntries()) {
-//			if (e.getKey().equals("boardSignature")) {
-//				continue;
-//			}
-//
-//			Element element = this.createValueElement(e.getValue());
-//			if (element != null) {
-//				betaElements.add(element);
-//			}
-//		}
-//		DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
-//		Element betaElement = Tuple.getInstance(beteDenseElements);
-//
-//		return Tuple.getInstance(messageElement, alphaElement, betaElement);
-//	}
-//
-//	protected Element createValueElement(Value value) {
-//		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
-//		Z z = Z.getInstance();
-//		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-//		if (value instanceof ByteArrayValue) {
-//			return byteSpace.getElement(((ByteArrayValue) value).getValue());
-//		} else if (value instanceof DateValue) {
-//			TimeZone timeZone = TimeZone.getTimeZone("UTC");
-//			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-//			dateFormat.setTimeZone(timeZone);
-//			String stringDate = dateFormat.format(((DateValue) value).getValue());
-//			return stringSpace.getElement(stringDate);
-//		} else if (value instanceof IntegerValue) {
-//			return z.getElement(((IntegerValue) value).getValue());
-//		} else if (value instanceof StringValue) {
-//			return stringSpace.getElement(((StringValue) value).getValue());
-//		} else {
-//			logger.log(Level.SEVERE, "Unsupported Value type.");
-//			return null;
-//		}
-//	}
-    protected Element createMessageElement(byte[] message, Attributes alpha) {
-	StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
-	Z z = Z.getInstance();
-	ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-	Element messageElement = byteSpace.getElement(message);
-	List<Element> alphaElements = new ArrayList<>();
-	//itterate over alpha until one reaches the property = signature
-	for (Map.Entry<String, Value> e : alpha.getEntries()) {
-	    if (e.getKey().equals("signature")) {
-		break;
-	    }
-	    Element tmp;
-	    if (e.getValue() instanceof ByteArrayValue) {
-		tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-		alphaElements.add(tmp);
-	    } else if (e.getValue() instanceof DateValue) {
-		TimeZone timeZone = TimeZone.getTimeZone("UTC");
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		dateFormat.setTimeZone(timeZone);
-		String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
-		tmp = stringSpace.getElement(stringDate);
-		alphaElements.add(tmp);
-	    } else if (e.getValue() instanceof IntegerValue) {
-		tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-		alphaElements.add(tmp);
-	    } else if (e.getValue() instanceof StringValue) {
-		tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-		alphaElements.add(tmp);
-	    } else {
-		logger.log(Level.SEVERE, "Unsupported Value type.");
-	    }
-	}
-	DenseArray immuElements = DenseArray.getInstance(alphaElements);
-	Element alphaElement = Tuple.getInstance(immuElements);
-	System.out.println("message hash: " + messageElement.getHashValue(HASH_METHOD));
-	System.out.println("alpha hash: " + alphaElement.getHashValue(HASH_METHOD));
-	System.out.println("post element: " + Pair.getInstance(messageElement, alphaElement));
-	System.out.println("post hash: " + Pair.getInstance(messageElement, alphaElement).getHashValue(HASH_METHOD));
-	return Pair.getInstance(messageElement, alphaElement);
-    }
-
-    protected Element createMessageElement(byte[] message, Attributes alpha, Attributes beta) {
-	ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-	Element messageElement = byteSpace.getElement(message);
-	List<Element> alphaElements = new ArrayList<>();
-	for (Map.Entry<String, Value> e : alpha.getEntries()) {
-	    Element element = this.createValueElement(e.getValue());
-	    if (element != null) {
-		alphaElements.add(element);
-	    }
-	}
-	DenseArray alphaDenseElements = DenseArray.getInstance(alphaElements);
-	Element alphaElement = Tuple.getInstance(alphaDenseElements);
-	List<Element> betaElements = new ArrayList<>();
-	for (Map.Entry<String, Value> e : beta.getEntries()) {
-	    if (e.getKey().equals("boardSignature")) {
-		continue;
-	    }
-
-	    Element element = this.createValueElement(e.getValue());
-	    if (element != null) {
-		betaElements.add(element);
-	    }
-	}
-	DenseArray beteDenseElements = DenseArray.getInstance(betaElements);
-	Element betaElement = Tuple.getInstance(beteDenseElements);
-
-	return Tuple.getInstance(messageElement, alphaElement, betaElement);
-    }
-
-    protected Element createValueElement(Value value) {
-	StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
-	Z z = Z.getInstance();
-	ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-	if (value instanceof ByteArrayValue) {
-	    return byteSpace.getElement(((ByteArrayValue) value).getValue());
-	} else if (value instanceof DateValue) {
-	    TimeZone timeZone = TimeZone.getTimeZone("UTC");
-	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-	    dateFormat.setTimeZone(timeZone);
-	    String stringDate = dateFormat.format(((DateValue) value).getValue());
-	    return stringSpace.getElement(stringDate);
-	} else if (value instanceof IntegerValue) {
-	    return z.getElement(((IntegerValue) value).getValue());
-	} else if (value instanceof StringValue) {
-	    return stringSpace.getElement(((StringValue) value).getValue());
-	} else {
-	    logger.log(Level.SEVERE, "Unsupported Value type.");
-	    return null;
+	} catch (SignatureException ex) {
+	    Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (TransformException ex) {
+	    Logger.getLogger(UniBoardRestServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 	}
     }
 
@@ -734,6 +388,11 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	return texts;
     }
 
+    /**
+     * Creates a Candidate Election (lists can not be selected)
+     *
+     * @return
+     */
     private CandidateElection createCandidateElection() {
 	//Candidate election
 	List<Candidate> candidates = new ArrayList<>();
@@ -770,6 +429,11 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	return e;
     }
 
+    /**
+     * Creates a vote (Yes/no/blank answer)
+     *
+     * @return
+     */
     private Vote createVote() {
 	//Vote
 	List<Option> options = new ArrayList<>();
@@ -795,6 +459,11 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	return v;
     }
 
+    /**
+     * Create a simple PartyElection (Lists and candidates are selectable)
+     *
+     * @return
+     */
     private PartyElection createPartyElection1() {
 	//PartyElection
 	List<Choice> choices = new ArrayList<>();
@@ -845,6 +514,11 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	return pe;
     }
 
+    /**
+     * Creates a complex party election
+     *
+     * @return
+     */
     private PartyElection createPartyElection2() {
 	LocalizedText lt = new LocalizedText();
 	lt.setLanguageCode(LanguageCode.FR);
@@ -1619,6 +1293,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	lt.setText("Liste UDC");
 
 	PartyList pl1 = new PartyList();
+	//should be displayed as "List 1" in list button
 	pl1.setListNumber(Collections.singletonList(new LocalizedText(LanguageCode.FR, "1")));
 	pl1.setPartyId(4);
 	pl1.setName(Collections.singletonList(lt));
@@ -1628,6 +1303,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	lt.setText("Liste PS");
 
 	PartyList pl2 = new PartyList();
+	//should be displayed as "PS" in list button
 	pl2.setListNumber(Collections.singletonList(lt3));
 	pl2.setPartyId(5);
 	pl2.setName(Collections.singletonList(lt));
