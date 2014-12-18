@@ -9,6 +9,7 @@
 
 	<xs:complexType name="notify">
 		<xs:sequence>
+			<xs:element name="notificationCode" type="xs:string"/>
 			<xs:element name="post" type="ns1:post"/>
 		</xs:sequence>
 	</xs:complexType>

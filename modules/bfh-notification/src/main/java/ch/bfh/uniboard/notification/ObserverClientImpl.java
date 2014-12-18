@@ -37,13 +37,13 @@ public class ObserverClientImpl implements ObserverClient {
 	public void notifyObserver(String endpointUrl, String notificationCode, PostDTO post) {
 		ObserverService observer;
 		try {
-			URL wsdlLocation = new URL(endpointUrl);
+			URL wsdlLocation = new URL(endpointUrl + "?wsdl");
 			QName qname = new QName("http://uniboard.bfh.ch/notification/", "ObserverService");
 			ObserverService_Service observerService = new ObserverService_Service(wsdlLocation, qname);
 			observer = observerService.getObserverServicePort();
 			BindingProvider bp = (BindingProvider) observer;
 			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointUrl);
-			observer.notify(post);
+			observer.notify(notificationCode, post);
 		} catch (Exception ex) {
 			observerManager.getObservers().remove(notificationCode);
 			logger.log(Level.SEVERE, "Unable to notify Observer: {0}, exception: {1}",

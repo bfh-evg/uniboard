@@ -9,3 +9,4 @@
 /doc/uniboard-arch/*.hst
 /doc/uniboard-arch/*.ver
 /tools/InitialRight/target/
+/application-clients/client-library/target/
