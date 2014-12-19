@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ch.bfh.uniboard.restservice.mock.election.crypto;
 
 import javax.xml.bind.annotation.XmlType;
@@ -12,19 +11,21 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author phil
  */
-@XmlType(name="")
-public class DLSignatureSetting extends SignatureSetting{
-    
+@XmlType(name = "")
+public class DLSignatureSetting extends SignatureSetting {
+
     private String p;
     private String q;
+    private String g;
 
     public DLSignatureSetting() {
     }
 
-    public DLSignatureSetting(String ghat, String p, String q) {
+    public DLSignatureSetting(String ghat, String p, String q, String g) {
 	super(ghat, "DL");
 	this.p = p;
 	this.q = q;
+	this.g = g;
     }
 
     public String getP() {
@@ -42,7 +43,12 @@ public class DLSignatureSetting extends SignatureSetting{
     public void setQ(String q) {
 	this.q = q;
     }
-    
-    
-	    
+
+    public String getG() {
+	return g;
+    }
+
+    public void setG(String g) {
+	this.g = g;
+    }
 }
