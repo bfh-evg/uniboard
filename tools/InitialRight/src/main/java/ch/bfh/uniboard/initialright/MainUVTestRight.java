@@ -179,6 +179,56 @@ public class MainUVTestRight {
 		String post4 = PostCreator.createMessage(message4, alpha4, beta4);
 		System.out.println(post4);
 
+		//create accessRight message
+		byte[] message5 = ("{\"group\":\"trustees\",\"crypto\":{\"type\":\"DL\", \"p\":\""
+				+ eaPubKey.getParams().getP().toString(10)
+				+ "\",\"q\":\"" + eaPubKey.getParams().getQ().toString(10)
+				+ "\",\"g\":\"" + eaPubKey.getParams().getG().toString(10)
+				+ "\",\"publickey\":\""
+				+ electionAdministrationPublicKey.toString(10) + "\"}}").getBytes(Charset.forName("UTF-8"));
+
+		//Create alphas and betas
+		Attributes alpha5 = new Attributes();
+		alpha5.add("section", new StringValue(section));
+		alpha5.add("group", new StringValue("accessRight"));
+		Element ucMsgSig4 = PostCreator.createAlphaSignatureWithDL(message5, alpha5, dsaPrivKey);
+		alpha5.add("signature", new StringValue(ucMsgSig4.getBigInteger().toString(10)));
+		alpha5.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
+
+		Attributes beta5 = new Attributes();
+		beta5.add("timestamp", new DateValue(new Date()));
+		beta5.add("rank", new IntegerValue(4));
+		Element acMsgSig4 = PostCreator.createBetaSignature(message1, alpha5, beta5, dsaPrivKey);
+		beta5.add("boardSignature", new StringValue(acMsgSig4.getBigInteger().toString(10)));
+
+		String post5 = PostCreator.createMessage(message5, alpha5, beta5);
+		System.out.println(post5);
+
+		//create accessRight message
+		byte[] message6 = ("{\"group\":\"securityLevel\",\"crypto\":{\"type\":\"DL\", \"p\":\""
+				+ eaPubKey.getParams().getP().toString(10)
+				+ "\",\"q\":\"" + eaPubKey.getParams().getQ().toString(10)
+				+ "\",\"g\":\"" + eaPubKey.getParams().getG().toString(10)
+				+ "\",\"publickey\":\""
+				+ electionAdministrationPublicKey.toString(10) + "\"}}").getBytes(Charset.forName("UTF-8"));
+
+		//Create alphas and betas
+		Attributes alpha6 = new Attributes();
+		alpha6.add("section", new StringValue(section));
+		alpha6.add("group", new StringValue("accessRight"));
+		Element ucMsgSig5 = PostCreator.createAlphaSignatureWithDL(message6, alpha6, dsaPrivKey);
+		alpha6.add("signature", new StringValue(ucMsgSig5.getBigInteger().toString(10)));
+		alpha6.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
+
+		Attributes beta6 = new Attributes();
+		beta6.add("timestamp", new DateValue(new Date()));
+		beta6.add("rank", new IntegerValue(5));
+		Element acMsgSig5 = PostCreator.createBetaSignature(message1, alpha6, beta6, dsaPrivKey);
+		beta6.add("boardSignature", new StringValue(acMsgSig5.getBigInteger().toString(10)));
+
+		String post6 = PostCreator.createMessage(message6, alpha6, beta6);
+		System.out.println(post6);
+
 	}
 
 }
