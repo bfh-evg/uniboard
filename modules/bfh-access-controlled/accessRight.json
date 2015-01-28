@@ -34,6 +34,7 @@
 		}
 	},
 	"required": ["group", "crypto"],
+	"additionalProperties": false,
 	"definitions": {
 		"RSA": {
 			"properties": {
@@ -47,7 +48,8 @@
 					"type": "string"
 				}
 			},
-			"required": ["type", "publickey"]
+			"required": ["type", "publickey"],
+			"additionalProperties": false
 		},
 		"DL": {
 			"properties": {
@@ -70,7 +72,8 @@
 					"type": "string"
 				}
 			},
-			"required": ["type", "p", "q", "g", "publickey"]
+			"required": ["type", "p", "q", "g", "publickey"],
+			"additionalProperties": false
 		},
 		"ECDL": {
 			"properties": {
@@ -87,7 +90,8 @@
 					"type": "string"
 				}
 			},
-			"required": ["type", "curve", "publickey"]
+			"required": ["type", "curve", "publickey"],
+			"additionalProperties": false
 		}
 	}
 }
