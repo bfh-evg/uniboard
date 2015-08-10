@@ -13,6 +13,10 @@ This component implments the PostService
 
 Adds the beta attribute "boardSignature"
 
+## Error Codes
+
+BCP-001 Internal server error
+
 ## Configuration
 
 Describe how the configuration works. Does this component use the the ConfigurationManager or not?

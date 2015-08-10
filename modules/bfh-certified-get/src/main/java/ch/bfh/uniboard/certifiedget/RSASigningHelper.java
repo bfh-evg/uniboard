@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.certifiedget;
 
+import static ch.bfh.uniboard.certifiedget.CertifiedGetService.CONVERT_METHOD;
 import static ch.bfh.uniboard.certifiedget.CertifiedGetService.HASH_METHOD;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZMod;
@@ -31,7 +32,8 @@ public class RSASigningHelper implements SigningHelper {
 	@Override
 	public Element sign(Element message) {
 		RSASignatureScheme rsaScheme
-				= RSASignatureScheme.getInstance(message.getSet(), ZMod.getInstance(modulus), HASH_METHOD);
+				= RSASignatureScheme.getInstance(message.getSet(), ZMod.getInstance(modulus), CONVERT_METHOD,
+						HASH_METHOD);
 		Element privateKeyElement = rsaScheme.getSignatureKeySpace().getElement(privateKey);
 		return rsaScheme.sign(privateKeyElement, message);
 	}

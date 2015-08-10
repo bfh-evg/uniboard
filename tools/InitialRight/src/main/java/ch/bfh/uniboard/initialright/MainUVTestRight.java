@@ -90,14 +90,14 @@ public class MainUVTestRight {
 		alpha.add("section", new StringValue(section));
 		alpha.add("group", new StringValue("accessRight"));
 		Element ubMsgSig = PostCreator.createAlphaSignatureWithDL(message1, alpha, dsaPrivKey);
-		alpha.add("signature", new StringValue(ubMsgSig.getBigInteger().toString(10)));
+		alpha.add("signature", new StringValue(ubMsgSig.convertToBigInteger().toString(10)));
 		alpha.add("publickey", new StringValue(uniboardPublicKey.toString(10)));
 
 		Attributes beta = new Attributes();
 		beta.add("timestamp", new DateValue(new Date()));
 		beta.add("rank", new IntegerValue(0));
 		Element initMsgBetaSig = PostCreator.createBetaSignature(message1, alpha, beta, dsaPrivKey);
-		beta.add("boardSignature", new StringValue(initMsgBetaSig.getBigInteger().toString(10)));
+		beta.add("boardSignature", new StringValue(initMsgBetaSig.convertToBigInteger().toString(10)));
 
 		//output post as json
 		String post = PostCreator.createMessage(message1, alpha, beta);
@@ -117,14 +117,14 @@ public class MainUVTestRight {
 		alpha2.add("section", new StringValue(section));
 		alpha2.add("group", new StringValue("accessRight"));
 		Element ucMsgSig = PostCreator.createAlphaSignatureWithDL(message2, alpha2, dsaPrivKey);
-		alpha2.add("signature", new StringValue(ucMsgSig.getBigInteger().toString(10)));
+		alpha2.add("signature", new StringValue(ucMsgSig.convertToBigInteger().toString(10)));
 		alpha2.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta2 = new Attributes();
 		beta2.add("timestamp", new DateValue(new Date()));
 		beta2.add("rank", new IntegerValue(1));
 		Element acMsgSig = PostCreator.createBetaSignature(message1, alpha2, beta2, dsaPrivKey);
-		beta2.add("boardSignature", new StringValue(acMsgSig.getBigInteger().toString(10)));
+		beta2.add("boardSignature", new StringValue(acMsgSig.convertToBigInteger().toString(10)));
 
 		String post2 = PostCreator.createMessage(message2, alpha2, beta2);
 		System.out.println(post2);
@@ -142,14 +142,14 @@ public class MainUVTestRight {
 		alpha3.add("section", new StringValue(section));
 		alpha3.add("group", new StringValue("accessRight"));
 		Element ucMsgSig2 = PostCreator.createAlphaSignatureWithDL(message3, alpha3, dsaPrivKey);
-		alpha3.add("signature", new StringValue(ucMsgSig2.getBigInteger().toString(10)));
+		alpha3.add("signature", new StringValue(ucMsgSig2.convertToBigInteger().toString(10)));
 		alpha3.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta3 = new Attributes();
 		beta3.add("timestamp", new DateValue(new Date()));
 		beta3.add("rank", new IntegerValue(2));
 		Element acMsgSig2 = PostCreator.createBetaSignature(message1, alpha3, beta3, dsaPrivKey);
-		beta3.add("boardSignature", new StringValue(acMsgSig2.getBigInteger().toString(10)));
+		beta3.add("boardSignature", new StringValue(acMsgSig2.convertToBigInteger().toString(10)));
 
 		String post3 = PostCreator.createMessage(message3, alpha3, beta3);
 		System.out.println(post3);
@@ -167,14 +167,14 @@ public class MainUVTestRight {
 		alpha4.add("section", new StringValue(section));
 		alpha4.add("group", new StringValue("accessRight"));
 		Element ucMsgSig3 = PostCreator.createAlphaSignatureWithDL(message4, alpha4, dsaPrivKey);
-		alpha4.add("signature", new StringValue(ucMsgSig3.getBigInteger().toString(10)));
+		alpha4.add("signature", new StringValue(ucMsgSig3.convertToBigInteger().toString(10)));
 		alpha4.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta4 = new Attributes();
 		beta4.add("timestamp", new DateValue(new Date()));
 		beta4.add("rank", new IntegerValue(3));
 		Element acMsgSig3 = PostCreator.createBetaSignature(message1, alpha4, beta4, dsaPrivKey);
-		beta4.add("boardSignature", new StringValue(acMsgSig3.getBigInteger().toString(10)));
+		beta4.add("boardSignature", new StringValue(acMsgSig3.convertToBigInteger().toString(10)));
 
 		String post4 = PostCreator.createMessage(message4, alpha4, beta4);
 		System.out.println(post4);
@@ -192,14 +192,14 @@ public class MainUVTestRight {
 		alpha5.add("section", new StringValue(section));
 		alpha5.add("group", new StringValue("accessRight"));
 		Element ucMsgSig4 = PostCreator.createAlphaSignatureWithDL(message5, alpha5, dsaPrivKey);
-		alpha5.add("signature", new StringValue(ucMsgSig4.getBigInteger().toString(10)));
+		alpha5.add("signature", new StringValue(ucMsgSig4.convertToBigInteger().toString(10)));
 		alpha5.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta5 = new Attributes();
 		beta5.add("timestamp", new DateValue(new Date()));
 		beta5.add("rank", new IntegerValue(4));
 		Element acMsgSig4 = PostCreator.createBetaSignature(message1, alpha5, beta5, dsaPrivKey);
-		beta5.add("boardSignature", new StringValue(acMsgSig4.getBigInteger().toString(10)));
+		beta5.add("boardSignature", new StringValue(acMsgSig4.convertToBigInteger().toString(10)));
 
 		String post5 = PostCreator.createMessage(message5, alpha5, beta5);
 		System.out.println(post5);
@@ -217,14 +217,14 @@ public class MainUVTestRight {
 		alpha6.add("section", new StringValue(section));
 		alpha6.add("group", new StringValue("accessRight"));
 		Element ucMsgSig5 = PostCreator.createAlphaSignatureWithDL(message6, alpha6, dsaPrivKey);
-		alpha6.add("signature", new StringValue(ucMsgSig5.getBigInteger().toString(10)));
+		alpha6.add("signature", new StringValue(ucMsgSig5.convertToBigInteger().toString(10)));
 		alpha6.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta6 = new Attributes();
 		beta6.add("timestamp", new DateValue(new Date()));
 		beta6.add("rank", new IntegerValue(5));
 		Element acMsgSig5 = PostCreator.createBetaSignature(message1, alpha6, beta6, dsaPrivKey);
-		beta6.add("boardSignature", new StringValue(acMsgSig5.getBigInteger().toString(10)));
+		beta6.add("boardSignature", new StringValue(acMsgSig5.convertToBigInteger().toString(10)));
 
 		String post6 = PostCreator.createMessage(message6, alpha6, beta6);
 		System.out.println(post6);

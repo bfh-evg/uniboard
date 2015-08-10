@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.certifiedget;
 
+import static ch.bfh.uniboard.certifiedget.CertifiedGetService.CONVERT_METHOD;
 import static ch.bfh.uniboard.certifiedget.CertifiedGetService.HASH_METHOD;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
@@ -37,7 +38,8 @@ public class SchnorrSigningHelper implements SigningHelper {
 	public Element sign(Element message) {
 		GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
 		GStarModElement g = g_q.getElement(generator);
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, HASH_METHOD);
+		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(message.getSet(), g, CONVERT_METHOD,
+				HASH_METHOD);
 		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(privateKey);
 		return schnorr.sign(privateKeyElement, message);
 	}

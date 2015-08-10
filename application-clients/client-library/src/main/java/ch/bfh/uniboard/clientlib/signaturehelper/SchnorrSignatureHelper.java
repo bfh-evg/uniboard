@@ -21,65 +21,69 @@ import java.security.interfaces.DSAPublicKey;
 
 /**
  * Helper class generating and verifying Schnorr signature of UniCrypt elements
+ *
  * @author Philémon von Bergen
  */
 public class SchnorrSignatureHelper extends SignatureHelper {
 
-    private final BigInteger modulus;
-    private final BigInteger orderFactor;
-    private final BigInteger generator;
-    private BigInteger privateKey = null;
-    private BigInteger publicKey = null;
+	private final BigInteger modulus;
+	private final BigInteger orderFactor;
+	private final BigInteger generator;
+	private BigInteger privateKey = null;
+	private BigInteger publicKey = null;
 
-    /**
-     * Create a SignatureHelper for generating Schnorr signatures
-     * @param dsaPrivKey private key used to sign
-     */
-    public SchnorrSignatureHelper(DSAPrivateKey dsaPrivKey) {
-	privateKey = dsaPrivKey.getX();
-	modulus = dsaPrivKey.getParams().getP();
-	orderFactor = dsaPrivKey.getParams().getQ();
-	generator = dsaPrivKey.getParams().getG();
-    }
-
-    /**
-     * Create a SignatureHelper for verifying Schnorr signatures
-     * @param dsaPublicKey public key used to verify
-     */
-    public SchnorrSignatureHelper(DSAPublicKey dsaPublicKey) {
-	publicKey = dsaPublicKey.getY();
-	modulus = dsaPublicKey.getParams().getP();
-	orderFactor = dsaPublicKey.getParams().getQ();
-	generator = dsaPublicKey.getParams().getG();
-    }
-
-    
-    @Override
-    protected Element sign(Element element) throws SignatureException {
-	if(privateKey==null){
-	    throw new SignatureException("No private key provided in constructor");
+	/**
+	 * Create a SignatureHelper for generating Schnorr signatures
+	 *
+	 * @param dsaPrivKey private key used to sign
+	 */
+	public SchnorrSignatureHelper(DSAPrivateKey dsaPrivKey) {
+		privateKey = dsaPrivKey.getX();
+		modulus = dsaPrivKey.getParams().getP();
+		orderFactor = dsaPrivKey.getParams().getQ();
+		generator = dsaPrivKey.getParams().getG();
 	}
-	GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
-	GStarModElement g = g_q.getElement(generator);
-	SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g, HASH_METHOD);
-	Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(privateKey);
-	return schnorr.sign(privateKeyElement, element);
-    }
 
-    @Override
-    protected boolean verify(Element element, BigInteger signatureBI) throws SignatureException {
-	if(publicKey==null){
-	    throw new SignatureException("No public key indicated in constructor");
+	/**
+	 * Create a SignatureHelper for verifying Schnorr signatures
+	 *
+	 * @param dsaPublicKey public key used to verify
+	 */
+	public SchnorrSignatureHelper(DSAPublicKey dsaPublicKey) {
+		publicKey = dsaPublicKey.getY();
+		modulus = dsaPublicKey.getParams().getP();
+		orderFactor = dsaPublicKey.getParams().getQ();
+		generator = dsaPublicKey.getParams().getG();
 	}
-	GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
-	GStarModElement g = g_q.getElement(generator);
-	SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g, HASH_METHOD);
-	Element signature = schnorr.getSignatureSpace().getElementFrom(signatureBI);
 
-	Element publicKeyElement = schnorr.getVerificationKeySpace().getElement(publicKey);
+	@Override
+	protected Element sign(Element element) throws SignatureException {
+		if (privateKey == null) {
+			throw new SignatureException("No private key provided in constructor");
+		}
+		GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
+		GStarModElement g = g_q.getElement(generator);
+		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
+				CONVERT_METHOD, HASH_METHOD);
+		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(privateKey);
+		return schnorr.sign(privateKeyElement, element);
+	}
 
-	return schnorr.verify(publicKeyElement, element, signature).getValue();
+	@Override
+	protected boolean verify(Element element, BigInteger signatureBI) throws SignatureException {
+		if (publicKey == null) {
+			throw new SignatureException("No public key indicated in constructor");
+		}
+		GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
+		GStarModElement g = g_q.getElement(generator);
+		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
+				CONVERT_METHOD, HASH_METHOD);
+		Element signature = schnorr.getSignatureSpace().getElementFrom(signatureBI);
 
-    }
+		Element publicKeyElement = schnorr.getVerificationKeySpace().getElement(publicKey);
+
+		return schnorr.verify(publicKeyElement, element, signature).getValue();
+
+	}
 
 }

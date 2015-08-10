@@ -26,8 +26,8 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.bfh.unicrypt</groupId>
-			<artifactId>unicrypt2</artifactId>
-			<version>2.0.1</version>
+			<artifactId>unicrypt</artifactId>
+			<version>2.1</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -31,15 +31,14 @@ import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
-import ch.bfh.unicrypt.helper.Alphabet;
-import ch.bfh.unicrypt.helper.MathUtil;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
-import ch.bfh.unicrypt.helper.converter.classes.bytearray.ByteArrayToByteArray;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.StringToByteArray;
 import ch.bfh.unicrypt.helper.hash.HashAlgorithm;
 import ch.bfh.unicrypt.helper.hash.HashMethod;
+import ch.bfh.unicrypt.helper.math.Alphabet;
+import ch.bfh.unicrypt.helper.math.MathUtil;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
@@ -87,13 +86,10 @@ public class AccessControlledService extends PostComponent implements PostServic
 	private static final String AUTH = "accessRight";
 	private static final String AMOUNT = "amount";
 
-	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(
-			HashAlgorithm.SHA256,
-			ConvertMethod.getInstance(
-					BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
-					ByteArrayToByteArray.getInstance(false),
-					StringToByteArray.getInstance(Charset.forName("UTF-8"))),
-			HashMethod.Mode.RECURSIVE);
+	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(HashAlgorithm.SHA256);
+	protected static final ConvertMethod CONVERT_METHOD = ConvertMethod.getInstance(
+			BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
+			StringToByteArray.getInstance(Charset.forName("UTF-8")));
 
 	private static final Logger logger = Logger.getLogger(AccessControlledService.class.getName());
 
@@ -171,7 +167,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 			//Check the signature
 			JsonNode key = data.get(ATTRIBUTE_NAME_CRYPTO);
-			
+
 			String type = key.get("type").textValue();
 
 			boolean signature = false;
@@ -275,11 +271,13 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 		Element messageElement = this.createMessageElement(message, alpha);
 
-		RSASignatureScheme rsa = RSASignatureScheme.getInstance(messageElement.getSet(), n, HASH_METHOD);
+		RSASignatureScheme rsa
+				= RSASignatureScheme.getInstance(messageElement.getSet(), n, CONVERT_METHOD, HASH_METHOD);
 		Element rsaPublicKeyElement = rsa.getVerificationKeySpace().getElement(rsaPublicKeyBI[0]);
 
 		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
-		Element signatureElement = rsa.getSignatureSpace().getElementFrom(signature);
+		BigInteger biSignature = new BigInteger(signature);
+		Element signatureElement = rsa.getSignatureSpace().getElementFrom(biSignature);
 
 		return rsa.verify(rsaPublicKeyElement, messageElement, signatureElement).getValue();
 	}
@@ -294,13 +292,14 @@ public class AccessControlledService extends PostComponent implements PostServic
 		Element messageElement = this.createMessageElement(message, alpha);
 
 		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
-				messageElement.getSet(), g, HASH_METHOD);
+				messageElement.getSet(), g, CONVERT_METHOD, HASH_METHOD);
 
 		Element publicKey = schnorr.getVerificationKeySpace()
 				.getElement(new BigInteger(key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue()));
 
 		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
-		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
+		BigInteger biSignature = new BigInteger(signature);
+		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(biSignature);
 
 		return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
 	}

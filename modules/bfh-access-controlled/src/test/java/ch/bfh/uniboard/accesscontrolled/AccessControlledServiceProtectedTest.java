@@ -107,12 +107,12 @@ public class AccessControlledServiceProtectedTest {
 		Element messageElement = service.createMessageElement(message, alpha);
 
 		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
-				messageElement.getSet(), g, AccessControlledService.HASH_METHOD);
+				messageElement.getSet(), g, AccessControlledService.CONVERT_METHOD, AccessControlledService.HASH_METHOD);
 
 		Element privateKey = schnorr.getSignatureKeySpace().getElement(new BigInteger("78"));
 		Element signature = schnorr.sign(privateKey, messageElement, schnorr.getRandomizationSpace().getRandomElement());
 
-		String sigString = signature.getBigInteger().toString(10);
+		String sigString = signature.convertToBigInteger().toString(10);
 		alpha.add("signature", new StringValue(sigString));
 
 		assertTrue(service.checkDLSignature(key, message, alpha));
@@ -137,14 +137,14 @@ public class AccessControlledServiceProtectedTest {
 		BigInteger q = new BigInteger("53");
 
 		RSASignatureScheme rsa = RSASignatureScheme.getInstance(messageElement.getSet(),
-				ZModPrimePair.getInstance(p, q), HASH_METHOD);
+				ZModPrimePair.getInstance(p, q), AccessControlledService.CONVERT_METHOD, HASH_METHOD);
 
 		Element prKey = rsa.getSignatureKeySpace().getElement(new BigInteger("17"));
 		Element puKey = rsa.getVerificationKeySpace().getElement(new BigInteger("2753"));
 
 		Element signature = rsa.sign(prKey, messageElement);
 
-		String sigString = signature.getBigInteger().toString(10);
+		String sigString = signature.convertToBigInteger().toString(10);
 		alpha.add("signature", new StringValue(sigString));
 
 		assertTrue(service.checkRSASignature(key, message, alpha));

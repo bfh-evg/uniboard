@@ -202,7 +202,7 @@ public class AccessControlledServiceTest {
 		Attributes beta = new Attributes();
 		Attributes result = postService.post(message, alpha, beta);
 		assertEquals(1, result.getEntries().size());
-		assertEquals("BAC-005", ((StringValue) result.getValue(Attributes.REJECTED)).getValue().subSequence(0, 7));
+		assertEquals("BAC-007", ((StringValue) result.getValue(Attributes.REJECTED)).getValue().subSequence(0, 7));
 		assertNull(this.postServiceTestBean.getLastPost());
 	}
 

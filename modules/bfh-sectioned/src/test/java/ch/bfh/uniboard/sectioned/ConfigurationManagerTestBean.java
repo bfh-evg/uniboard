@@ -42,7 +42,13 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 	}
 
 	@Override
-	public void saveConfiguration(String key, Properties configuration) {
+	public void saveState(String key, Properties configuration) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Properties loadState(String key) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 }

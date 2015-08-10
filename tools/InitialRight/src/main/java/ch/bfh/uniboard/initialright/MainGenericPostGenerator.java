@@ -48,12 +48,11 @@ public class MainGenericPostGenerator {
 		String section = "test-2015";
 		String group = "accessRight";
 		int rank = 13;
-		String message = "{\n" +
-"     \"group\": \"ballot\",\n" +
-"     \"crypto\": {\n" +
-"       \"type\": \"RSA\",\n" +
-"       \"publickey\": \"8929678803623423234650140905091265782177126532343305799523432485570665609740329884480076503804986605694297331948117884984431668840534448371283314077165594253446986565036143090547558028970935871720449070776818246892672777057924429656563470724840116644921835408266013821963202977626142229339560522785458683198638821534098632412515810513567824004764914253850511348944964763235393741752795501427087917363229814795984531547233609108160018447001183051487905789717703926417994853605887955871482073516634531717539286611812230867280177947596336935844553438612714195242300295662878002444311601284284480826501904795473157468538\"\n" +
-"    }} ";
+		String message = "{\"group\":\"accessRight\",\"crypto\":{\"type\":\"DL\", \"p\":\""
+				+ "89884656743115795386465259539451236680898848947115328636715040578866337902750481566354238661203768010560056939935696678829394884407208311246423715319737062188883946712432742638151109800623047059726541476042502884419075341171231440736956555270413618581675255342293149119973622969239858152417678164812113740223" + "\",\"q\":\"" + "44942328371557897693232629769725618340449424473557664318357520289433168951375240783177119330601884005280028469967848339414697442203604155623211857659868531094441973356216371319075554900311523529863270738021251442209537670585615720368478277635206809290837627671146574559986811484619929076208839082406056870111"
+				+ "\",\"g\":\"" + "107109962631870964694631290572616741684259433534913193717696669627034744183712064532843948178840692685135901742106546031184882792684386296417476646866306748317314750581351545212887046296410227653636832554555991359342552427316273176036531855263497569544312481810013296540896767718156533429912241745106756662354"
+				+ "\",\"publickey\":\""
+				+ "" + "\"}}";
 
 		KeyStore caKs = KeyStore.getInstance(System.getProperty("javax.net.ssl.keyStoreType", "jks"));
 
@@ -75,7 +74,6 @@ public class MainGenericPostGenerator {
 		DSAPublicKey signerPubKey = (DSAPublicKey) signerCert.getPublicKey();
 		BigInteger signerPublicKey = signerPubKey.getY();
 
-		
 		//Create correct json message
 		byte[] message1 = message.getBytes(Charset.forName("UTF-8"));
 
@@ -84,30 +82,28 @@ public class MainGenericPostGenerator {
 		alpha.add("section", new StringValue(section));
 		alpha.add("group", new StringValue(group));
 		Element msgSig = null;
-		try{
-		    msgSig = PostCreator.createAlphaSignatureWithDL(message1, alpha, signerPrivKey);
-		    alpha.add("signature", new StringValue(msgSig.getBigInteger().toString(10)));
-		    alpha.add("publickey", new StringValue(signerPublicKey.toString(10)));
-		} catch (Exception e){
-		    //dummy signature if exception (for example no private key)
-		    System.err.println("Exception occured while signing: "+e.getClass()+" - "+ e.getMessage());
-		    alpha.add("signature", new StringValue(""));
-		    alpha.add("publickey", new StringValue(signerPublicKey.toString(10)));
+		try {
+			msgSig = PostCreator.createAlphaSignatureWithDL(message1, alpha, signerPrivKey);
+			alpha.add("signature", new StringValue(msgSig.convertToBigInteger().toString(10)));
+			alpha.add("publickey", new StringValue(signerPublicKey.toString(10)));
+		} catch (Exception e) {
+			//dummy signature if exception (for example no private key)
+			System.err.println("Exception occured while signing: " + e.getClass() + " - " + e.getMessage());
+			alpha.add("signature", new StringValue(""));
+			alpha.add("publickey", new StringValue(signerPublicKey.toString(10)));
 		}
-		
 
 		Attributes beta = new Attributes();
 		beta.add("timestamp", new DateValue(new Date()));
 		beta.add("rank", new IntegerValue(rank));
 		Element initMsgBetaSig = PostCreator.createBetaSignature(message1, alpha, beta, boardPrivKey);
-		beta.add("boardSignature", new StringValue(initMsgBetaSig.getBigInteger().toString(10)));
+		beta.add("boardSignature", new StringValue(initMsgBetaSig.convertToBigInteger().toString(10)));
 
 		//output post as json
 		String post = PostCreator.createMessage(message1, alpha, beta);
 
 		System.out.println(post);
 
-		
 	}
 
 }
