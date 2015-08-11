@@ -12,8 +12,10 @@
 package ch.bfh.uniboard.clientlib;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPrivateKey;
@@ -23,6 +25,14 @@ import java.security.spec.DSAPublicKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Helper class allowing to transform BigInteger keys into PublicKey and PrivateKey objects
@@ -30,6 +40,14 @@ import java.security.spec.RSAPublicKeySpec;
  * @author Philémon von Bergen
  */
 public class KeyHelper {
+
+	public static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
+	private static final String PRIVATE_KEY_PREFIX = "=====BEGIN_UNICERT_PRIVATE_KEY=====";
+	private static final String PRIVATE_KEY_POSTFIX = "=====END_UNICERT_PRIVATE_KEY=====";
+	private static final String ENC_PRIVATE_KEY_PREFIX = "-----BEGIN ENCRYPTED UNICERT KEY-----";
+	private static final String ENC_PRIVATE_KEY_POSTFIX = "-----END ENCRYPTED UNICERT KEY-----";
+	private static final int KEY_SIZE = 128;
+	private static final int ITERATIONS = 1000;
 
 	/**
 	 * Transform a BigInteger DSA private key into a DSAPrivateKey object
@@ -105,5 +123,92 @@ public class KeyHelper {
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
 		return (RSAPublicKey) keyFactory.generatePublic(spec);
+	}
+
+	/**
+	 * Encrypts (using AES) the given private key with a key derived from the password.
+	 *
+	 * @param password password used to derive key
+	 * @param privateKey Key to encrypt
+	 * @return encrypted key with pre- and postfix
+	 */
+	public static String encryptPrivateKey(String password, byte[] privateKey) {
+
+		String b16Message = DatatypeConverter.printHexBinary(privateKey);
+
+		byte[] salt, iv, enc;
+		try {
+			SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+			salt = sr.generateSeed(16);
+
+			String toEncrypt = PRIVATE_KEY_PREFIX + b16Message + PRIVATE_KEY_POSTFIX;
+
+			PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_SIZE);
+			SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+			SecretKey sk = skf.generateSecret(spec);
+			SecretKey aesSk = new SecretKeySpec(sk.getEncoded(), "AES");
+
+			iv = sr.generateSeed(16);
+
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			IvParameterSpec ivspec = new IvParameterSpec(iv);
+			cipher.init(Cipher.ENCRYPT_MODE, aesSk, ivspec);
+
+			enc = cipher.doFinal(toEncrypt.getBytes("UTF-8"));
+		} catch (Exception e) {
+			throw new RuntimeException("Error occured during encryption: " + e.getMessage());
+		}
+		return ENC_PRIVATE_KEY_PREFIX + DatatypeConverter.printBase64Binary(salt)
+				+ DatatypeConverter.printBase64Binary(iv) + DatatypeConverter.printBase64Binary(enc)
+				+ ENC_PRIVATE_KEY_POSTFIX;
+	}
+
+	/**
+	 * Decrpyt the encrypted private key with a key derived from the password.
+	 *
+	 * @param password password to use to derive key
+	 * @param cipherText encrypted private key with pre- and postfix
+	 * @return the byte array representing the private key
+	 */
+	public static byte[] decryptPrivateKey(String password, String cipherText) {
+
+		//Remove prefix and postfix if exists and all special chars
+		String key;
+		key = cipherText.replaceAll("[-]*", "");
+		key = key.replace(ENC_PRIVATE_KEY_PREFIX.replaceAll("[-]*", ""), "");
+		key = key.replace(ENC_PRIVATE_KEY_POSTFIX.replaceAll("[-]*", ""), "");
+		key = key.replaceAll("[^\\w=\\+/\\-]", "");
+
+		byte[] salt = DatatypeConverter.parseBase64Binary(key.substring(0, 24));
+		byte[] iv = DatatypeConverter.parseBase64Binary(key.substring(24, 48));
+		byte[] enc = DatatypeConverter.parseBase64Binary(key.substring(48));
+
+		String dec = "";
+		try {
+			PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_SIZE);
+			SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+			SecretKey sk = skf.generateSecret(spec);
+			SecretKey sk2 = new SecretKeySpec(sk.getEncoded(), "AES");
+
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			IvParameterSpec ivspec = new IvParameterSpec(iv);
+			cipher.init(Cipher.DECRYPT_MODE, sk2, ivspec);
+
+			dec = new String(cipher.doFinal(enc), Charset.forName("UTF-8"));
+		} catch (BadPaddingException e) {
+			throw new RuntimeException("Wrong password");
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid key");
+		}
+
+		if (!dec.contains(PRIVATE_KEY_PREFIX) || !dec.contains(PRIVATE_KEY_POSTFIX)) {
+			throw new RuntimeException("Wrong password");
+		}
+
+		dec = dec.replace(PRIVATE_KEY_PREFIX, "");
+		dec = dec.replace(PRIVATE_KEY_POSTFIX, "");
+		dec = dec.replace("\n", "");
+
+		return DatatypeConverter.parseHexBinary(dec);
 	}
 }
