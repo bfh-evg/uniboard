@@ -141,7 +141,7 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 	}
 
 	protected Element createValueElement(Value value) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 		Z z = Z.getInstance();
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 		if (value instanceof ByteArrayValue) {

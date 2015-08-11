@@ -19,6 +19,7 @@ import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
+import ch.bfh.unicrypt.helper.math.MathUtil;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayElement;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringElement;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZElement;
@@ -143,6 +144,8 @@ public class AccessControlledServiceProtectedTest {
 		Element puKey = rsa.getVerificationKeySpace().getElement(new BigInteger("2753"));
 
 		Element signature = rsa.sign(prKey, messageElement);
+
+		System.out.println(MathUtil.pair(new BigInteger("2753"), p.multiply(q)).toString(10));
 
 		String sigString = signature.convertToBigInteger().toString(10);
 		alpha.add("signature", new StringValue(sigString));

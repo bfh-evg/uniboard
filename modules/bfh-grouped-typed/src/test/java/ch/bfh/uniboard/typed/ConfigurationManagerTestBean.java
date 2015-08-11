@@ -12,6 +12,7 @@
 package ch.bfh.uniboard.typed;
 
 import ch.bfh.uniboard.service.ConfigurationManager;
+import java.io.File;
 import java.util.Properties;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
@@ -32,13 +33,16 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 
 		if (this.correct && this.groupded) {
 			Properties p = new Properties();
-			p.put("number", "src/test/resources/numberSchema.json");
-			p.put("ip", "src/test/resources/ipSchema.json");
+			File f = new File("src/test/resources/numberSchema.json");
+			p.put("number", f.getAbsolutePath());
+			File f2 = new File("src/test/resources/ipSchema.json");
+			p.put("ip", f2.getAbsolutePath());
 			return p;
 		}
 		if (this.correct && !this.groupded) {
 			Properties p = new Properties();
-			p.put("singleType", "src/test/resources/numberSchema.json");
+			File f = new File("src/test/resources/numberSchema.json");
+			p.put("singleType", f.getAbsolutePath());
 			return p;
 		}
 		return null;

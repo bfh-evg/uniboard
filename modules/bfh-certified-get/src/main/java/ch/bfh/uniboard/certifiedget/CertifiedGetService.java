@@ -72,7 +72,7 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
 			StringToByteArray.getInstance(Charset.forName("UTF-8")));
 
-	private static final StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+	private static final StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 
 	private static final Logger logger = Logger.getLogger(CertifiedGetService.class.getName());
 

@@ -16,6 +16,7 @@ import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZMod;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import java.math.BigInteger;
 import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 /**
@@ -37,6 +38,21 @@ public class RSASignatureHelper extends SignatureHelper {
 	public RSASignatureHelper(RSAPrivateCrtKey rsaPrivKey) {
 		privateKey = rsaPrivKey.getPrivateExponent();
 		modulus = rsaPrivKey.getModulus();
+	}
+
+	/**
+	 * Create a SignatureHelper for generating RSA signatures
+	 *
+	 * @param rsaPrivKey private key used to sign
+	 */
+	public RSASignatureHelper(RSAPrivateKey rsaPrivKey) {
+		privateKey = rsaPrivKey.getPrivateExponent();
+		modulus = rsaPrivKey.getModulus();
+	}
+
+	public RSASignatureHelper(BigInteger modulus, BigInteger privateKey) {
+		this.modulus = modulus;
+		this.privateKey = privateKey;
 	}
 
 	/**

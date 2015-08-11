@@ -81,7 +81,7 @@ public class PostCreator {
 	}
 
 	public static Element createELementMessageAlpha(byte[] message, Attributes alpha) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 		Z z = Z.getInstance();
 
@@ -118,7 +118,7 @@ public class PostCreator {
 	public static Element createBetaSignature(byte[] message,
 			Attributes alpha, Attributes beta, DSAPrivateKey dsaPrivKey) {
 
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 		Z z = Z.getInstance();
 

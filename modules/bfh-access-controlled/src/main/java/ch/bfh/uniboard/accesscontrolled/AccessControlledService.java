@@ -309,7 +309,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 	}
 
 	protected Element createMessageElement(byte[] message, Attributes alpha) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 		Z z = Z.getInstance();
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 

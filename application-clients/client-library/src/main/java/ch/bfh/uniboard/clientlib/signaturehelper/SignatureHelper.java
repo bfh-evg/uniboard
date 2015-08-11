@@ -162,7 +162,7 @@ public abstract class SignatureHelper {
 	 * @return the element representing the message and alpha attributes (Poster signature and following attributes
 	 * excluded)
 	 */
-	private Element prepareElement(byte[] message, AttributesDTO alpha) {
+	protected Element prepareElement(byte[] message, AttributesDTO alpha) {
 		return this.prepareElement(message, alpha, UniBoardAttributesName.SIGNATURE.getName());
 	}
 
