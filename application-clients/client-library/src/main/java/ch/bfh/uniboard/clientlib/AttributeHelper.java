@@ -18,8 +18,8 @@ import java.util.Iterator;
  * Class containing helper methods for getting attributes
  * @author Philémon von Bergen
  */
-class AttributeHelper {
-    
+public class AttributeHelper {
+
     /**
      * Search an attribute with key "key" in the list of given attributes
      * @param attributes the attributes in which to search
