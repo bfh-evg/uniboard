@@ -100,8 +100,7 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			return gamma;
 		}
 		Element messageElement = this.createMessageElement(query, resultContainer);
-		Element signature = this.signer.sign(messageElement);
-		String signatureString = signature.convertToBigInteger().toString(10);
+		String signatureString = this.signer.sign(messageElement).toString(10);
 		gamma.add(ATTRIBUTE_NAME, new StringValue(signatureString));
 		return gamma;
 

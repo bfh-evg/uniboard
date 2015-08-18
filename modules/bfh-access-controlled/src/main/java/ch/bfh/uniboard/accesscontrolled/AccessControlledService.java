@@ -291,17 +291,19 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 		Element messageElement = this.createMessageElement(message, alpha);
 
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
+		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(
 				messageElement.getSet(), g, CONVERT_METHOD, HASH_METHOD);
 
 		Element publicKey = schnorr.getVerificationKeySpace()
 				.getElement(new BigInteger(key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue()));
 
-		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
-		BigInteger biSignature = new BigInteger(signature);
-		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(biSignature);
+		String strSignature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
+		BigInteger biSignature = new BigInteger(strSignature);
+		BigInteger[] schnorrSignature = MathUtil.unpair(biSignature);
+		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[1], schnorrSignature[0]);
+		System.out.println(signature);
 
-		return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
+		return schnorr.verify(publicKey, messageElement, signature).getValue();
 	}
 
 	protected boolean checkECDLSignature(JsonNode key, byte[] message, Attributes alpha) {

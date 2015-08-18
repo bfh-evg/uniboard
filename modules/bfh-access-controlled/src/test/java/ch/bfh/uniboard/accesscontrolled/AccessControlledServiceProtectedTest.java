@@ -107,13 +107,15 @@ public class AccessControlledServiceProtectedTest {
 
 		Element messageElement = service.createMessageElement(message, alpha);
 
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
+		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(
 				messageElement.getSet(), g, AccessControlledService.CONVERT_METHOD, AccessControlledService.HASH_METHOD);
 
 		Element privateKey = schnorr.getSignatureKeySpace().getElement(new BigInteger("78"));
-		Element signature = schnorr.sign(privateKey, messageElement, schnorr.getRandomizationSpace().getRandomElement());
+		Pair signature = schnorr.sign(privateKey, messageElement, schnorr.getRandomizationSpace().getRandomElement());
+		System.out.println(signature);
+		String sigString = MathUtil.pair(signature.getSecond().convertToBigInteger(),
+				signature.getFirst().convertToBigInteger()).toString(10);
 
-		String sigString = signature.convertToBigInteger().toString(10);
 		alpha.add("signature", new StringValue(sigString));
 
 		assertTrue(service.checkDLSignature(key, message, alpha));

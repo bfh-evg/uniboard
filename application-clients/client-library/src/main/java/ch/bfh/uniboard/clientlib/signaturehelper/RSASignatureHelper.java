@@ -66,14 +66,14 @@ public class RSASignatureHelper extends SignatureHelper {
 	}
 
 	@Override
-	protected Element sign(Element element) throws SignatureException {
+	protected BigInteger sign(Element element) throws SignatureException {
 		if (privateKey == null) {
 			throw new SignatureException("No private key provided in constructor");
 		}
 		RSASignatureScheme rsaScheme = RSASignatureScheme.getInstance(element.getSet(), ZMod.getInstance(modulus),
 				CONVERT_METHOD, HASH_METHOD);
 		Element privateKeyElement = rsaScheme.getSignatureKeySpace().getElement(privateKey);
-		return rsaScheme.sign(privateKeyElement, element);
+		return rsaScheme.sign(privateKeyElement, element).convertToBigInteger();
 	}
 
 	@Override

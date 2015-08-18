@@ -12,6 +12,9 @@
 package ch.bfh.uniboard.clientlib.signaturehelper;
 
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
+import ch.bfh.unicrypt.helper.math.MathUtil;
+import ch.bfh.unicrypt.math.algebra.general.classes.Pair;
+import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import ch.bfh.unicrypt.math.algebra.multiplicative.classes.GStarModElement;
 import ch.bfh.unicrypt.math.algebra.multiplicative.classes.GStarModPrime;
@@ -57,16 +60,17 @@ public class SchnorrSignatureHelper extends SignatureHelper {
 	}
 
 	@Override
-	protected Element sign(Element element) throws SignatureException {
+	protected BigInteger sign(Element element) throws SignatureException {
 		if (privateKey == null) {
 			throw new SignatureException("No private key provided in constructor");
 		}
 		GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
 		GStarModElement g = g_q.getElement(generator);
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
+		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
 				CONVERT_METHOD, HASH_METHOD);
 		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(privateKey);
-		return schnorr.sign(privateKeyElement, element);
+		Pair signature = schnorr.sign(privateKeyElement, element);
+		return MathUtil.pair(signature.getSecond().convertToBigInteger(), signature.getFirst().convertToBigInteger());
 	}
 
 	@Override
@@ -76,9 +80,10 @@ public class SchnorrSignatureHelper extends SignatureHelper {
 		}
 		GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
 		GStarModElement g = g_q.getElement(generator);
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
+		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
 				CONVERT_METHOD, HASH_METHOD);
-		Element signature = schnorr.getSignatureSpace().getElementFrom(signatureBI);
+		BigInteger[] schnorrSignature = MathUtil.unpair(signatureBI);
+		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[1], schnorrSignature[0]);
 
 		Element publicKeyElement = schnorr.getVerificationKeySpace().getElement(publicKey);
 

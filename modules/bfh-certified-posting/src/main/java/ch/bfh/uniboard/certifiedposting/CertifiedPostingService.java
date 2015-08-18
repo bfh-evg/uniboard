@@ -105,8 +105,7 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 			return beta;
 		}
 		Element messageElement = this.createMessageElement(message, alpha, beta);
-		Element signature = this.signer.sign(messageElement);
-		String signatureString = signature.convertToBigInteger().toString(10);
+		String signatureString = this.signer.sign(messageElement).toString(10);
 		beta.add(ATTRIBUTE_NAME, new StringValue(signatureString));
 		return beta;
 	}

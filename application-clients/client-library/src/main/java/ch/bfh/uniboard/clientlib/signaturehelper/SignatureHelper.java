@@ -75,6 +75,18 @@ public abstract class SignatureHelper {
 			StringToByteArray.getInstance(Charset.forName("UTF-8")));
 	private static final StringMonoid STRING_SPACE = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+	public static String bytesToHex(byte[] bytes) {
+		char[] hexChars = new char[bytes.length * 2];
+		for (int j = 0; j < bytes.length; j++) {
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
+	}
+
 	/**
 	 * Signs an UniCrypt element
 	 *
@@ -82,7 +94,7 @@ public abstract class SignatureHelper {
 	 * @return the signature of element
 	 * @throws SignatureException thrown when an error occured during signing process
 	 */
-	protected abstract Element sign(Element element) throws SignatureException;
+	protected abstract BigInteger sign(Element element) throws SignatureException;
 
 	/**
 	 * Verifies signature of an UniCrypt element
@@ -104,7 +116,7 @@ public abstract class SignatureHelper {
 	 */
 	public BigInteger sign(byte[] message, AttributesDTO alpha) throws SignatureException {
 		Element messageElement = prepareElement(message, alpha);
-		return sign(messageElement).convertToBigInteger();
+		return sign(messageElement);
 	}
 
 	/**
@@ -135,6 +147,8 @@ public abstract class SignatureHelper {
 	public boolean verify(byte[] message, AttributesDTO alpha, AttributesDTO beta, BigInteger signature) throws
 			SignatureException {
 		Element messageElement = prepareElement(message, alpha, beta);
+		logger.log(Level.INFO, "Element Hash: {0}",
+				bytesToHex(messageElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
 		return verify(messageElement, signature);
 	}
 

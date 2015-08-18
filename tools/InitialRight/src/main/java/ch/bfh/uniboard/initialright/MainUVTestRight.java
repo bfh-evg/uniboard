@@ -39,14 +39,14 @@ public class MainUVTestRight {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String keyStorePath = "/home/hss3/Documents/UniVote.jks";
-		String keyStorePass = "123456";
+		String keyStorePath = "/home/hss3/Documents/GIT/univote2/demo/UniVote.jks";
+		String keyStorePass = "12345678";
 		String boardAlias = "uniboardvote";
-		String boardPKPass = "123456";
+		String boardPKPass = "12345678";
 		String ecAlias = "ec-demo";
-		String ecPKPass = "123456";
+		String ecPKPass = "12345678";
 		String eaAlias = "ea-demo";
-		String section = "test-2015";
+		String section = "sub-2015";
 
 		KeyStore caKs = KeyStore.getInstance(System.getProperty("javax.net.ssl.keyStoreType", "jks"));
 
@@ -228,6 +228,31 @@ public class MainUVTestRight {
 
 		String post6 = PostCreator.createMessage(message6, alpha6, beta6);
 		System.out.println(post6);
+
+		//create accessRight message
+		byte[] message7 = ("{\"group\":\"votingData\",\"crypto\":{\"type\":\"DL\", \"p\":\""
+				+ ecPubKey.getParams().getP().toString(10)
+				+ "\",\"q\":\"" + ecPubKey.getParams().getQ().toString(10)
+				+ "\",\"g\":\"" + ecPubKey.getParams().getG().toString(10)
+				+ "\",\"publickey\":\""
+				+ electionCoordinatorPublicKey.toString(10) + "\"}}").getBytes(Charset.forName("UTF-8"));
+
+		//Create alphas and betas
+		Attributes alpha7 = new Attributes();
+		alpha7.add("section", new StringValue(section));
+		alpha7.add("group", new StringValue("accessRight"));
+		Element ucMsgSig7 = PostCreator.createAlphaSignatureWithDL(message7, alpha7, dsaPrivKey);
+		alpha7.add("signature", new StringValue(ucMsgSig7.convertToBigInteger().toString(10)));
+		alpha7.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
+
+		Attributes beta7 = new Attributes();
+		beta7.add("timestamp", new DateValue(new Date()));
+		beta7.add("rank", new IntegerValue(5));
+		Element acMsgSig7 = PostCreator.createBetaSignature(message1, alpha7, beta7, dsaPrivKey);
+		beta7.add("boardSignature", new StringValue(acMsgSig7.convertToBigInteger().toString(10)));
+
+		String post7 = PostCreator.createMessage(message7, alpha7, beta7);
+		System.out.println(post7);
 
 	}
 
