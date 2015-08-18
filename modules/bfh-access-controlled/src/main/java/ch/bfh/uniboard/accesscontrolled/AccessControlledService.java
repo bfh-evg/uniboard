@@ -300,7 +300,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 		String strSignature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
 		BigInteger biSignature = new BigInteger(strSignature);
 		BigInteger[] schnorrSignature = MathUtil.unpair(biSignature);
-		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[1], schnorrSignature[0]);
+		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[0], schnorrSignature[1]);
 		System.out.println(signature);
 
 		return schnorr.verify(publicKey, messageElement, signature).getValue();

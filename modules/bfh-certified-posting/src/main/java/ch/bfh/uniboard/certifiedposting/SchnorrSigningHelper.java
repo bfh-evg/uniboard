@@ -44,7 +44,7 @@ public class SchnorrSigningHelper implements SigningHelper {
 				HASH_METHOD);
 		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(privateKey);
 		Pair signature = schnorr.sign(privateKeyElement, message);
-		return MathUtil.pair(signature.getSecond().convertToBigInteger(), signature.getFirst().convertToBigInteger());
+		return MathUtil.pair(signature.getFirst().convertToBigInteger(), signature.getSecond().convertToBigInteger());
 	}
 
 }

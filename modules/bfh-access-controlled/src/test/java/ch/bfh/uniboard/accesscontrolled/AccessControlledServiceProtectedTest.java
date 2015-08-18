@@ -113,8 +113,8 @@ public class AccessControlledServiceProtectedTest {
 		Element privateKey = schnorr.getSignatureKeySpace().getElement(new BigInteger("78"));
 		Pair signature = schnorr.sign(privateKey, messageElement, schnorr.getRandomizationSpace().getRandomElement());
 		System.out.println(signature);
-		String sigString = MathUtil.pair(signature.getSecond().convertToBigInteger(),
-				signature.getFirst().convertToBigInteger()).toString(10);
+		String sigString = MathUtil.pair(signature.getFirst().convertToBigInteger(),
+				signature.getSecond().convertToBigInteger()).toString(10);
 
 		alpha.add("signature", new StringValue(sigString));
 

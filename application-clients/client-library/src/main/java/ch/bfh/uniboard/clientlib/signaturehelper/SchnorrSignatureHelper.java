@@ -70,7 +70,7 @@ public class SchnorrSignatureHelper extends SignatureHelper {
 				CONVERT_METHOD, HASH_METHOD);
 		Element privateKeyElement = schnorr.getSignatureKeySpace().getElement(privateKey);
 		Pair signature = schnorr.sign(privateKeyElement, element);
-		return MathUtil.pair(signature.getSecond().convertToBigInteger(), signature.getFirst().convertToBigInteger());
+		return MathUtil.pair(signature.getFirst().convertToBigInteger(), signature.getSecond().convertToBigInteger());
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class SchnorrSignatureHelper extends SignatureHelper {
 		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
 				CONVERT_METHOD, HASH_METHOD);
 		BigInteger[] schnorrSignature = MathUtil.unpair(signatureBI);
-		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[1], schnorrSignature[0]);
+		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[0], schnorrSignature[1]);
 
 		Element publicKeyElement = schnorr.getVerificationKeySpace().getElement(publicKey);
 
