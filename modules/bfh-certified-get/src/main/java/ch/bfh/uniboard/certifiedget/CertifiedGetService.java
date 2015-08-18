@@ -78,6 +78,18 @@ public class CertifiedGetService extends GetComponent implements GetService {
 
 	private SigningHelper signer = null;
 
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+	public static String bytesToHex(byte[] bytes) {
+		char[] hexChars = new char[bytes.length * 2];
+		for (int j = 0; j < bytes.length; j++) {
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
+	}
+
 	@EJB
 	GetService getSuccessor;
 
@@ -100,6 +112,9 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			return gamma;
 		}
 		Element messageElement = this.createMessageElement(query, resultContainer);
+		logger.log(Level.FINE, "message: {0}", messageElement.toString());
+		logger.log(Level.FINE, "complete: {0}",
+				bytesToHex(messageElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
 		String signatureString = this.signer.sign(messageElement).toString(10);
 		gamma.add(ATTRIBUTE_NAME, new StringValue(signatureString));
 		return gamma;
@@ -109,7 +124,11 @@ public class CertifiedGetService extends GetComponent implements GetService {
 	protected Element createMessageElement(Query query, ResultContainer resultContainer) {
 
 		Element queryElement = this.createQueryElement(query);
+		logger.log(Level.FINE, "query: {0}",
+				bytesToHex(queryElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
 		Element resultContainerElement = this.createResultContainerElement(resultContainer);
+		logger.log(Level.FINE, "result container: {0}",
+				bytesToHex(resultContainerElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
 		return Tuple.getInstance(queryElement, resultContainerElement);
 	}
 
@@ -138,16 +157,11 @@ public class CertifiedGetService extends GetComponent implements GetService {
 	protected Element createIdentifierElement(Identifier identifier) {
 		List<Element> identifierElements = new ArrayList<>();
 
-		if (identifier instanceof AlphaIdentifier) {
-			identifierElements.add(stringSpace.getElement("alpha"));
-		} else if (identifier instanceof BetaIdentifier) {
-			identifierElements.add(stringSpace.getElement("beta"));
-		} else if (identifier instanceof MessageIdentifier) {
-			identifierElements.add(stringSpace.getElement("message"));
-		} else {
-			logger.log(Level.SEVERE, "Unsupported Identifier type.");
-			return null;
-		}
+		char c[] = identifier.getClass().getSimpleName().toCharArray();
+		c[0] = Character.toLowerCase(c[0]);
+		String strIdentifier = new String(c);
+
+		identifierElements.add(stringSpace.getElement(strIdentifier));
 
 		for (String part : identifier.getParts()) {
 			identifierElements.add(stringSpace.getElement(part));
@@ -287,9 +301,9 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			}
 		}
 		DenseArray gammaDenseElements = DenseArray.getInstance(gammaElements);
-		Element gammeElement = Tuple.getInstance(gammaDenseElements);
+		Element gammaElement = Tuple.getInstance(gammaDenseElements);
 
-		return Tuple.getInstance(postElement, gammeElement);
+		return Tuple.getInstance(postElement, gammaElement);
 	}
 
 	@PostConstruct

@@ -12,10 +12,8 @@
 package ch.bfh.uniboard.clientlib.signaturehelper;
 
 import ch.bfh.uniboard.clientlib.UniBoardAttributesName;
-import ch.bfh.uniboard.data.AlphaIdentifierDTO;
 import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
-import ch.bfh.uniboard.data.BetaIdentifierDTO;
 import ch.bfh.uniboard.data.BetweenDTO;
 import ch.bfh.uniboard.data.ByteArrayValueDTO;
 import ch.bfh.uniboard.data.ConstraintDTO;
@@ -28,7 +26,6 @@ import ch.bfh.uniboard.data.InDTO;
 import ch.bfh.uniboard.data.IntegerValueDTO;
 import ch.bfh.uniboard.data.LessDTO;
 import ch.bfh.uniboard.data.LessEqualDTO;
-import ch.bfh.uniboard.data.MessageIdentifierDTO;
 import ch.bfh.uniboard.data.NotEqualDTO;
 import ch.bfh.uniboard.data.OrderDTO;
 import ch.bfh.uniboard.data.PostDTO;
@@ -59,6 +56,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Class encapsulating code for generating poster signature and verifying signature of UniBoard
@@ -147,7 +145,7 @@ public abstract class SignatureHelper {
 	public boolean verify(byte[] message, AttributesDTO alpha, AttributesDTO beta, BigInteger signature) throws
 			SignatureException {
 		Element messageElement = prepareElement(message, alpha, beta);
-		logger.log(Level.INFO, "Element Hash: {0}",
+		logger.log(Level.FINE, "Element Hash: {0}",
 				bytesToHex(messageElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
 		return verify(messageElement, signature);
 	}
@@ -310,16 +308,7 @@ public abstract class SignatureHelper {
 	private Element prepareIdentifierElement(IdentifierDTO identifier) {
 		List<Element> identifierElements = new ArrayList<>();
 
-		if (identifier instanceof AlphaIdentifierDTO) {
-			identifierElements.add(STRING_SPACE.getElement("alpha"));
-		} else if (identifier instanceof BetaIdentifierDTO) {
-			identifierElements.add(STRING_SPACE.getElement("beta"));
-		} else if (identifier instanceof MessageIdentifierDTO) {
-			identifierElements.add(STRING_SPACE.getElement("message"));
-		} else {
-			logger.log(Level.SEVERE, "Unsupported Identifier type.");
-			return null;
-		}
+		identifierElements.add(STRING_SPACE.getElement(identifier.getClass().getAnnotation(XmlType.class).name()));
 
 		for (String part : identifier.getPart()) {
 			identifierElements.add(STRING_SPACE.getElement(part));
@@ -413,7 +402,8 @@ public abstract class SignatureHelper {
 
 		List<Element> constraintsElements = new ArrayList<>();
 		for (ConstraintDTO c : query.getConstraint()) {
-			constraintsElements.add(this.prepareConstraintElement(c));
+			Element tmp = this.prepareConstraintElement(c);
+			constraintsElements.add(tmp);
 		}
 		DenseArray constraintsDenseElements = DenseArray.getInstance(constraintsElements);
 		Element contraints = Tuple.getInstance(constraintsDenseElements);
@@ -445,9 +435,8 @@ public abstract class SignatureHelper {
 		}
 		DenseArray postDenseElements = DenseArray.getInstance(postElements);
 		Element postElement = Tuple.getInstance(postDenseElements);
-
-		Element gammaElement = this.prepareAttributesElement(resultContainer.getGamma(), UniBoardAttributesName.BOARD_SIGNATURE.getName());
-
+		Element gammaElement = this.prepareAttributesElement(resultContainer.getGamma(),
+				UniBoardAttributesName.BOARD_SIGNATURE.getName());
 		return Tuple.getInstance(postElement, gammaElement);
 	}
 }
