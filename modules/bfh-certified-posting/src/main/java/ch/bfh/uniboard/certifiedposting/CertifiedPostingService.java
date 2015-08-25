@@ -20,14 +20,13 @@ import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
-import ch.bfh.unicrypt.helper.Alphabet;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
-import ch.bfh.unicrypt.helper.converter.classes.bytearray.ByteArrayToByteArray;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.StringToByteArray;
 import ch.bfh.unicrypt.helper.hash.HashAlgorithm;
 import ch.bfh.unicrypt.helper.hash.HashMethod;
+import ch.bfh.unicrypt.helper.math.Alphabet;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
@@ -76,13 +75,10 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 	private static final String CONFIG_ID = "id";
 	private static final String CONFIG_PRIVATEKEY_PASS = "privatekey-pass";
 
-	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(
-			HashAlgorithm.SHA256,
-			ConvertMethod.getInstance(
-					BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
-					ByteArrayToByteArray.getInstance(false),
-					StringToByteArray.getInstance(Charset.forName("UTF-8"))),
-			HashMethod.Mode.RECURSIVE);
+	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(HashAlgorithm.SHA256);
+	protected static final ConvertMethod CONVERT_METHOD = ConvertMethod.getInstance(
+			BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
+			StringToByteArray.getInstance(Charset.forName("UTF-8")));
 
 	private static final Logger logger = Logger.getLogger(CertifiedPostingService.class.getName());
 
@@ -104,13 +100,12 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 		if (this.signer == null) {
 			logger.log(Level.SEVERE,
 					"Signer is not set. Check the configuration.");
-			beta.add(Attributes.REJECTED,
+			beta.add(Attributes.ERROR,
 					new StringValue("BCP-001 Internal server error."));
 			return beta;
 		}
 		Element messageElement = this.createMessageElement(message, alpha, beta);
-		Element signature = this.signer.sign(messageElement);
-		String signatureString = signature.getBigInteger().toString(10);
+		String signatureString = this.signer.sign(messageElement).toString(10);
 		beta.add(ATTRIBUTE_NAME, new StringValue(signatureString));
 		return beta;
 	}
@@ -145,7 +140,7 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 	}
 
 	protected Element createValueElement(Value value) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 		Z z = Z.getInstance();
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 		if (value instanceof ByteArrayValue) {

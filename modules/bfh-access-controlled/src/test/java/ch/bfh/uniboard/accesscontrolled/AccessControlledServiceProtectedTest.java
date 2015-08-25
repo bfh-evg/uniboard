@@ -19,6 +19,7 @@ import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
+import ch.bfh.unicrypt.helper.math.MathUtil;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayElement;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringElement;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZElement;
@@ -106,13 +107,15 @@ public class AccessControlledServiceProtectedTest {
 
 		Element messageElement = service.createMessageElement(message, alpha);
 
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
-				messageElement.getSet(), g, AccessControlledService.HASH_METHOD);
+		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(
+				messageElement.getSet(), g, AccessControlledService.CONVERT_METHOD, AccessControlledService.HASH_METHOD);
 
 		Element privateKey = schnorr.getSignatureKeySpace().getElement(new BigInteger("78"));
-		Element signature = schnorr.sign(privateKey, messageElement, schnorr.getRandomizationSpace().getRandomElement());
+		Pair signature = schnorr.sign(privateKey, messageElement, schnorr.getRandomizationSpace().getRandomElement());
+		System.out.println(signature);
+		String sigString = MathUtil.pair(signature.getFirst().convertToBigInteger(),
+				signature.getSecond().convertToBigInteger()).toString(10);
 
-		String sigString = signature.getBigInteger().toString(10);
 		alpha.add("signature", new StringValue(sigString));
 
 		assertTrue(service.checkDLSignature(key, message, alpha));
@@ -137,14 +140,16 @@ public class AccessControlledServiceProtectedTest {
 		BigInteger q = new BigInteger("53");
 
 		RSASignatureScheme rsa = RSASignatureScheme.getInstance(messageElement.getSet(),
-				ZModPrimePair.getInstance(p, q), HASH_METHOD);
+				ZModPrimePair.getInstance(p, q), AccessControlledService.CONVERT_METHOD, HASH_METHOD);
 
 		Element prKey = rsa.getSignatureKeySpace().getElement(new BigInteger("17"));
 		Element puKey = rsa.getVerificationKeySpace().getElement(new BigInteger("2753"));
 
 		Element signature = rsa.sign(prKey, messageElement);
 
-		String sigString = signature.getBigInteger().toString(10);
+		System.out.println(MathUtil.pair(new BigInteger("2753"), p.multiply(q)).toString(10));
+
+		String sigString = signature.convertToBigInteger().toString(10);
 		alpha.add("signature", new StringValue(sigString));
 
 		assertTrue(service.checkRSASignature(key, message, alpha));

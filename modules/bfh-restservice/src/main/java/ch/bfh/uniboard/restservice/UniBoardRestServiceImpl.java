@@ -21,13 +21,13 @@ import ch.bfh.uniboard.service.GetService;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * The class UniBoardRestServiceImpl implements a RESTful interface of the UniBoard by delegating the get and post
@@ -61,10 +61,11 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	@Override
 	public AttributesDTO post(PostContainerDTO postContainer) {
 		try {
-			byte[] message = DatatypeConverter.parseBase64Binary(postContainer.getMessage());
+			byte[] message = Base64.getDecoder().decode(postContainer.getMessage());
 			Attributes alpha = Transformer.convertAttributesDTOtoAttributes(postContainer.getAlpha());
 			Attributes beta = new Attributes();
-			logger.info("Post message=" + DatatypeConverter.printBase64Binary(message) + ", alpha=" + alpha + ", beta=" + beta);
+			logger.log(Level.INFO, "Post message={0}, alpha={1}, beta={2}",
+					new Object[]{postContainer.getMessage(), alpha, beta});
 			beta = postSuccessor.post(message, alpha, beta);
 			return Transformer.convertAttributesToDTO(beta);
 		} catch (TransformException ex) {

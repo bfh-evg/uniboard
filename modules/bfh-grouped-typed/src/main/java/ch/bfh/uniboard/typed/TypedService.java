@@ -105,11 +105,11 @@ public class TypedService extends PostComponent implements PostService {
 	public boolean validate(String jsonData, String jsonSchema) {
 
 		try {
-			JsonNode schemaNode = JsonLoader.fromPath(jsonSchema);
+			//JsonNode schemaNode = JsonLoader.fromPath(jsonSchema);
 			JsonNode data = JsonLoader.fromString(jsonData);
 
 			JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-			JsonSchema schema = factory.getJsonSchema(schemaNode);
+			JsonSchema schema = factory.getJsonSchema("file://" + jsonSchema);
 			ProcessingReport report = schema.validate(data);
 
 			return report.isSuccess();

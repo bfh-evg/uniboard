@@ -16,6 +16,7 @@ import java.util.Iterator;
 
 /**
  * Class containing helper methods for getting attributes
+ *
  * @author Philémon von Bergen
  */
 public class AttributeHelper {
@@ -33,6 +34,4 @@ public class AttributeHelper {
 	    attr = it.next();
 	    if(attr.getKey().equals(key)) return attr;
 	}
-	return null;
-    }
 }
