@@ -27,11 +27,15 @@ public class AttributeHelper {
      * @param key the key of the attributes to search
      * @return the attribute if one was found, null otherwise
      */
-    public static AttributesDTO.AttributeDTO searchAttribute(AttributesDTO attributes, String key){
-	Iterator<AttributesDTO.AttributeDTO> it = attributes.getAttribute().iterator();
-	AttributesDTO.AttributeDTO attr;
-	while(it.hasNext()){
-	    attr = it.next();
-	    if(attr.getKey().equals(key)) return attr;
-	}
+    public static AttributesDTO.AttributeDTO searchAttribute(AttributesDTO attributes, String key) {
+        Iterator<AttributesDTO.AttributeDTO> it = attributes.getAttribute().iterator();
+        AttributesDTO.AttributeDTO attr;
+        while (it.hasNext()) {
+            attr = it.next();
+            if (attr.getKey().equals(key)) {
+                return attr;
+            }
+        }
+        return null;
+    }
 }
