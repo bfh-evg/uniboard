@@ -80,13 +80,16 @@ public class NotifyingService extends PostComponent implements PostService {
 		try {
 			PostDTO post = new PostDTO(message, Transformer.convertAttributesToDTO(alpha),
 					Transformer.convertAttributesToDTO(beta));
-
+			logger.log(Level.FINE, this.observerManager.getObservers().toString());
 			for (Entry<String, Observer> entry : this.observerManager.getObservers().entrySet()) {
 				Query query = entry.getValue().getQuery();
 				Constraint c = new Equal(new BetaIdentifier(uniqueAttribute), beta.getValue(uniqueAttribute));
 				query.getConstraints().add(c);
+				logger.log(Level.FINE, query.toString());
 				ResultContainer result = getService.get(query);
+				query.getConstraints().remove(c);
 				if (!result.getResult().isEmpty()) {
+					logger.log(Level.INFO, "Notifing observer: {0}", entry.getValue().getUrl());
 					this.observerClient.notifyObserver(entry.getValue().getUrl(), entry.getKey(), post);
 				}
 			}

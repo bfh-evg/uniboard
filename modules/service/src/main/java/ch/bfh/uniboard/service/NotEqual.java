@@ -28,4 +28,10 @@ public class NotEqual extends Constraint {
 	public Value getValue() {
 		return value;
 	}
+
+	@Override
+	public String toString() {
+		return "NotEqual{" + super.getIdentifier().toString() + " value=" + value + '}';
+	}
+
 }

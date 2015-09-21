@@ -28,4 +28,10 @@ public class Less extends Constraint {
 	public Value getValue() {
 		return value;
 	}
+
+	@Override
+	public String toString() {
+		return "Less{" + super.getIdentifier().toString() + " value=" + value + '}';
+	}
+
 }

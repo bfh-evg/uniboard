@@ -28,4 +28,10 @@ public class GreaterEqual extends Constraint {
 	public Value getValue() {
 		return value;
 	}
+
+	@Override
+	public String toString() {
+		return "GreaterEqual{" + super.getIdentifier().toString() + "value=" + value + '}';
+	}
+
 }

@@ -29,4 +29,9 @@ public class Equal extends Constraint {
 		return value;
 	}
 
+	@Override
+	public String toString() {
+		return "Equal{" + super.getIdentifier().toString() + "value=" + value + '}';
+	}
+
 }

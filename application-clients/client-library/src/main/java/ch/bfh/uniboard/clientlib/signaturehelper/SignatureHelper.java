@@ -140,7 +140,7 @@ public abstract class SignatureHelper {
 	 * @param beta board attributes received after posting
 	 * @param signature board signature to verify
 	 * @return true if signature is correct, false otherwise
-	 * @throws SignatureException when error occured during signing
+	 * @throws SignatureException when error occurs during verifying
 	 */
 	public boolean verify(byte[] message, AttributesDTO alpha, AttributesDTO beta, BigInteger signature) throws
 			SignatureException {

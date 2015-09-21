@@ -81,38 +81,34 @@ public class GetHelper {
 	 *
 	 * @param query the query to execute
 	 * @return the result container containing the result and the gamma attributes
-	 * @throws GetException thrown when a signature is not valid
-	 * @throws SignatureException thrown when an error occured during signatur validation
+	 * @throws SignatureException thrown when an error occurred during signature validation
 	 */
-	public ResultContainerDTO get(QueryDTO query) throws GetException, SignatureException {
+	public ResultContainerDTO get(QueryDTO query) throws SignatureException {
 		ResultContainerDTO rc = board.get(query);
 
 		AttributeDTO attr = AttributeHelper.searchAttribute(rc.getGamma(), UniBoardAttributesName.BOARD_SIGNATURE.
 				getName());
 
 		if (attr == null) {
-			logger.log(Level.SEVERE, "No board signature found");
-			throw new GetException("No board signature found");
+			logger.log(Level.SEVERE, "No board signature found.");
+			throw new SignatureException("No board signature found.");
 		}
 
 		String boardSig = ((StringValueDTO) attr.getValue()).getValue();
 		if (!this.signatureVerificatorHelper.verify(query, rc, new BigInteger(boardSig, 10))) {
-			logger.log(Level.SEVERE, "UniBoard signature is invalid");
-			throw new GetException("UniBoard signature is invalid");
+			throw new SignatureException("UniBoard signature is invalid.");
 		} else {
 			for (PostDTO p : rc.getResult().getPost()) {
 				attr = AttributeHelper.searchAttribute(p.getBeta(), UniBoardAttributesName.BOARD_SIGNATURE.getName());
 
 				if (attr == null) {
-					logger.log(Level.SEVERE, "No board signature found");
-					throw new GetException("No board signature found");
+					throw new SignatureException("No board signature found.");
 				}
 
 				boardSig = ((StringValueDTO) attr.getValue()).getValue();
 				if (!this.signatureVerificatorHelper.verify(p.getMessage(), p.getAlpha(), p.getBeta(), new BigInteger(
 						boardSig, 10))) {
-					logger.log(Level.SEVERE, "UniBoard signature is invalid");
-					throw new GetException("UniBoard signature is invalid");
+					throw new SignatureException("UniBoard signature is invalid for post.");
 				}
 			}
 			return rc;
@@ -126,7 +122,7 @@ public class GetHelper {
 	 * @param post the post to verify
 	 * @param posterPublicKey the public key of the poster
 	 * @return true if signature is valid, false otherwise
-	 * @throws SignatureException if an error occured during signature validation
+	 * @throws SignatureException if an error occurred during signature validation
 	 */
 	public boolean verifyPosterSignature(PostDTO post, PublicKey posterPublicKey) throws SignatureException {
 
@@ -136,13 +132,12 @@ public class GetHelper {
 		} else if (posterPublicKey instanceof DSAPublicKey) {
 			sigHelper = new SchnorrSignatureHelper((DSAPublicKey) posterPublicKey);
 		} else {
-			throw new SignatureException("Unsupported key type");
+			throw new SignatureException("Unsupported key type.");
 		}
 
 		AttributeDTO attr = AttributeHelper.searchAttribute(post.getAlpha(), UniBoardAttributesName.SIGNATURE.getName());
 		if (attr == null) {
-			logger.log(Level.SEVERE, "No poster signature found");
-			throw new SignatureException("No poster signature found");
+			throw new SignatureException("No poster signature found.");
 		}
 
 		String posterSig = ((StringValueDTO) attr.getValue()).getValue();

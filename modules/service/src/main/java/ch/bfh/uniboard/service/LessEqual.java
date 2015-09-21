@@ -28,4 +28,10 @@ public class LessEqual extends Constraint {
 	public Value getValue() {
 		return value;
 	}
+
+	@Override
+	public String toString() {
+		return "LessEqual{" + super.getIdentifier().toString() + " value=" + value + '}';
+	}
+
 }

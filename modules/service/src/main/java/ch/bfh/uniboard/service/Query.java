@@ -81,7 +81,7 @@ public class Query implements Serializable {
 			if (builder.length() > 0) {
 				builder.append(", ");
 			}
-			builder.append(constraint.getIdentifier());
+			builder.append(constraint.toString());
 		}
 		return "Query{" + "constraints=[" + builder + "], limit=" + limit + "}";
 	}

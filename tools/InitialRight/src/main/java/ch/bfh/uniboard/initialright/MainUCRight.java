@@ -42,12 +42,12 @@ public class MainUCRight {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String keyStorePath = "/home/phil/UniCert.jks";
-		String keyStorePass = "123456";
+		String keyStorePath = "../../../unicert/demo/UniCert.jks";
+		String keyStorePass = "12345678";
 		String boardAlias = "uniboardcert";
-		String boardPKPass = "123456";
+		String boardPKPass = "12345678";
 		String certAlias = "unicertbfh";
-		String certPKPass = "123456";
+		String certPKPass = "12345678";
 		String section = "unicert";
 
 		KeyStore caKs = KeyStore.getInstance(System.getProperty("javax.net.ssl.keyStoreType", "jks"));

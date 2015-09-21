@@ -37,4 +37,9 @@ public class Between extends Constraint implements Serializable {
 		return end;
 	}
 
+	@Override
+	public String toString() {
+		return "Between{" + super.getIdentifier().toString() + "start=" + start + ", end=" + end + '}';
+	}
+
 }

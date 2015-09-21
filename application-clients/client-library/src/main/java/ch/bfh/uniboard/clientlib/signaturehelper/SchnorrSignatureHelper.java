@@ -21,6 +21,8 @@ import ch.bfh.unicrypt.math.algebra.multiplicative.classes.GStarModPrime;
 import java.math.BigInteger;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.DSAPublicKey;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Helper class generating and verifying Schnorr signature of UniCrypt elements
@@ -34,6 +36,7 @@ public class SchnorrSignatureHelper extends SignatureHelper {
 	private final BigInteger generator;
 	private BigInteger privateKey = null;
 	private BigInteger publicKey = null;
+	private static final Logger logger = Logger.getLogger(SchnorrSignatureHelper.class.getName());
 
 	/**
 	 * Create a SignatureHelper for generating Schnorr signatures
@@ -53,10 +56,15 @@ public class SchnorrSignatureHelper extends SignatureHelper {
 	 * @param dsaPublicKey public key used to verify
 	 */
 	public SchnorrSignatureHelper(DSAPublicKey dsaPublicKey) {
-		publicKey = dsaPublicKey.getY();
+		logger.log(Level.FINE, "New SchnorrSignatureHelper");
 		modulus = dsaPublicKey.getParams().getP();
+		logger.log(Level.FINE, "Modulus {0}", modulus);
 		orderFactor = dsaPublicKey.getParams().getQ();
+		logger.log(Level.FINE, "Order {0}", orderFactor);
 		generator = dsaPublicKey.getParams().getG();
+		logger.log(Level.FINE, "Generator {0}", generator);
+		publicKey = dsaPublicKey.getY();
+		logger.log(Level.FINE, "PublicKey {0}", publicKey);
 	}
 
 	@Override
@@ -83,7 +91,12 @@ public class SchnorrSignatureHelper extends SignatureHelper {
 		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(element.getSet(), g,
 				CONVERT_METHOD, HASH_METHOD);
 		BigInteger[] schnorrSignature = MathUtil.unpair(signatureBI);
+		logger.log(Level.FINE, "Signature Value 1: {0}", schnorrSignature[0]);
+		logger.log(Level.FINE, "Signature Value 2: {0}", schnorrSignature[1]);
 		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[0], schnorrSignature[1]);
+		if (signature == null) {
+			return false;
+		}
 
 		Element publicKeyElement = schnorr.getVerificationKeySpace().getElement(publicKey);
 

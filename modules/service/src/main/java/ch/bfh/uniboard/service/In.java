@@ -30,4 +30,10 @@ public class In extends Constraint {
 	public List<Value> getSet() {
 		return element;
 	}
+
+	@Override
+	public String toString() {
+		return "In{" + super.getIdentifier().toString() + " element=" + element + '}';
+	}
+
 }
