@@ -103,7 +103,7 @@ public class ObserverManagerTest {
 		constraints.add(c);
 		Query q = new Query(constraints);
 		Observer obs = new Observer("URL", q);
-		observers.put("testKey", obs);
+		observerManager.put("testKey", obs);
 		observerManager.stop();
 
 		Properties config = configurationManager.loadState("");

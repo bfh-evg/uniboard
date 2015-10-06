@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
@@ -90,6 +92,18 @@ public class ObserverManagerImpl implements ObserverManager {
 
 	@Override
 	public Map<String, Observer> getObservers() {
-		return observers;
+		return new HashMap<>(observers);
+	}
+
+	@Override
+	@Lock(LockType.WRITE)
+	public Observer remove(String notificationCode) {
+		return this.observers.remove(notificationCode);
+	}
+
+	@Override
+	@Lock(LockType.WRITE)
+	public void put(String notificationCode, Observer observer) {
+		this.observers.put(notificationCode, observer);
 	}
 }

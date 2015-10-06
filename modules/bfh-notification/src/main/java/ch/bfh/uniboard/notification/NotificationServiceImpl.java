@@ -48,7 +48,7 @@ public class NotificationServiceImpl implements NotificationService {
 			FixedStringSet fixedStringSet = FixedStringSet.getInstance(UPPER_CASE, 20);
 			String notificationCode = fixedStringSet.getRandomElement().getValue();
 			Query q = Transformer.convertQueryDTOtoQuery(query);
-			this.observerManager.getObservers().put(notificationCode, new Observer(url, q));
+			this.observerManager.put(notificationCode, new Observer(url, q));
 			logger.log(Level.INFO, "Added url: {0} and query {1}", new Object[]{url, q.toString()});
 			return notificationCode;
 		} catch (TransformException ex) {
@@ -59,7 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void unregister(String notificationCode) {
-		Observer observer = this.observerManager.getObservers().remove(notificationCode);
+		Observer observer = this.observerManager.remove(notificationCode);
 		if (observer != null) {
 			logger.log(Level.INFO, "Removed Observer:{0} Notification: {1}",
 					new Object[]{observer.getUrl(), notificationCode});
