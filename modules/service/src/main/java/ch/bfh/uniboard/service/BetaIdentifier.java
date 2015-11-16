@@ -13,12 +13,21 @@ package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "betaIdentifier")
 public class BetaIdentifier extends Identifier implements Serializable {
+
+	public BetaIdentifier() {
+		super();
+	}
 
 	public BetaIdentifier(List<String> parts) {
 		super(parts);

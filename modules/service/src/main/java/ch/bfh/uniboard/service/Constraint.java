@@ -12,6 +12,11 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * A constraint allows to restrict the result retrieved from the persistence layer. A constraint consists of an
@@ -20,9 +25,28 @@ import java.io.Serializable;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "constraint", propOrder = {
+	"identifier"
+})
+@XmlSeeAlso({
+	In.class,
+	NotEqual.class,
+	Less.class,
+	Equal.class,
+	GreaterEqual.class,
+	LessEqual.class,
+	Greater.class,
+	Between.class
+})
 public abstract class Constraint implements Serializable {
 
-	private final Identifier identifier;
+	@XmlElement(required = true)
+	private Identifier identifier;
+
+	public Constraint() {
+		super();
+	}
 
 	public Constraint(Identifier identifier) {
 		this.identifier = identifier;

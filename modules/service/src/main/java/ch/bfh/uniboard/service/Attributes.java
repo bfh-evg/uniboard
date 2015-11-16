@@ -16,6 +16,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * A data container for arbitrary key/value pairs. Keys are strings, values can be anything. Values should be immutable.
@@ -24,6 +27,10 @@ import java.util.Set;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "attributes", propOrder = {
+	"attribute"
+})
 public class Attributes implements Serializable {
 
 	private static final long serialVersionUID = 1L;

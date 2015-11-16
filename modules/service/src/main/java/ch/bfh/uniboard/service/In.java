@@ -12,15 +12,28 @@
 package ch.bfh.uniboard.service;
 
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "in", propOrder = {
+	"element"
+})
 public class In extends Constraint {
 
-	private final List<Value> element;
+	@XmlElement(required = true)
+	private List<Value> element;
+
+	public In() {
+		super();
+	}
 
 	public In(Identifier identifier, List<Value> element) {
 		super(identifier);

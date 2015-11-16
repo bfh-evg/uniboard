@@ -12,8 +12,17 @@
 package ch.bfh.uniboard.service;
 
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "messageIdentifier")
 public class MessageIdentifier extends Identifier {
+
+	public MessageIdentifier() {
+		super();
+	}
 
 	public MessageIdentifier(List<String> parts) {
 		super(parts);

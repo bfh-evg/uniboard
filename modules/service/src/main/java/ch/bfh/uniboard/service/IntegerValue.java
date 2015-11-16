@@ -13,15 +13,26 @@ package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Wrapper for integer variables
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class IntegerValue implements Value<Integer>, Serializable {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "integerValue", propOrder = {
+	"value"
+})
+public class IntegerValue extends Value<Integer> implements Serializable {
 
 	private Integer value;
+
+	public IntegerValue() {
+		super();
+	}
 
 	public IntegerValue(Integer value) {
 		this.value = value;

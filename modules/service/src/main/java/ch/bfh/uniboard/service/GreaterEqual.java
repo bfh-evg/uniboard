@@ -11,14 +11,28 @@
  */
 package ch.bfh.uniboard.service;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "greaterEqual", propOrder = {
+	"value"
+})
 public class GreaterEqual extends Constraint {
 
-	private final Value value;
+	@XmlElement(required = true)
+	private Value value;
+
+	public GreaterEqual() {
+		super();
+	}
 
 	public GreaterEqual(Identifier identifier, Value value) {
 		super(identifier);

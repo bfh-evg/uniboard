@@ -12,12 +12,9 @@
 package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Base64;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +28,10 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  *
@@ -59,15 +60,13 @@ public class ObserverManagerImpl implements ObserverManager {
 			String s = (String) e.getValue();
 
 			try {
-				byte[] data = Base64.getDecoder().decode(s);
-				Observer tmp;
-				try (ObjectInputStream objectInputStream
-						= new ObjectInputStream(new ByteArrayInputStream(data))) {
-					tmp = (Observer) objectInputStream.readObject();
-				}
-				this.observers.put(key, tmp);
-			} catch (IOException | ClassNotFoundException ex) {
-				logger.log(Level.WARNING, "Could not restore observer from configuration.", ex);
+				JAXBContext jaxbContext = ObserverManagerImpl.initJAXBContext(Observer.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				Reader reader = new StringReader(s);
+				Observer obs = unmarshaller.unmarshal(new StreamSource(reader), Observer.class).getValue();
+				this.observers.put(key, obs);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Could not restore persisted observer.");
 			}
 		}
 	}
@@ -77,13 +76,14 @@ public class ObserverManagerImpl implements ObserverManager {
 		Properties config = new Properties();
 		for (Entry<String, Observer> e : this.observers.entrySet()) {
 			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-					oos.writeObject(e.getValue());
-				}
-				String tmp = Base64.getEncoder().encodeToString(baos.toByteArray());
+				JAXBContext jaxbContext = ObserverManagerImpl.initJAXBContext(Observer.class);
+				StringWriter writer = new StringWriter();
+				Marshaller marshaller = jaxbContext.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+				marshaller.marshal(e.getValue(), writer);
+				String tmp = writer.toString();
 				config.put(e.getKey(), tmp);
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				logger.log(Level.SEVERE, "Could not persist observer to configuraiton.", ex);
 			}
 		}
@@ -105,5 +105,17 @@ public class ObserverManagerImpl implements ObserverManager {
 	@Lock(LockType.WRITE)
 	public void put(String notificationCode, Observer observer) {
 		this.observers.put(notificationCode, observer);
+	}
+
+	/**
+	 * Initializes the JAXB context.
+	 *
+	 * @param <T> the Java type of the domain class the conversion takes place
+	 * @param type the actual type object
+	 * @return the JAXB context
+	 * @throws Exception if the context cannot be established
+	 */
+	private static <T> JAXBContext initJAXBContext(Class<T> type) throws Exception {
+		return JAXBContext.newInstance(new Class<?>[]{type});
 	}
 }

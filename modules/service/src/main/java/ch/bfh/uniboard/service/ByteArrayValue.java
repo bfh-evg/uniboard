@@ -14,15 +14,28 @@ package ch.bfh.uniboard.service;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Base64;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Wrapper for the byte array variables
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class ByteArrayValue implements Value<byte[]>, Serializable {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "byteArrayValue", propOrder = {
+	"value"
+})
+public class ByteArrayValue extends Value<byte[]> implements Serializable {
 
+	@XmlElement(required = true)
 	private byte[] value;
+
+	public ByteArrayValue() {
+		super();
+	}
 
 	public ByteArrayValue(byte[] value) {
 		this.value = value;
