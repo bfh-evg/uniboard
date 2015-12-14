@@ -11,8 +11,9 @@
  */
 package ch.bfh.uniboard.sectioned;
 
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.util.Properties;
+import ch.bfh.uniboard.service.State;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
@@ -27,11 +28,11 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 	private boolean correct = true;
 
 	@Override
-	public Properties getConfiguration(String key) {
+	public Configuration getConfiguration(String key) {
 		if (this.correct) {
-			Properties p = new Properties();
-			p.put("section1", "test");
-			p.put("section2", "test2");
+			Configuration p = new Configuration();
+			p.getEntries().put("section1", "test");
+			p.getEntries().put("section2", "test2");
 			return p;
 		}
 		return null;
@@ -42,12 +43,12 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 	}
 
 	@Override
-	public void saveState(String key, Properties configuration) {
+	public void saveState(State state) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public Properties loadState(String key) {
+	public <T extends State> T loadState(String key, Class<T> t) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

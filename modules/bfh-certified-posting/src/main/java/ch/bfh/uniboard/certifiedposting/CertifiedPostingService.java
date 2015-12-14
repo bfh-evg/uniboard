@@ -1,18 +1,48 @@
 /*
- * Copyright (c) 2014 Berner Fachhochschule, Switzerland.
- * Bern University of Applied Sciences, Engineering and Information Technology,
- * Research Institute for Security in the Information Society, E-Voting Group,
- * Biel, Switzerland.
+ * Uniboard
  *
- * Project UniBoard.
+ *  Copyright (c) 2015 Bern University of Applied Sciences (BFH),
+ *  Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *  Quellgasse 21, CH-2501 Biel, Switzerland
  *
- * Distributable under GPL license.
- * See terms of license at gnu.org.
+ *  Licensed under Dual License consisting of:
+ *  1. GNU Affero General Public License (AGPL) v3
+ *  and
+ *  2. Commercial license
+ *
+ *
+ *  1. This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *  2. Licensees holding valid commercial licenses for UniVote2 may use this file in
+ *   accordance with the commercial license agreement provided with the
+ *   Software or, alternatively, in accordance with the terms contained in
+ *   a written agreement between you and Bern University of Applied Sciences (BFH),
+ *   Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *   Quellgasse 21, CH-2501 Biel, Switzerland.
+ *
+ *
+ *   For further information contact <e-mail: severin.hauser@bfh.ch>
+ *
+ *
+ * Redistributions of files must retain the above copyright notice.
  */
 package ch.bfh.uniboard.certifiedposting;
 
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.ByteArrayValue;
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.IntegerValue;
@@ -53,7 +83,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -165,15 +194,15 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 	@PostConstruct
 	private void init() {
 
-		Properties configuration = configurationManager.getConfiguration(CONFIG_NAME);
+		Configuration configuration = configurationManager.getConfiguration(CONFIG_NAME);
 		if (configuration == null) {
 			return;
 		}
 
-		String keyStorePath = configuration.getProperty(CONFIG_KEYSTORE_PATH);
-		String keyStorePass = configuration.getProperty(CONFIG_KEYSTORE_PASS);
-		String privateKeyPass = configuration.getProperty(CONFIG_PRIVATEKEY_PASS);
-		String id = configuration.getProperty(CONFIG_ID);
+		String keyStorePath = configuration.getEntries().get(CONFIG_KEYSTORE_PATH);
+		String keyStorePass = configuration.getEntries().get(CONFIG_KEYSTORE_PASS);
+		String privateKeyPass = configuration.getEntries().get(CONFIG_PRIVATEKEY_PASS);
+		String id = configuration.getEntries().get(CONFIG_ID);
 
 		KeyStore caKs;
 

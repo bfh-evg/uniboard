@@ -1,31 +1,69 @@
 /*
- * Copyright (c) 2013 Berner Fachhochschule, Switzerland.
- * Bern University of Applied Sciences, Engineering and Information Technology,
- * Research Institute for Security in the Information Society, E-Voting Group,
- * Biel, Switzerland.
+ * Uniboard
  *
- * Project UniBoard.
+ *  Copyright (c) 2015 Bern University of Applied Sciences (BFH),
+ *  Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *  Quellgasse 21, CH-2501 Biel, Switzerland
  *
- * Distributable under GPL license.
- * See terms of license at gnu.org.
+ *  Licensed under Dual License consisting of:
+ *  1. GNU Affero General Public License (AGPL) v3
+ *  and
+ *  2. Commercial license
+ *
+ *
+ *  1. This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *  2. Licensees holding valid commercial licenses for UniVote2 may use this file in
+ *   accordance with the commercial license agreement provided with the
+ *   Software or, alternatively, in accordance with the terms contained in
+ *   a written agreement between you and Bern University of Applied Sciences (BFH),
+ *   Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *   Quellgasse 21, CH-2501 Biel, Switzerland.
+ *
+ *
+ *   For further information contact <e-mail: severin.hauser@bfh.ch>
+ *
+ *
+ * Redistributions of files must retain the above copyright notice.
  */
 package ch.bfh.uniboard.configuration;
 
+import static com.mongodb.client.model.Filters.*;
+import ch.bfh.uniboard.persistence.mongodb.ConnectionManager;
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import ch.bfh.uniboard.service.State;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.UpdateOptions;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.naming.NamingException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 /**
  *
@@ -36,102 +74,112 @@ import javax.naming.NamingException;
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
 	private static final Logger logger = Logger.getLogger(ConfigurationManagerImpl.class.getName());
-	private static final String JNDI_URI = "/uniboard/configuration";
+	private static final String COLLECTION_NAME = "uniboard-configuration";
 
-	public Map<String, Properties> configurations;
-	public Map<String, Properties> states;
+	public Map<String, Configuration> configurations;
+
+	@EJB
+	ConnectionManager connectionManager;
 
 	@PostConstruct
-	private void init() {
+	protected void init() {
 		configurations = new HashMap<>();
-		states = new HashMap<>();
-		Properties props;
-		try {
-			javax.naming.InitialContext ic = new javax.naming.InitialContext();
-			props = (Properties) ic.lookup(JNDI_URI);
-		} catch (NamingException ex) {
-			logger.log(Level.SEVERE, "JNDI lookup for " + JNDI_URI + " failed."
-					+ "ConfigurationManager could not be initialized. Exception: {0}",
-					new Object[]{ex});
-			return;
-		}
-		for (String componentKey : props.stringPropertyNames()) {
-			String[] split = componentKey.split("\\.");
-			String type = split[split.length - 1];
-			String key = split[0];
-
-			switch (type) {
-				case "state":
-					try {
-						InputStream in = new FileInputStream(props.getProperty(componentKey));
-						Properties tmpProperties = new Properties();
-						tmpProperties.load(in);
-						this.states.put(key, tmpProperties);
-					} catch (IOException ex) {
-						logger.log(Level.WARNING, "File not found {0}",
-								new Object[]{props.getProperty(componentKey), ex});
-					}
-
-					break;
-				case "config":
-					Properties tmpProperties;
-					try {
-						javax.naming.InitialContext ic = new javax.naming.InitialContext();
-						tmpProperties = (Properties) ic.lookup(props.getProperty(componentKey));
-						this.configurations.put(key, tmpProperties);
-					} catch (NamingException ex) {
-						logger.log(Level.WARNING, "JNDI lookup for '{0}' failed. Exception: {1}",
-								new Object[]{props.getProperty(componentKey), ex});
-					}
-					break;
-				default:
-					logger.log(Level.WARNING, "Unsupported resource type: {0}", new Object[]{type});
-					break;
+		Bson query = exists("config_key");
+		MongoCursor<Document> cursor
+				= this.connectionManager.getCollection(COLLECTION_NAME).find(query, Document.class).iterator();
+		while (cursor.hasNext()) {
+			try {
+				String s = cursor.next().toJson();
+				Configuration cfg = ConfigurationManagerImpl.unmarshal(Configuration.class, s);
+				this.configurations.put(cfg.getConfig_key(), cfg);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Could not load configuration.", ex);
 			}
-
 		}
+		logger.log(Level.INFO, "Loaded configurations.");
 	}
 
 	@Override
-	public Properties getConfiguration(String key) {
+	public Configuration getConfiguration(String key) {
 		return this.configurations.get(key);
 	}
 
 	@Override
-	public void saveState(String key, Properties configuration) {
-
-		Properties props;
-
+	public void saveState(State state) {
 		try {
-			javax.naming.InitialContext ic = new javax.naming.InitialContext();
-			props = (Properties) ic.lookup(JNDI_URI);
-		} catch (NamingException ex) {
-			logger.log(Level.SEVERE, "JNDI lookup for '/uniboard/configuration' failed."
-					+ "ConfigurationManager could not be initialized. Exception: {0}",
-					new Object[]{ex});
-			return;
-		}
-		if (props.containsKey(key + ".state")) {
-			try {
-				OutputStream out = new FileOutputStream(props.getProperty(key + ".state"));
-				configuration.store(out, key);
-			} catch (IOException ex) {
-				logger.log(Level.SEVERE, "Could not save configuration in the File "
-						+ "Please check access rights for {0} Exception: {1}",
-						new Object[]{key, ex});
-			}
-
-			this.states.put(key, configuration);
-		} else {
-			logger.log(Level.SEVERE, "Could not save configuration in the File "
-					+ "Please configure a path to save state {0}",
-					new Object[]{key});
+			String stateString = ConfigurationManagerImpl.marshal(state);
+			System.out.println(stateString);
+			Bson query = eq("state_key", state.getKey());
+			Document newState = Document.parse(stateString);
+			UpdateOptions uOptions = new UpdateOptions();
+			uOptions.upsert(true);
+			this.connectionManager.getCollection(COLLECTION_NAME).replaceOne(query, newState, uOptions);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, null, ex);
 		}
 	}
 
 	@Override
-	public Properties loadState(String key) {
-		return this.states.get(key);
+	public <T extends State> T loadState(String key, Class<T> t) {
+		try {
+			Bson query = eq("state_key", key);
+			Document state = this.connectionManager.getCollection(COLLECTION_NAME).find(query).first();
+			if (state != null) {
+				return ConfigurationManagerImpl.unmarshal(t, state.toJson());
+			}
+			return null;
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, null, ex);
+			return null;
+		}
+	}
+
+	/**
+	 * Initializes the JAXB context.
+	 *
+	 * @param <T> the Java type of the domain class the conversion takes place
+	 * @param type the actual type object
+	 * @return the JAXB context
+	 * @throws Exception if the context cannot be established
+	 */
+	private static <T> JAXBContext initJAXBContext(Class<T> type) throws Exception {
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("eclipselink.media-type", "application/json");
+		properties.put("eclipselink.json.include-root", false);
+		return JAXBContext.newInstance(new Class<?>[]{State.class, type}, properties);
+	}
+
+	/**
+	 * Converts a JSON string into the corresponding domain class.
+	 *
+	 * @param <T> the Java type of the domain class the conversion takes place
+	 * @param type the actual type object
+	 * @param message a JSON string
+	 * @return the Java instance of the domain class
+	 * @throws Exception if the conversion cannot be made
+	 */
+	protected static <T> T unmarshal(Class<T> type, String message) throws Exception {
+		JAXBContext jaxbContext = ConfigurationManagerImpl.initJAXBContext(type);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		Reader reader = new StringReader(message);
+		return unmarshaller.unmarshal(new StreamSource(reader), type).getValue();
+
+	}
+
+	/**
+	 * Given an instance of a domain class denoting a JSON object, converts it into a JSON string.
+	 *
+	 * @param object an instance of a domain class denoting a JSON object
+	 * @return a JSON string
+	 * @throws Exception if there is an error
+	 */
+	protected static String marshal(Object object) throws Exception {
+		JAXBContext jaxbContext = ConfigurationManagerImpl.initJAXBContext(object.getClass());
+		StringWriter writer = new StringWriter();
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+		marshaller.marshal(object, writer);
+		return writer.toString();
 	}
 
 }

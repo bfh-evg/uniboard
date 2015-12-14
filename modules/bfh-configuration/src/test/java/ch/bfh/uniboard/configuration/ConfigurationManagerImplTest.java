@@ -11,15 +11,21 @@
  */
 package ch.bfh.uniboard.configuration;
 
-import ch.bfh.uniboard.service.ConfigurationManager;
-import java.util.Properties;
+import ch.bfh.uniboard.persistence.mongodb.ConnectionManager;
+import ch.bfh.uniboard.service.Configuration;
+import com.mongodb.client.MongoCollection;
+import static com.mongodb.client.model.Filters.eq;
 import javax.ejb.EJB;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,22 +44,66 @@ public class ConfigurationManagerImplTest {
 	@Deployment
 	public static JavaArchive createDeployment() {
 		JavaArchive ja = ShrinkWrap.create(JavaArchive.class)
-				.addPackage(ConfigurationManagerImpl.class.getPackage())
+				.addClass(TestableConfigurationManagerImpl.class)
+				.addClass(ConnectionManagerTestImpl.class)
 				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
 		return ja;
 	}
 
 	@EJB
-	ConfigurationManager cm;
+	TestableConfigurationManagerImpl cm;
+
+	@EJB
+	ConnectionManager connectionManager;
 
 	public ConfigurationManagerImplTest() {
 	}
 
 	@Test
-	public void testJNDIProperty() {
-		Properties p = cm.getConfiguration("jndiTest");
-		String result = p.getProperty("testvalue");
-		assertEquals(result, "test");
+	public void testGetConfiguration1() throws Exception {
+		String collectionName = "uniboard-configuration";
+		MongoCollection<Document> collection = this.connectionManager.getCollection(collectionName);
+		String cdfgString = "{\"config_key\":\"testKey1\",\"entries\":{\"testkey\":\"testvalue\"}}";
+		Document config = Document.parse(cdfgString);
+		collection.insertOne(config);
+		cm.init();
+		Configuration p = cm.getConfiguration("testKey1");
+		assertNotNull(p);
+		String result = p.getEntries().get("testkey");
+		assertEquals(result, "testvalue");
+	}
+
+	@Test
+	public void testSaveState1() throws Exception {
+		String collectionName = "uniboard-configuration";
+		MongoCollection<Document> collection = this.connectionManager.getCollection(collectionName);
+		TestState state = new TestState();
+		state.setKey("testSaveState1");
+		state.setTest1("test");
+		state.setTest2(2);
+
+		cm.saveState(state);
+		Bson query = eq("state_key", state.getKey());
+		Document result = collection.find(query).first();
+		assertTrue(result.containsKey("test1"));
+		assertEquals("test", result.getString("test1"));
+		assertTrue(result.containsKey("test2"));
+		assertEquals(new Integer("2"), result.getInteger("test2"));
+
+	}
+
+	@Test
+	public void testLoadState() throws Exception {
+		String collectionName = "uniboard-configuration";
+		MongoCollection<Document> collection = this.connectionManager.getCollection(collectionName);
+		String cdfgString = "{\"type\":\"testState\",\"state_key\":\"testLoadState\",\"test1\":\"test\",\"test2\":2}";
+		Document config = Document.parse(cdfgString);
+		collection.insertOne(config);
+		cm.init();
+		TestState state = cm.loadState("testLoadState", TestState.class);
+		assertNotNull(state);
+		assertEquals("test", state.getTest1());
+		assertEquals(2, state.getTest2());
 	}
 
 }

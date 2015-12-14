@@ -38,8 +38,9 @@
  *
  * Redistributions of files must retain the above copyright notice.
  */
-package ch.bfh.uniboard.persistence.mongodb;
+package ch.bfh.uniboard.configuration;
 
+import ch.bfh.uniboard.persistence.mongodb.ConnectionManager;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -70,7 +71,7 @@ import org.bson.Document;
 @LocalBean
 public class ConnectionManagerTestImpl implements ConnectionManager {
 
-	private static final Logger logger = Logger.getLogger(ConnectionManagerImpl.class.getName());
+	private static final Logger logger = Logger.getLogger(ConnectionManagerTestImpl.class.getName());
 
 	//TODO put this in a config file
 	private static final String host = "localhost";

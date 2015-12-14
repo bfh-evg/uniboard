@@ -45,7 +45,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -309,15 +308,15 @@ public class CertifiedGetService extends GetComponent implements GetService {
 	@PostConstruct
 	private void init() {
 
-		Properties configuration = configurationManager.getConfiguration(CONFIG_NAME);
+		Configuration configuration = configurationManager.getConfiguration(CONFIG_NAME);
 		if (configuration == null) {
 			return;
 		}
 
-		String keyStorePath = configuration.getProperty(CONFIG_KEYSTORE_PATH);
-		String keyStorePass = configuration.getProperty(CONFIG_KEYSTORE_PASS);
-		String privateKeyPass = configuration.getProperty(CONFIG_PRIVATEKEY_PASS);
-		String id = configuration.getProperty(CONFIG_ID);
+		String keyStorePath = configuration.getEntries().get(CONFIG_KEYSTORE_PATH);
+		String keyStorePass = configuration.getEntries().get(CONFIG_KEYSTORE_PASS);
+		String privateKeyPass = configuration.getEntries().get(CONFIG_PRIVATEKEY_PASS);
+		String id = configuration.getEntries().get(CONFIG_ID);
 
 		KeyStore caKs;
 

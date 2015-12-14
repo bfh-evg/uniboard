@@ -16,6 +16,7 @@ import ch.bfh.uniboard.data.TransformException;
 import ch.bfh.uniboard.data.Transformer;
 import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.BetaIdentifier;
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
 import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.Equal;
@@ -25,7 +26,6 @@ import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.ResultContainer;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -65,13 +65,13 @@ public class NotifyingService extends PostComponent implements PostService {
 	@Override
 	protected void afterPost(byte[] message, Attributes alpha, Attributes beta) {
 
-		Properties config = this.configurationManager.getConfiguration(CONFIG_NAME);
+		Configuration config = this.configurationManager.getConfiguration(CONFIG_NAME);
 		if (config == null) {
 			logger.log(Level.SEVERE,
 					"Configuration for the notification service is not available. Keyword: " + CONFIG_NAME);
 			return;
 		}
-		String uniqueAttribute = this.configurationManager.getConfiguration(CONFIG_NAME).getProperty(UNIQUE_ATTRIBUTE);
+		String uniqueAttribute = config.getEntries().get(UNIQUE_ATTRIBUTE);
 		if (uniqueAttribute == null) {
 			logger.log(Level.SEVERE,
 					"Configuration for the notification service is not complete. Attribute: " + UNIQUE_ATTRIBUTE);

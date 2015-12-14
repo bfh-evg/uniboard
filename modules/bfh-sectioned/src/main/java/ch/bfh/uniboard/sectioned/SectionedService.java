@@ -12,11 +12,11 @@
 package ch.bfh.uniboard.sectioned;
 
 import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.StringValue;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -60,14 +60,14 @@ public class SectionedService extends PostComponent implements PostService {
 			return beta;
 		}
 		StringValue section = (StringValue) alpha.getValue(ATTRIBUTE_NAME);
-		Properties p = this.configurationManager.getConfiguration(CONFIG_NAME);
+		Configuration p = this.configurationManager.getConfiguration(CONFIG_NAME);
 		if (p == null) {
 			logger.log(Level.SEVERE, "Configuration for component " + CONFIG_NAME + " is missing.");
 			beta.add(Attributes.ERROR,
 					new StringValue("BSE-003 This UniBoard instance is down due to a configuration error."));
 			return beta;
 		}
-		if (!p.containsValue(section.getValue())) {
+		if (!p.getEntries().containsValue(section.getValue())) {
 			beta.add(Attributes.REJECTED,
 					new StringValue("BSE-004 Unknown " + ATTRIBUTE_NAME + ": " + section.getValue()));
 			return beta;

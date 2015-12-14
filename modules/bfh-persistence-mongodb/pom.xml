@@ -22,16 +22,15 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>2.12.2</version>
-		</dependency>
-		<dependency>
 			<groupId>de.flapdoodle.embed</groupId>
 			<artifactId>de.flapdoodle.embed.mongo</artifactId>
 			<version>1.46.0</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-mongodb-connector</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
