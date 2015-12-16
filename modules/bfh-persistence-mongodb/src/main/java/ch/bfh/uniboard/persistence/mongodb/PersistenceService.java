@@ -42,9 +42,10 @@ package ch.bfh.uniboard.persistence.mongodb;
 
 import ch.bfh.uniboard.service.*;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -52,6 +53,7 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.bson.Document;
 
 /**
  * Service responsible for persisting the received posts
@@ -93,7 +95,7 @@ public class PersistenceService implements PostService, GetService {
 			pp.setAlpha(alpha);
 			pp.setBeta(beta);
 
-			DBCollection collection = this.connectionManager.getCollection(DEFAULT_COLLECTION);
+			MongoCollection collection = this.connectionManager.getCollection(DEFAULT_COLLECTION);
 			if (collection == null) {
 				Attributes betaError = new Attributes();
 				betaError.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
@@ -101,7 +103,7 @@ public class PersistenceService implements PostService, GetService {
 				return betaError;
 			}
 
-			collection.insert(pp.toDBObject());
+			collection.insertOne(pp.toDocument());
 
 			return beta;
 		} catch (Exception e) {
@@ -205,10 +207,10 @@ public class PersistenceService implements PostService, GetService {
 			}
 
 			//combine the different constrainst in an AND query
-			DBObject completeQuery = new BasicDBObject();
+			BasicDBObject completeQuery = new BasicDBObject();
 			completeQuery.put("$and", constraintsList);
 
-			DBCursor cursor;
+			FindIterable<Document> documents;
 
 			if (query.getOrder().size() > 0) {
 
@@ -240,21 +242,20 @@ public class PersistenceService implements PostService, GetService {
 					}
 					orderBy.append(identifier, ascDesc);
 				}
-
-				cursor = this.connectionManager.getCollection(DEFAULT_COLLECTION)
-						.find(completeQuery).sort(orderBy).limit(query.getLimit());
+				documents = this.connectionManager.getCollection(DEFAULT_COLLECTION).find(completeQuery).sort(orderBy).limit(query.getLimit());
 			} else {
 				//apply query on database
-				cursor = this.connectionManager.getCollection(DEFAULT_COLLECTION).
+				documents = this.connectionManager.getCollection(DEFAULT_COLLECTION).
 						find(completeQuery).limit(query.getLimit());
 			}
 
 			//creates the result container with the db result
 			List<Post> list = new ArrayList<>();
+			MongoCursor<Document> cursor = documents.iterator();
 			while (cursor.hasNext()) {
-				DBObject object = cursor.next();
+				Document object = cursor.next();
 				//convert to PersistedPost
-				list.add(PersistedPost.fromDBObject(object));
+				list.add(PersistedPost.fromDocument(object));
 			}
 			return new ResultContainer(list, new Attributes());
 		} catch (Exception e) {

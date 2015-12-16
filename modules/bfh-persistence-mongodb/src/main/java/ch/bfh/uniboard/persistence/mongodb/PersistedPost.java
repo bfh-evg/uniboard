@@ -47,16 +47,16 @@ import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.Post;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import com.mongodb.util.JSONParseException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bson.Document;
+import org.bson.json.JsonParseException;
+import org.bson.types.Binary;
 
 /**
  * A persisted post represents the posted message and all belonging attributes in the format in which it is persisted
@@ -92,37 +92,45 @@ public class PersistedPost extends Post {
      * Method allowing to convert the current PersistedPost to the format supported by the database
      * @return a DBObject format of the PersistedPost
      */
-    public BasicDBObject toDBObject() {
-		BasicDBObject doc = new BasicDBObject();
+    public Document toDocument() {
+		Document doc = new Document();
 
 		//Save raw message
 		doc.put("message", Base64.getEncoder().encodeToString(message));
 
 		//Check if message is a JSON message
-		DBObject jsonMessageContent = null;
+		Document jsonMessageContent = null;
 		try {
-			jsonMessageContent = (DBObject) JSON.parse(new String(message, "UTF-8"));
-		} catch (JSONParseException | UnsupportedEncodingException ex) {
+			jsonMessageContent = Document.parse(new String(message, "UTF-8"));
+		} catch (JsonParseException | UnsupportedEncodingException ex) {
 			Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Message is not a JSON string {0}", ex.getMessage());
 		}
 
 		if (jsonMessageContent != null) {
 			//save message as JSON content
-			DBObject jsonMessage = new BasicDBObject("searchable-message", jsonMessageContent);
+			Document jsonMessage = new Document("searchable-message", jsonMessageContent);
 			doc.putAll(jsonMessage);
 		}
 
 		//Prepares the Alpha attributes
-		BasicDBObject alphaList = new BasicDBObject();
+		Document alphaList = new Document();
 		for (Entry<String, Value> entry : alpha.getEntries()) {
-			alphaList.put(entry.getKey(), entry.getValue().getValue());
+			if (entry.getValue() instanceof ByteArrayValue) {
+				alphaList.put(entry.getKey(), new Binary(((ByteArrayValue) entry.getValue()).getValue()));
+			} else {
+				alphaList.put(entry.getKey(), entry.getValue().getValue());
+			}
 		}
 		doc.put("alpha", alphaList);
 
 		//Prepares the Beta attributes
-		BasicDBObject betaList = new BasicDBObject();
+		Document betaList = new Document();
 		for (Entry<String, Value> entry : beta.getEntries()) {
-			betaList.put(entry.getKey(), entry.getValue().getValue());
+			if (entry.getValue() instanceof ByteArrayValue) {
+				betaList.put(entry.getKey(), new Binary(((ByteArrayValue) entry.getValue()).getValue()));
+			} else {
+				betaList.put(entry.getKey(), entry.getValue().getValue());
+			}
 		}
 		doc.put("beta", betaList);
 
@@ -136,7 +144,7 @@ public class PersistedPost extends Post {
 	 * @param doc the DBObject returned by the database
 	 * @return the corresponding persisted post
 	 */
-	public static PersistedPost fromDBObject(DBObject doc) {
+	public static PersistedPost fromDocument(Document doc) {
 		PersistedPost pp = new PersistedPost();
 
 		//TODO remove try catch when DB will be cleaned
@@ -150,7 +158,7 @@ public class PersistedPost extends Post {
 
 		//fill alpha attributes
 		Attributes alpha = new Attributes();
-		DBObject alphaList = (DBObject) doc.get("alpha");
+		Document alphaList = doc.get("alpha", Document.class);
 		for (String key : alphaList.keySet()) {
 			//String key = dbObj.keySet().iterator().next();
 			alpha.add(key, inflateType(alphaList.get(key)));
@@ -159,7 +167,7 @@ public class PersistedPost extends Post {
 
 		//fill beta attributes
 		Attributes beta = new Attributes();
-		DBObject betaList = (DBObject) doc.get("beta");
+		Document betaList = doc.get("beta", Document.class);
 		for (String key : betaList.keySet()) {
 			//String key = dbObj.keySet().iterator().next();
 			beta.add(key, inflateType(betaList.get(key)));
@@ -184,8 +192,8 @@ public class PersistedPost extends Post {
 			return new StringValue((String) o);
 		} else if (o instanceof Date) {
 			return new DateValue((Date) o);
-		} else if (o instanceof byte[]) {
-			return new ByteArrayValue((byte[]) o);
+		} else if (o instanceof Binary) {
+			return new ByteArrayValue(((Binary) o).getData());
 		} else {
 			return null;
 		}

@@ -42,8 +42,7 @@ package ch.bfh.uniboard.persistence.mongodb;
 
 import ch.bfh.uniboard.service.*;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -52,6 +51,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import org.bson.Document;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -168,23 +168,20 @@ public class PersistenceServiceTest {
 	public void postTest() {
 		Attributes returned = ps.post(message, alpha, beta);
 
-		DBCursor cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find();
+		FindIterable<Document> cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find();
 
-		assertEquals(1, cursor.size());
+		assertEquals(1, conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).count());
 		assertEquals(beta, returned);
 
-		cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(pp.toDBObject());
+		cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(pp.toDocument());
 
-		assertEquals(1, cursor.size());
-
-		DBObject query = new BasicDBObject();
+		BasicDBObject query = new BasicDBObject();
 		query.put("alpha.first", "value1");
 
-		cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(query);
+		assertEquals(1, conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).count(query));
 
-		assertEquals(1, cursor.size());
-
-		assertEquals(pp, PersistedPost.fromDBObject(cursor.next()));
+		assertEquals(pp, PersistedPost.fromDocument(
+				conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(query).first()));
 	}
 
 	/**
@@ -880,9 +877,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p1.toDBObject());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p2.toDBObject());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p3.toDBObject());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
 	}
 
 	@Test
@@ -925,9 +922,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p1.toDBObject());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p2.toDBObject());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p3.toDBObject());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
 	}
 
 	@Test
@@ -981,9 +978,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p1.toDBObject());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p2.toDBObject());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).remove(p3.toDBObject());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
 	}
 
 	/* -------------------------------

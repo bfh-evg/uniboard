@@ -45,14 +45,16 @@ import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;
-import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import org.bson.Document;
+import org.bson.types.Binary;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -131,49 +133,51 @@ public class PersistedPostTest {
 	}
 
 	/**
-	 * Test the conversion from a PersistedPost to a DBObject
+	 * Test the conversion from a PersistedPost to a Document
 	 */
 	@Test
 	public void toDbObjectTest() {
-		DBObject dbObj = pp.toDBObject();
+		Document dbObj = pp.toDocument();
 
-		assertTrue(dbObj.containsField("message"));
-		assertTrue(dbObj.containsField("alpha"));
-		assertTrue(dbObj.containsField("beta"));
+		assertTrue(dbObj.containsKey("message"));
+		assertTrue(dbObj.containsKey("alpha"));
+		assertTrue(dbObj.containsKey("beta"));
 
 		assertEquals(message[0], pp.getMessage()[0]);
 		assertEquals(message[1], pp.getMessage()[1]);
 		assertEquals(message[2], pp.getMessage()[2]);
 		assertEquals(message[3], pp.getMessage()[3]);
 
-		assertTrue(((DBObject) dbObj.get("alpha")).containsField("first"));
-		assertTrue(((DBObject) dbObj.get("alpha")).containsField("second"));
-		assertTrue(((DBObject) dbObj.get("alpha")).containsField("third"));
-		assertTrue(((DBObject) dbObj.get("alpha")).containsField("fourth"));
+		assertTrue(((Document) dbObj.get("alpha")).containsKey("first"));
+		assertTrue(((Document) dbObj.get("alpha")).containsKey("second"));
+		assertTrue(((Document) dbObj.get("alpha")).containsKey("third"));
+		assertTrue(((Document) dbObj.get("alpha")).containsKey("fourth"));
 
-		assertEquals(alpha.getValue("first").getValue(), ((DBObject) dbObj.get("alpha")).get("first"));
-		assertEquals(alpha.getValue("second").getValue(), ((DBObject) dbObj.get("alpha")).get("second"));
-		assertEquals(alpha.getValue("third").getValue(), ((DBObject) dbObj.get("alpha")).get("third"));
-		assertEquals(alpha.getValue("fourth").getValue(), ((DBObject) dbObj.get("alpha")).get("fourth"));
+		assertEquals(alpha.getValue("first").getValue(), ((Document) dbObj.get("alpha")).get("first"));
+		assertEquals(alpha.getValue("second").getValue(), ((Document) dbObj.get("alpha")).get("second"));
+		assertArrayEquals(((ByteArrayValue) alpha.getValue("third")).getValue(),
+				((Binary) ((Document) dbObj.get("alpha")).get("third")).getData());
+		assertEquals(alpha.getValue("fourth").getValue(), ((Document) dbObj.get("alpha")).get("fourth"));
 
-		assertTrue(((DBObject) dbObj.get("beta")).containsField("fifth"));
-		assertTrue(((DBObject) dbObj.get("beta")).containsField("seventh"));
-		assertTrue(((DBObject) dbObj.get("beta")).containsField("eighth"));
+		assertTrue(((Document) dbObj.get("beta")).containsKey("fifth"));
+		assertTrue(((Document) dbObj.get("beta")).containsKey("seventh"));
+		assertTrue(((Document) dbObj.get("beta")).containsKey("eighth"));
 
-		assertEquals(beta.getValue("fifth").getValue(), ((DBObject) dbObj.get("beta")).get("fifth"));
-		assertEquals(beta.getValue("seventh").getValue(), ((DBObject) dbObj.get("beta")).get("seventh"));
-		assertEquals(beta.getValue("eighth").getValue(), ((DBObject) dbObj.get("beta")).get("eighth"));
+		assertEquals(beta.getValue("fifth").getValue(), ((Document) dbObj.get("beta")).get("fifth"));
+		assertEquals(beta.getValue("seventh").getValue(), ((Document) dbObj.get("beta")).get("seventh"));
+		assertArrayEquals(((ByteArrayValue) beta.getValue("eighth")).getValue(),
+				((Binary) ((Document) dbObj.get("beta")).get("eighth")).getData());
 
 	}
 
 	/**
-	 * Test the conversion from DBObject to PersistedPost
+	 * Test the conversion from Document to PersistedPost
 	 */
 	@Test
 	public void fromDbObjectTest() {
-		DBObject dbObj = pp.toDBObject();
+		Document dbObj = pp.toDocument();
 
-		PersistedPost newPP = PersistedPost.fromDBObject(dbObj);
+		PersistedPost newPP = PersistedPost.fromDocument(dbObj);
 
 		assertEquals(this.message[0], newPP.getMessage()[0]);
 		assertEquals(this.message[1], newPP.getMessage()[1]);
@@ -201,11 +205,11 @@ public class PersistedPostTest {
 
 		PersistedPost pp2 = new PersistedPost(jsonMessage.getBytes("UTF-8"), alpha, beta);
 
-		DBObject dbObj = pp2.toDBObject();
+		Document dbObj = pp2.toDocument();
 
 		assertEquals(jsonMessage, JSON.serialize(dbObj.get("searchable-message")));
 
-		PersistedPost pp3 = PersistedPost.fromDBObject(dbObj);
+		PersistedPost pp3 = PersistedPost.fromDocument(dbObj);
 
 		assertEquals(jsonMessage, new String(pp3.getMessage(), "UTF-8"));
 
