@@ -146,6 +146,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("eclipselink.media-type", "application/json");
 		properties.put("eclipselink.json.include-root", false);
+		//State class added to ensure that moxy is used
 		return JAXBContext.newInstance(new Class<?>[]{State.class, type}, properties);
 	}
 

@@ -12,14 +12,8 @@
 package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,9 +23,6 @@ import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 /**
  *
@@ -46,65 +37,37 @@ public class ObserverManagerImpl implements ObserverManager {
 
 	private static final String STATE_NAME = "bfh-notification-observer";
 	private static final Logger logger = Logger.getLogger(ObserverManagerImpl.class.getName());
-	private Map<String, Observer> observers;
+	private NotificationState state;
 
 	@PostConstruct
 	protected void init() {
-		Properties state = configurationManager.loadState(STATE_NAME);
-		this.observers = new HashMap<>();
+		state = configurationManager.loadState(STATE_NAME, NotificationState.class);
 		if (state == null) {
-			return;
-		}
-		for (Entry e : state.entrySet()) {
-			String key = (String) e.getKey();
-			String s = (String) e.getValue();
-
-			try {
-				JAXBContext jaxbContext = ObserverManagerImpl.initJAXBContext(Observer.class);
-				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				Reader reader = new StringReader(s);
-				Observer obs = unmarshaller.unmarshal(new StreamSource(reader), Observer.class).getValue();
-				this.observers.put(key, obs);
-			} catch (Exception ex) {
-				logger.log(Level.WARNING, "Could not restore persisted observer.");
-			}
+			this.state = new NotificationState();
+			this.state.setKey(STATE_NAME);
 		}
 	}
 
 	@PreDestroy
 	protected void stop() {
-		Properties config = new Properties();
-		for (Entry<String, Observer> e : this.observers.entrySet()) {
-			try {
-				JAXBContext jaxbContext = ObserverManagerImpl.initJAXBContext(Observer.class);
-				StringWriter writer = new StringWriter();
-				Marshaller marshaller = jaxbContext.createMarshaller();
-				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-				marshaller.marshal(e.getValue(), writer);
-				String tmp = writer.toString();
-				config.put(e.getKey(), tmp);
-			} catch (Exception ex) {
-				logger.log(Level.SEVERE, "Could not persist observer to configuraiton.", ex);
-			}
-		}
-		configurationManager.saveState(STATE_NAME, config);
+		configurationManager.saveState(state);
 	}
 
 	@Override
 	public Map<String, Observer> getObservers() {
-		return new HashMap<>(observers);
+		return new HashMap<>(state.getObservers());
 	}
 
 	@Override
 	@Lock(LockType.WRITE)
 	public Observer remove(String notificationCode) {
-		return this.observers.remove(notificationCode);
+		return this.state.getObservers().remove(notificationCode);
 	}
 
 	@Override
 	@Lock(LockType.WRITE)
 	public void put(String notificationCode, Observer observer) {
-		this.observers.put(notificationCode, observer);
+		this.state.getObservers().put(notificationCode, observer);
 	}
 
 	/**

@@ -18,7 +18,6 @@ import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
-import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -35,7 +34,7 @@ public class OrderedService implements PostService {
 	private static final String ATTRIBUTE_NAME = "rank";
 	private static final String STATE_NAME = "bfh-ordered";
 	private static final String SECTIONED_NAME = "section";
-	protected Properties sectionHeads;
+	protected OrderedState state;
 
 	@EJB
 	PostService postSuccessor;
@@ -47,30 +46,24 @@ public class OrderedService implements PostService {
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
 		Value sectionValue = alpha.getValue(SECTIONED_NAME);
 		String section = ((StringValue) sectionValue).getValue();
-		String orderTmp = this.sectionHeads.getProperty(section, "0");
-		Integer order = new Integer(orderTmp);
+		Integer order = this.state.getSections().getOrDefault(section, 0);
 		order++;
 		beta.add(ATTRIBUTE_NAME, new IntegerValue(order));
 		Attributes newBeta = this.postSuccessor.post(message, alpha, beta);
 		//If no error happend further below safe the new head
 		if (!(newBeta.getKeys().contains(Attributes.ERROR) || newBeta.getKeys().contains(Attributes.REJECTED))) {
-			this.sectionHeads.put(section, Integer.toString(order));
+			this.state.getSections().put(section, order);
 		}
 		return newBeta;
 	}
 
 	@PostConstruct
 	protected void init() {
-		Properties tmp = configurationManager.loadState(STATE_NAME);
-		if (tmp == null) {
-			this.sectionHeads = new Properties();
-		} else {
-			this.sectionHeads = tmp;
-		}
+		this.state = configurationManager.loadState(STATE_NAME, OrderedState.class);
 	}
 
 	@PreDestroy
 	protected void save() {
-		configurationManager.saveState(STATE_NAME, sectionHeads);
+		configurationManager.saveState(state);
 	}
 }

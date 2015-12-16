@@ -12,7 +12,6 @@
 package ch.bfh.uniboard.ordered;
 
 import ch.bfh.uniboard.service.PostService;
-import java.util.Properties;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
@@ -24,18 +23,18 @@ import javax.ejb.Singleton;
 @Singleton
 public class OrderedServiceTestBean extends OrderedService implements PostService {
 
-    public Properties getHeads() {
-        return super.sectionHeads;
-    }
+	public OrderedState getHeads() {
+		return super.state;
+	}
 
-    @Override
-    public void save() {
-        super.save();
-    }
+	@Override
+	public void save() {
+		super.save();
+	}
 
-    @Override
-    public void init() {
-        super.init();
-    }
+	@Override
+	public void init() {
+		super.init();
+	}
 
 }

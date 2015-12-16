@@ -16,18 +16,10 @@ import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.StringValue;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javax.ejb.EJB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -67,7 +59,7 @@ public class ObserverManagerTest {
 
 	@Test
 	public void testEmpty() {
-		configurationManager.saveState(null, null);
+		configurationManager.saveState(null);
 		observerManager.init();
 		Map<String, Observer> observers = observerManager.getObservers();
 		assertTrue(observers.isEmpty());
@@ -75,22 +67,15 @@ public class ObserverManagerTest {
 
 	@Test
 	public void testNotEmpty() throws Exception {
-		Properties config = new Properties();
+		NotificationState state = new NotificationState();
 		List<Constraint> constraints = new ArrayList<>();
 		Constraint c = new Equal(new AlphaIdentifier("test"), new StringValue("test2"));
 		constraints.add(c);
 		Query q = new Query(constraints);
 		Observer obs = new Observer("URL", q);
+		state.getObservers().put("test", obs);
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(new Class<?>[]{Observer.class});
-		StringWriter writer = new StringWriter();
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-		marshaller.marshal(obs, writer);
-		String tmp = writer.toString();
-		config.put("test3", tmp);
-
-		configurationManager.saveState(null, config);
+		configurationManager.saveState(state);
 		observerManager.init();
 		Map<String, Observer> observers = observerManager.getObservers();
 		assertFalse(observers.isEmpty());
@@ -99,7 +84,6 @@ public class ObserverManagerTest {
 	@Test
 	public void testShutdown() throws Exception {
 		observerManager.init();
-		Map<String, Observer> observers = observerManager.getObservers();
 		List<Constraint> constraints = new ArrayList<>();
 		Constraint c = new Equal(new AlphaIdentifier("test"), new StringValue("test2"));
 		constraints.add(c);
@@ -108,13 +92,8 @@ public class ObserverManagerTest {
 		observerManager.put("testKey", obs);
 		observerManager.stop();
 
-		Properties config = configurationManager.loadState("");
-		assertEquals(config.size(), 1);
-		String xmlString = config.getProperty("testKey");
-		JAXBContext jaxbContext = JAXBContext.newInstance(new Class<?>[]{Observer.class});
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		Reader reader = new StringReader(xmlString);
-		Observer tmp = unmarshaller.unmarshal(new StreamSource(reader), Observer.class).getValue();
-		assertEquals(tmp.getUrl(), "URL");
+		NotificationState state = configurationManager.loadState("", NotificationState.class);
+		assertEquals(state.getObservers().size(), 1);
+		assertEquals(state.getObservers().get("testKey").getUrl(), "URL");
 	}
 }

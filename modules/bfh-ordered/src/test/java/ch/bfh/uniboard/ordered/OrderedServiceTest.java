@@ -16,7 +16,6 @@ import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
 import java.io.File;
-import java.util.Properties;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -83,7 +82,7 @@ public class OrderedServiceTest {
 		assertTrue(tmp instanceof IntegerValue);
 		IntegerValue order = (IntegerValue) tmp;
 		assertEquals(new Integer(2), order.getValue());
-		assertEquals("2", this.postService.getHeads().getProperty("section1"));
+		assertEquals(new Integer("2"), this.postService.getHeads().getSections().get("section1"));
 
 	}
 
@@ -100,7 +99,7 @@ public class OrderedServiceTest {
 		this.postServiceMock.setError(true);
 		this.postService.init();
 		this.postService.post(message, alpha, beta);
-		assertEquals("26", this.postService.getHeads().getProperty("section2"));
+		assertEquals(new Integer("26"), this.postService.getHeads().getSections().get("section2"));
 
 	}
 
@@ -116,13 +115,13 @@ public class OrderedServiceTest {
 		Attributes beta = new Attributes();
 		this.postServiceMock.setError(false);
 		this.postService.init();
-		assertNull(this.postService.getHeads().getProperty("section3"));
+		assertNull(this.postService.getHeads().getSections().get("section3"));
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
 		Value tmp = resultingBeta.getValue("rank");
 		assertTrue(tmp instanceof IntegerValue);
 		IntegerValue order = (IntegerValue) tmp;
 		assertEquals(new Integer(1), order.getValue());
-		assertEquals("1", this.postService.getHeads().getProperty("section1"));
+		assertEquals(new Integer("1"), this.postService.getHeads().getSections().get("section1"));
 
 	}
 
@@ -138,25 +137,25 @@ public class OrderedServiceTest {
 		Attributes beta = new Attributes();
 		this.postServiceMock.setError(true);
 		this.postService.init();
-		assertNull(this.postService.getHeads().getProperty("section4"));
+		assertNull(this.postService.getHeads().getSections().get("section4"));
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
 		Value tmp = resultingBeta.getValue("rank");
 		assertTrue(tmp instanceof IntegerValue);
 		IntegerValue order = (IntegerValue) tmp;
 		assertEquals(new Integer(1), order.getValue());
-		assertNull(this.postService.getHeads().getProperty("section4"));
+		assertNull(this.postService.getHeads().getSections().get("section4"));
 
 	}
 
 	@Test
 	public void testInitSave() {
 		this.postService.init();
-		assertNotNull(this.postService.getHeads().getProperty("section1"));
-		this.postService.getHeads().put("section5", "3");
+		assertNotNull(this.postService.getHeads().getSections().get("section1"));
+		this.postService.getHeads().getSections().put("section5", 3);
 		this.postService.save();
-		Properties p = this.configurationManager.getSaved();
+		OrderedState p = (OrderedState) this.configurationManager.getSaved();
 		assertNotNull(p);
-		assertEquals("3", p.getProperty("section5"));
+		assertEquals(new Integer("3"), p.getSections().get("section5"));
 	}
 
 }

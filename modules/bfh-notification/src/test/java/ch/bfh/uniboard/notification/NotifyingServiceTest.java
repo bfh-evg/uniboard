@@ -14,6 +14,7 @@ package ch.bfh.uniboard.notification;
 import ch.bfh.uniboard.data.PostDTO;
 import ch.bfh.uniboard.service.AlphaIdentifier;
 import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.PostService;
@@ -87,7 +88,7 @@ public class NotifyingServiceTest {
 	public void testNotFittingQuery() {
 		Properties config = new Properties();
 		config.put("unique", "section");
-		configurationManager.saveState(null, config);
+		configurationManager.saveState(null);
 		this.setContraint();
 		this.observerClient.reset();
 		this.postGetService.correctRunning(false);
@@ -101,9 +102,9 @@ public class NotifyingServiceTest {
 
 	@Test
 	public void testFittingQuery() {
-		Properties config = new Properties();
-		config.put("unique", "section");
-		configurationManager.saveState(null, config);
+		Configuration config = new Configuration();
+		config.getEntries().put("unique", "section");
+		configurationManager.setConfiguration(config);
 		this.setContraint();
 		this.observerClient.reset();
 		this.postGetService.correctRunning(true);

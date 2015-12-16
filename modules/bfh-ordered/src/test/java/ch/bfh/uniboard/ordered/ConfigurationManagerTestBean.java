@@ -11,8 +11,9 @@
  */
 package ch.bfh.uniboard.ordered;
 
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.util.Properties;
+import ch.bfh.uniboard.service.State;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
@@ -24,28 +25,28 @@ import javax.ejb.Singleton;
 @LocalBean
 public class ConfigurationManagerTestBean implements ConfigurationManager {
 
-	private Properties saved;
+	private State saved;
 
 	@Override
-	public Properties getConfiguration(String key) {
+	public Configuration getConfiguration(String key) {
 		return null;
 	}
 
 	@Override
-	public void saveState(String key, Properties configuration) {
+	public void saveState(State configuration) {
 		this.saved = configuration;
 	}
 
-	public Properties getSaved() {
+	public State getSaved() {
 		return this.saved;
 	}
 
 	@Override
-	public Properties loadState(String key) {
-		Properties p = new Properties();
-		p.put("section1", "1");
-		p.put("section2", "26");
-		return p;
+	public <T extends State> T loadState(String key, Class<T> t) {
+		OrderedState state = new OrderedState();
+		state.getSections().put("section1", 1);
+		state.getSections().put("section2", 26);
+		return (T) state;
 	}
 
 }
