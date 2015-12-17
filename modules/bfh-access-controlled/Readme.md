@@ -28,7 +28,7 @@ BAC-005 Amount of allowed posts used up
 BAC-006 Internal server error
 
 ## Example EJB-Descriptor
-
+```xml
 <enterprise-beans>
 	<session>
 		<ejb-name>AccessControlledServiceSimply</ejb-name>
@@ -39,3 +39,4 @@ BAC-006 Internal server error
 		</ejb-local-ref>
 	</session>
 </enterprise-beans>
+```
