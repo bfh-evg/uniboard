@@ -21,10 +21,10 @@ In this properties all values are expected to be valid sections. The key values 
 
 ## Error Codes
 
-BSE-001 - Attribute missing
-BSE-002 - Attribute is not a StringValue
-BSE-003 - Configuration for section-bfh is missing
-BSE-004 - Specified section is not known on this UniBoard
+- BSE-001 - Attribute missing
+- BSE-002 - Attribute is not a StringValue
+- BSE-003 - Configuration for section-bfh is missing
+- BSE-004 - Specified section is not known on this UniBoard
 
 ## Example EJB-Descriptor
 ```xml

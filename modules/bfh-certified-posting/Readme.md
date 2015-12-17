@@ -15,7 +15,7 @@ Adds the beta attribute "boardSignature"
 
 ## Error Codes
 
-BCP-001 Internal server error
+- BCP-001 Internal server error
 
 ## Configuration
 ```json

@@ -20,12 +20,12 @@ This component does not require any configuration.
 
 ## Error Codes
 
-BAC-001 There is no authorization for the provided key
-BAC-002 The provided signature is not valid
-BAC-003 Authorization is not active yet
-BAC-004 Authorization expired
-BAC-005 Amount of allowed posts used up
-BAC-006 Internal server error
+- BAC-001 There is no authorization for the provided key
+- BAC-002 The provided signature is not valid
+- BAC-003 Authorization is not active yet
+- BAC-004 Authorization expired
+- BAC-005 Amount of allowed posts used up
+- BAC-006 Internal server error
 
 ## Example EJB-Descriptor
 ```xml

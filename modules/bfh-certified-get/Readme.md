@@ -14,7 +14,7 @@ Adds the attribute boardSignature to gamma.
 
 ## Error Codes
 
-BCG-001 Internal server error
+- BCG-001 Internal server error
 
 ## Configuration
 ```json

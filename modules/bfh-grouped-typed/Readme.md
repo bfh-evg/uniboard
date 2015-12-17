@@ -58,12 +58,12 @@ Only Typed
 ```
 ## Error Codes
 
-BGT-001 - Attribute missing
-BGT-002 - Attribute is not a StringValue
-BGT-003 - Configuration for section-bfh is missing
-BGT-004 - Specified section is not known on this UniBoard
-BGT-005 - Message is not valid in typed only modus
-BGT-006 - Message is not valid for the selected group
+- BGT-001 - Attribute missing
+- BGT-002 - Attribute is not a StringValue
+- BGT-003 - Configuration for section-bfh is missing
+- BGT-004 - Specified section is not known on this UniBoard
+- BGT-005 - Message is not valid in typed only modus
+- BGT-006 - Message is not valid for the selected group
 
 ## Example EJB-Descriptor
 ###Descriptor for both properties. Map to GroupedService from the predecessor:
