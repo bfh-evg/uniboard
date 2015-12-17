@@ -27,14 +27,14 @@ BSE-003 - Configuration for section-bfh is missing
 BSE-004 - Specified section is not known on this UniBoard
 
 ## Example EJB-Descriptor
-
-	<enterprise-beans>
-		<session>
-			<ejb-name>SectionedService</ejb-name>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.sectioned.SectionedService/postSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>PostServiceToLink</ejb-link>
-			</ejb-local-ref>
-		</session>
-	</enterprise-beans>
+```xml
+<enterprise-beans>
+	<session>
+		<ejb-name>SectionedService</ejb-name>
+		<ejb-local-ref>
+			<ejb-ref-name>ch.bfh.uniboard.sectioned.SectionedService/postSuccessor</ejb-ref-name>
+			<local>ch.bfh.uniboard.service.PostService</local>
+			<ejb-link>PostServiceToLink</ejb-link>
+		</ejb-local-ref>
+	</session>
+</enterprise-beans>

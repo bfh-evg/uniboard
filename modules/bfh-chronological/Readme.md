@@ -17,7 +17,7 @@ Adds to every post a beta attribute "timestamp" containing the current time.
 This component doesn't have any configuration possibilities.
 
 ## Example EJB-Descriptor
-
+```xml
 <enterprise-beans>
 	<session>
 		<ejb-name>ChronologicalService</ejb-name>
@@ -28,3 +28,4 @@ This component doesn't have any configuration possibilities.
 		</ejb-local-ref>
 	</session>
 </enterprise-beans>
+```

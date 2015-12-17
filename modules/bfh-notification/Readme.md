@@ -19,24 +19,26 @@ For this property are no additional properties needed.
 
 This component uses the ConfigurationManager. It requires the configuration "bfh-notification", which only has one option "unique" which allows to define the beta attribute that
 provides the unique identifier of the post.
-
+```json
 {
 "config_key": "bfh-notification",
 "entries": {
 	"unique":"uniqueBetaAttribute"
 	}
 }
+```
 It also perists its state under "bfh-notification-observer".
 
 ## Example EJB-Descriptor
-
-	<enterprise-beans>
-		<session>
-			<ejb-name>NotificationService</ejb-name>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.notification.NotificationService/postSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>PostServiceToLink</ejb-link>
-			</ejb-local-ref>
-		</session>
-	</enterprise-beans>
+```xml
+<enterprise-beans>
+	<session>
+		<ejb-name>NotificationService</ejb-name>
+		<ejb-local-ref>
+			<ejb-ref-name>ch.bfh.uniboard.notification.NotificationService/postSuccessor</ejb-ref-name>
+			<local>ch.bfh.uniboard.service.PostService</local>
+			<ejb-link>PostServiceToLink</ejb-link>
+		</ejb-local-ref>
+	</session>
+</enterprise-beans>
+```

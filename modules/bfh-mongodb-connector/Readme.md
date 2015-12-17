@@ -33,7 +33,7 @@ The JNDI entry can have following entries:
 | authentication | Boolean indicating if authentication is required by the MongoDB | false |
 
 ## Example ejb-jar.xml
-
+```xml
 <ejb-jar xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 		 version="3.2"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -49,3 +49,4 @@ The JNDI entry can have following entries:
 		</session>
 	</enterprise-beans>
 </ejb-jar>
+```

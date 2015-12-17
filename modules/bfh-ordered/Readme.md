@@ -17,7 +17,7 @@ This component adds the "rank" attribute to beta.
 This component has no configuration but saves its current state in "bfh-ordered".
 
 ## Example EJB-Descriptor
-
+```xml
 <enterprise-beans>
 	<session>
 		<ejb-name>OrderedService</ejb-name>
@@ -27,4 +27,5 @@ This component has no configuration but saves its current state in "bfh-ordered"
 			<ejb-link>PostServiceToLink</ejb-link>
 		</ejb-local-ref>
 	</session>
-</enterprise-beans
+</enterprise-beans>
+```

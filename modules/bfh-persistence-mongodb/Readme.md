@@ -23,7 +23,7 @@ The collection used defaults to "uniboard" and can be changed over an enviroment
 This component doesn't require a EJB-Descriptor
 
 ## Example ejb-jar.xml
-
+```xml
 <ejb-jar xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 		 version="3.2"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -39,3 +39,4 @@ This component doesn't require a EJB-Descriptor
 		</session>
 	</enterprise-beans>
 </ejb-jar>
+```

@@ -17,7 +17,7 @@ This component does not need any configuration.
 
 ## Example EJB-Descriptor
 
-
+```xml
 <enterprise-beans>
 	<session>
 		<ejb-name>TimedGetService</ejb-name>
@@ -28,3 +28,4 @@ This component does not need any configuration.
 		</ejb-local-ref>
 	</session>
 </enterprise-beans>
+```

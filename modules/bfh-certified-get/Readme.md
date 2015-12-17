@@ -17,7 +17,7 @@ Adds the attribute boardSignature to gamma.
 BCG-001 Internal server error
 
 ## Configuration
-
+```json
 {
 "config_key": "bfh-certified-get",
 "entries": {
@@ -27,10 +27,10 @@ BCG-001 Internal server error
 	"privatekey-pass":"passForThePrivateKey"
 	}
 }
-
+```
 
 ## Example EJB-Descriptor
-
+```xml
 <enterprise-beans>
 	<session>
 		<ejb-name>CertifiedGetService</ejb-name>
@@ -41,3 +41,4 @@ BCG-001 Internal server error
 		</ejb-local-ref>
 	</session>
 </enterprise-beans>
+```

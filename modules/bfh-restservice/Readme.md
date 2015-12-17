@@ -17,7 +17,7 @@ This component does not add any attributes.
 This component does not have any configuration possibilities.
 
 ## Example EJB-Descriptor
-
+```xml
 <ejb-jar ...>
 	<enterprise-beans>
 		<session>
@@ -35,13 +35,13 @@ This component does not have any configuration possibilities.
 		</session>
 	</enterprise-beans>
 </ejb-jar>
-
+```
 ## Example Post
 
 POST /uniboard/messages/post HTTP/1.1
 Content-Type: application/json
 Accept: application/json
-
+```json
 {
 	"message": "HelloSpringfield",
 	"alpha": {
@@ -57,13 +57,13 @@ Accept: application/json
 		]
 	}
 }
-
+```
 ## Example Query
 
 POST /uniboard/messages/query HTTP/1.1
 Content-Type: application/json
 Accept: application/json
-
+```json
 {
 	"constraint": [
 		{
@@ -80,3 +80,4 @@ Accept: application/json
 	],
 	"limit": 0
 }
+```

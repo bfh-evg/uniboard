@@ -19,7 +19,7 @@ This component does not require a configuration if it can use the default collec
 "uniboard-configuration". To change the collection use define the ressource "ConfigurationCollection" in the ejb-descriptor. An example is below.
 
 ## Example EJB-Descriptor
-
+```xml
 <enterprise-beans>
 	<session>
 		<ejb-name>ConfigurationManagerImpl</ejb-name>
@@ -30,3 +30,4 @@ This component does not require a configuration if it can use the default collec
 		</env-entry>
 	</session>
 </enterprise-beans>
+```

@@ -28,6 +28,7 @@ If you need only one property you can change the linking in the EJB-Descriptor.
 Example configurations:
 
 Only Groups
+```json
 {
 "config_key": "bfh-grouped-typed",
 "entries": {
@@ -35,7 +36,9 @@ Only Groups
 	"group2":""
 	}
 }
+```
 Both
+```json
 {
 "config_key": "bfh-grouped-typed",
 "entries": {
@@ -43,14 +46,16 @@ Both
 	"group2":"/opt/jsonSchemas/group2.jsd"
 	}
 }
+```
 Only Typed
+```json
 {
 "config_key": "bfh-grouped-typed",
 "entries": {
 	"singleType":"/opt/jsonSchemas/type.jsd"
 	}
 }
-
+```
 ## Error Codes
 
 BGT-001 - Attribute missing
@@ -62,35 +67,41 @@ BGT-006 - Message is not valid for the selected group
 
 ## Example EJB-Descriptor
 ###Descriptor for both properties. Map to GroupedService from the predecessor:
-	<enterprise-beans>
-		<session>
-			<ejb-name>TypedService</ejb-name>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.typed.TypedService/postSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>PostServiceToLink</ejb-link>
-			</ejb-local-ref>
-		</session>
-	</enterprise-beans>
+```xml
+<enterprise-beans>
+	<session>
+		<ejb-name>TypedService</ejb-name>
+		<ejb-local-ref>
+			<ejb-ref-name>ch.bfh.uniboard.typed.TypedService/postSuccessor</ejb-ref-name>
+			<local>ch.bfh.uniboard.service.PostService</local>
+			<ejb-link>PostServiceToLink</ejb-link>
+		</ejb-local-ref>
+	</session>
+</enterprise-beans>
+```
 ###Descriptor for typed only. Map to TypedService from the predecessor:
-	<enterprise-beans>
-		<session>
-			<ejb-name>TypedService</ejb-name>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.typed.TypedService/postSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>PostServiceToLink</ejb-link>
-			</ejb-local-ref>
-		</session>
-	</enterprise-beans>
+```xml
+<enterprise-beans>
+	<session>
+		<ejb-name>TypedService</ejb-name>
+		<ejb-local-ref>
+			<ejb-ref-name>ch.bfh.uniboard.typed.TypedService/postSuccessor</ejb-ref-name>
+			<local>ch.bfh.uniboard.service.PostService</local>
+			<ejb-link>PostServiceToLink</ejb-link>
+		</ejb-local-ref>
+	</session>
+</enterprise-beans>
+```
 ###Descriptor for grouped only. Map to GroupedService from the predecessor:
-	<enterprise-beans>
-		<session>
-			<ejb-name>GroupedService</ejb-name>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.grouped.GroupedService/postSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>PostServiceToLink</ejb-link>
-			</ejb-local-ref>
-		</session>
-	</enterprise-beans>
+```xml
+<enterprise-beans>
+	<session>
+		<ejb-name>GroupedService</ejb-name>
+		<ejb-local-ref>
+			<ejb-ref-name>ch.bfh.uniboard.grouped.GroupedService/postSuccessor</ejb-ref-name>
+			<local>ch.bfh.uniboard.service.PostService</local>
+			<ejb-link>PostServiceToLink</ejb-link>
+		</ejb-local-ref>
+	</session>
+</enterprise-beans>
+```

@@ -18,7 +18,7 @@ Adds the beta attribute "boardSignature"
 BCP-001 Internal server error
 
 ## Configuration
-
+```json
 {
 "config_key": "bfh-certified-posting",
 "entries": {
@@ -28,9 +28,9 @@ BCP-001 Internal server error
 	"privatekey-pass":"passForThePrivateKey"
 	}
 }
-
+```
 ## Example EJB-Descriptor
-
+```
 <enterprise-beans>
 	<session>
 		<ejb-name>CertifiedPostingService</ejb-name>
@@ -41,3 +41,4 @@ BCP-001 Internal server error
 			</ejb-local-ref>
 	</session>
 </enterprise-beans>
+```
