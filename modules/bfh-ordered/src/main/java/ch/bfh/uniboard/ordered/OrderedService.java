@@ -46,7 +46,7 @@ public class OrderedService implements PostService {
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
 		Value sectionValue = alpha.getValue(SECTIONED_NAME);
 		String section = ((StringValue) sectionValue).getValue();
-		Integer order = this.state.getSections().getOrDefault(section, 0);
+		Integer order = this.state.getSections().getOrDefault(section, 1);
 		order++;
 		beta.add(ATTRIBUTE_NAME, new IntegerValue(order));
 		Attributes newBeta = this.postSuccessor.post(message, alpha, beta);

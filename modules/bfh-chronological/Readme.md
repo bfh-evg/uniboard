@@ -18,4 +18,13 @@ This component doesn't have any configuration possibilities.
 
 ## Example EJB-Descriptor
 
-Give a example of EJB-Descriptor needed for this component.
+<enterprise-beans>
+	<session>
+		<ejb-name>ChronologicalService</ejb-name>
+		<ejb-local-ref>
+			<ejb-ref-name>ch.bfh.uniboard.chronological.ChronologicalService/postSuccessor</ejb-ref-name>
+			<local>ch.bfh.uniboard.service.PostService</local>
+			<ejb-link>PostServiceToLink</ejb-link>
+		</ejb-local-ref>
+	</session>
+</enterprise-beans>

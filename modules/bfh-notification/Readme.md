@@ -17,12 +17,16 @@ For this property are no additional properties needed.
 
 ## Configuration
 
-This component uses the ConfigurationManager. It requires two configurations ("bfh-notification-persistence"
-and "bfh-notification").
-bfh-notification only has one option "unique" which allows to define the beta attribute that
+This component uses the ConfigurationManager. It requires the configuration "bfh-notification", which only has one option "unique" which allows to define the beta attribute that
 provides the unique identifier of the post.
-bfh-notification-persistence is used to store and retrieve the registred queries on shutdown/startup.
-This configuration is created automatically is not existent.
+
+{
+"config_key": "bfh-notification",
+"entries": {
+	"unique":"uniqueBetaAttribute"
+	}
+}
+It also perists its state under "bfh-notification-observer".
 
 ## Example EJB-Descriptor
 
@@ -32,7 +36,7 @@ This configuration is created automatically is not existent.
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.notification.NotificationService/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>POSTSERVICE_TO_USE</ejb-link>
+				<ejb-link>PostServiceToLink</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>

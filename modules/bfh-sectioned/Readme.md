@@ -34,7 +34,7 @@ BSE-004 - Specified section is not known on this UniBoard
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.sectioned.SectionedService/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>POSTSERVICE_TO_USE</ejb-link>
+				<ejb-link>PostServiceToLink</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>

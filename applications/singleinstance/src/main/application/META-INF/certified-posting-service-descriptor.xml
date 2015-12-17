@@ -11,11 +11,6 @@
 				<local>ch.bfh.uniboard.service.PostService</local>
 				<ejb-link>AccessControlledService</ejb-link>
 			</ejb-local-ref>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.certifiedposting.CertifiedPostingService/getSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.GetService</local>
-				<ejb-link>PersistenceService</ejb-link>
-			</ejb-local-ref>
 		</session>
 	</enterprise-beans>
 </ejb-jar>

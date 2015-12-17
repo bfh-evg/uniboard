@@ -16,7 +16,7 @@ Requires a the alpha attributes "signature" and "key".
 
 ## Configuration
 
-This component uses the ConfigurationManager. It requests the properties for the "bfh-access-controlled" key.
+This component does not require any configuration.
 
 ## Error Codes
 
@@ -35,7 +35,7 @@ BAC-006 Internal server error
 		<ejb-local-ref>
 			<ejb-ref-name>ch.bfh.uniboard.accesscontrolled.AccessControlledService/postSuccessor</ejb-ref-name>
 			<local>ch.bfh.uniboard.service.PostService</local>
-			<ejb-link>PostServiceTestBean</ejb-link>
+			<ejb-link>PostServiceToLink</ejb-link>
 		</ejb-local-ref>
 	</session>
 </enterprise-beans>

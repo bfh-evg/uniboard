@@ -25,6 +25,32 @@ If only the typed property is needed create only one entry with group name set t
 By default the linking is auto wired between grouped and typed.
 If you need only one property you can change the linking in the EJB-Descriptor.
 
+Example configurations:
+
+Only Groups
+{
+"config_key": "bfh-grouped-typed",
+"entries": {
+	"group1":"",
+	"group2":""
+	}
+}
+Both
+{
+"config_key": "bfh-grouped-typed",
+"entries": {
+	"group1":"/opt/jsonSchemas/group1.jsd",
+	"group2":"/opt/jsonSchemas/group2.jsd"
+	}
+}
+Only Typed
+{
+"config_key": "bfh-grouped-typed",
+"entries": {
+	"singleType":"/opt/jsonSchemas/type.jsd"
+	}
+}
+
 ## Error Codes
 
 BGT-001 - Attribute missing
@@ -42,7 +68,7 @@ BGT-006 - Message is not valid for the selected group
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.typed.TypedService/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>POSTSERVICE_TO_USE</ejb-link>
+				<ejb-link>PostServiceToLink</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>
@@ -53,7 +79,7 @@ BGT-006 - Message is not valid for the selected group
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.typed.TypedService/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>POSTSERVICE_TO_USE</ejb-link>
+				<ejb-link>PostServiceToLink</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>
@@ -64,7 +90,7 @@ BGT-006 - Message is not valid for the selected group
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.grouped.GroupedService/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>POSTSERVICE_TO_USE</ejb-link>
+				<ejb-link>PostServiceToLink</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>

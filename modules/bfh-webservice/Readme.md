@@ -24,12 +24,12 @@ This component has no configuration options.
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.webservice.UniBoardServiceImpl/postSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>POSTSERVICE_TO_USE</ejb-link>
+				<ejb-link>PostServiceToLink</ejb-link>
 			</ejb-local-ref>
 			<ejb-local-ref>
 				<ejb-ref-name>ch.bfh.uniboard.webservice.UniBoardServiceImpl/getSuccessor</ejb-ref-name>
 				<local>ch.bfh.uniboard.service.GetService</local>
-				<ejb-link>GETSERVICE_TO_USE</ejb-link>
+				<ejb-link>GetServiceToLink</ejb-link>
 			</ejb-local-ref>
 		</session>
 	</enterprise-beans>

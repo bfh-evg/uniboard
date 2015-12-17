@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -74,7 +75,9 @@ import org.bson.conversions.Bson;
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
 	private static final Logger logger = Logger.getLogger(ConfigurationManagerImpl.class.getName());
-	private static final String COLLECTION_NAME = "uniboard-configuration";
+
+	@Resource(name = "ConfigurationCollection")
+	private String COLLECTION_NAME = "uniboard-configuration";
 
 	public Map<String, Configuration> configurations;
 
