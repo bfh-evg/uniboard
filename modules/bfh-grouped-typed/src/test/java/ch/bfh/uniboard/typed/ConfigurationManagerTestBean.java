@@ -11,8 +11,10 @@
  */
 package ch.bfh.uniboard.typed;
 
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.util.Properties;
+import ch.bfh.uniboard.service.State;
+import java.io.File;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
@@ -28,17 +30,20 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 	private boolean groupded = true;
 
 	@Override
-	public Properties getConfiguration(String key) {
+	public Configuration getConfiguration(String key) {
 
 		if (this.correct && this.groupded) {
-			Properties p = new Properties();
-			p.put("number", "src/test/resources/numberSchema.json");
-			p.put("ip", "src/test/resources/ipSchema.json");
+			Configuration p = new Configuration();
+			File f = new File("src/test/resources/numberSchema.json");
+			p.getEntries().put("number", f.getAbsolutePath());
+			File f2 = new File("src/test/resources/ipSchema.json");
+			p.getEntries().put("ip", f2.getAbsolutePath());
 			return p;
 		}
 		if (this.correct && !this.groupded) {
-			Properties p = new Properties();
-			p.put("singleType", "src/test/resources/numberSchema.json");
+			Configuration p = new Configuration();
+			File f = new File("src/test/resources/numberSchema.json");
+			p.getEntries().put("singleType", f.getAbsolutePath());
 			return p;
 		}
 		return null;
@@ -53,12 +58,13 @@ public class ConfigurationManagerTestBean implements ConfigurationManager {
 	}
 
 	@Override
-	public void saveState(String key, Properties configuration) {
+	public void saveState(State state) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public Properties loadState(String key) {
-		return null;
+	public <T extends State> T loadState(String key, Class<T> t) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 }

@@ -16,23 +16,26 @@ import java.util.Iterator;
 
 /**
  * Class containing helper methods for getting attributes
+ *
  * @author Philémon von Bergen
  */
-class AttributeHelper {
-    
+public class AttributeHelper {
+
     /**
      * Search an attribute with key "key" in the list of given attributes
      * @param attributes the attributes in which to search
      * @param key the key of the attributes to search
      * @return the attribute if one was found, null otherwise
      */
-    public static AttributesDTO.AttributeDTO searchAttribute(AttributesDTO attributes, String key){
-	Iterator<AttributesDTO.AttributeDTO> it = attributes.getAttribute().iterator();
-	AttributesDTO.AttributeDTO attr;
-	while(it.hasNext()){
-	    attr = it.next();
-	    if(attr.getKey().equals(key)) return attr;
-	}
-	return null;
+    public static AttributesDTO.AttributeDTO searchAttribute(AttributesDTO attributes, String key) {
+        Iterator<AttributesDTO.AttributeDTO> it = attributes.getAttribute().iterator();
+        AttributesDTO.AttributeDTO attr;
+        while (it.hasNext()) {
+            attr = it.next();
+            if (attr.getKey().equals(key)) {
+                return attr;
+            }
+        }
+        return null;
     }
 }

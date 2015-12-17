@@ -17,7 +17,7 @@ import ch.bfh.uniboard.service.Value;
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-public class UnknownValue implements Value {
+public class UnknownValue extends Value {
 
 	@Override
 	public Object getValue() {

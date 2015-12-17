@@ -21,5 +21,17 @@
 			<artifactId>service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-mongodb-connector</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<version>1.50.0</version>
+			<scope>test</scope>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 </project>

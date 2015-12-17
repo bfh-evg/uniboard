@@ -23,4 +23,8 @@ public interface ObserverManager {
 
 	Map<String, Observer> getObservers();
 
+	Observer remove(String notificationCode);
+
+	void put(String notificationCode, Observer observer);
+
 }

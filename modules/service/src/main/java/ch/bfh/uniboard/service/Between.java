@@ -12,16 +12,31 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "between", propOrder = {
+	"start",
+	"end"
+})
 public class Between extends Constraint implements Serializable {
 
-	private final Value start;
-	private final Value end;
+	@XmlElement(required = true)
+	private Value start;
+	@XmlElement(required = true)
+	private Value end;
+
+	public Between(Identifier identifier) {
+		super(identifier);
+	}
 
 	public Between(Identifier identifier, Value start, Value end) {
 		super(identifier);
@@ -35,6 +50,11 @@ public class Between extends Constraint implements Serializable {
 
 	public Value getEnd() {
 		return end;
+	}
+
+	@Override
+	public String toString() {
+		return "Between{" + super.getIdentifier().toString() + "start=" + start + ", end=" + end + '}';
 	}
 
 }

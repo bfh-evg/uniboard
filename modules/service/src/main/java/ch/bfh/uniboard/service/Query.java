@@ -14,6 +14,9 @@ package ch.bfh.uniboard.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * A data container for a list of constraints.
@@ -21,13 +24,22 @@ import java.util.List;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "query", propOrder = {
+	"constraints",
+	"order",
+	"limit"
+})
 public class Query implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private final List<Constraint> constraints;
-	private final List<Order> order;
-	private final int limit;
+	private List<Constraint> constraints;
+	private List<Order> order;
+	private int limit;
+
+	public Query() {
+	}
 
 	public Query(List<Constraint> constraints, List<Order> order, int limit) {
 		this.constraints = constraints;
@@ -81,7 +93,7 @@ public class Query implements Serializable {
 			if (builder.length() > 0) {
 				builder.append(", ");
 			}
-			builder.append(constraint.getIdentifier());
+			builder.append(constraint.toString());
 		}
 		return "Query{" + "constraints=[" + builder + "], limit=" + limit + "}";
 	}

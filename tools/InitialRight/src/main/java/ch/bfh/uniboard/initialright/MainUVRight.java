@@ -90,14 +90,14 @@ public class MainUVRight {
 		alpha.add("section", new StringValue(section));
 		alpha.add("group", new StringValue("accessRight"));
 		Element ubMsgSig = PostCreator.createAlphaSignatureWithDL(message1, alpha, dsaPrivKey);
-		alpha.add("signature", new StringValue(ubMsgSig.getBigInteger().toString(10)));
+		alpha.add("signature", new StringValue(ubMsgSig.convertToBigInteger().toString(10)));
 		alpha.add("publickey", new StringValue(uniboardPublicKey.toString(10)));
 
 		Attributes beta = new Attributes();
 		beta.add("timestamp", new DateValue(new Date()));
 		beta.add("rank", new IntegerValue(0));
 		Element initMsgBetaSig = PostCreator.createBetaSignature(message1, alpha, beta, dsaPrivKey);
-		beta.add("boardSignature", new StringValue(initMsgBetaSig.getBigInteger().toString(10)));
+		beta.add("boardSignature", new StringValue(initMsgBetaSig.convertToBigInteger().toString(10)));
 
 		//output post as json
 		String post = PostCreator.createMessage(message1, alpha, beta);
@@ -117,14 +117,14 @@ public class MainUVRight {
 		alpha2.add("section", new StringValue(section));
 		alpha2.add("group", new StringValue("accessRight"));
 		Element ucMsgSig = PostCreator.createAlphaSignatureWithDL(message2, alpha2, dsaPrivKey);
-		alpha2.add("signature", new StringValue(ucMsgSig.getBigInteger().toString(10)));
+		alpha2.add("signature", new StringValue(ucMsgSig.convertToBigInteger().toString(10)));
 		alpha2.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta2 = new Attributes();
 		beta2.add("timestamp", new DateValue(new Date()));
 		beta2.add("rank", new IntegerValue(1));
 		Element acMsgSig = PostCreator.createBetaSignature(message1, alpha2, beta2, dsaPrivKey);
-		beta2.add("boardSignature", new StringValue(acMsgSig.getBigInteger().toString(10)));
+		beta2.add("boardSignature", new StringValue(acMsgSig.convertToBigInteger().toString(10)));
 
 		String post2 = PostCreator.createMessage(message2, alpha2, beta2);
 		System.out.println(post2);

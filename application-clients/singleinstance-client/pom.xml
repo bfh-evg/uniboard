@@ -20,6 +20,9 @@
 							<wsdlFiles>
 								<wsdlFile>UniBoardService.wsdl</wsdlFile>
 							</wsdlFiles>
+							<vmArgs>
+								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+							</vmArgs>
 							<packageName></packageName>
 							<wsdlLocation>${basedir}/wsdl/UniBoardService.wsdl</wsdlLocation>
 							<staleFile>${project.build.directory}/jaxws/stale/UniBoardService.stale</staleFile>

@@ -12,17 +12,30 @@
 package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Order allows to indicate the persistence layer what ordering one wishes for the result.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "order", propOrder = {
+	"identifier",
+	"ascDesc"
+})
 public class Order implements Serializable {
 
-	private final Identifier identifier;
+	@XmlElement(required = true)
+	private Identifier identifier;
 	//True indicates asc and false desc
-	private final boolean ascDesc;
+	private boolean ascDesc;
+
+	public Order() {
+	}
 
 	public Order(Identifier identifier, boolean ascDesc) {
 		this.identifier = identifier;

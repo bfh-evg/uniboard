@@ -13,15 +13,23 @@ package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.service.Query;
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Observer implements Serializable {
 
-	private final String url;
-	private final Query query;
+	private String url;
+	private Query query;
+
+	public Observer() {
+	}
 
 	public Observer(String url, Query query) {
 		this.url = url;

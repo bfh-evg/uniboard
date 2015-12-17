@@ -1,36 +1,74 @@
 /*
- * Copyright (c) 2014 Berner Fachhochschule, Switzerland.
- * Bern University of Applied Sciences, Engineering and Information Technology,
- * Research Institute for Security in the Information Society, E-Voting Group,
- * Biel, Switzerland.
+ * Uniboard
  *
- * Project UniBoard.
+ *  Copyright (c) 2015 Bern University of Applied Sciences (BFH),
+ *  Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *  Quellgasse 21, CH-2501 Biel, Switzerland
  *
- * Distributable under GPL license.
- * See terms of license at gnu.org.
+ *  Licensed under Dual License consisting of:
+ *  1. GNU Affero General Public License (AGPL) v3
+ *  and
+ *  2. Commercial license
+ *
+ *
+ *  1. This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *  2. Licensees holding valid commercial licenses for UniVote2 may use this file in
+ *   accordance with the commercial license agreement provided with the
+ *   Software or, alternatively, in accordance with the terms contained in
+ *   a written agreement between you and Bern University of Applied Sciences (BFH),
+ *   Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *   Quellgasse 21, CH-2501 Biel, Switzerland.
+ *
+ *
+ *   For further information contact <e-mail: severin.hauser@bfh.ch>
+ *
+ *
+ * Redistributions of files must retain the above copyright notice.
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
 import ch.bfh.uniboard.service.*;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.bson.Document;
 
 /**
  * Service responsible for persisting the received posts
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @Stateless
 public class PersistenceService implements PostService, GetService {
 
 	private static final Logger logger = Logger.getLogger(PersistenceService.class.getName());
+
+	private static final String SECTION = "section";
+	@Resource(name = "collection")
+	protected static final String DEFAULT_COLLECTION = "uniboard";
 
 	@EJB
 	ConnectionManager connectionManager;
@@ -52,26 +90,25 @@ public class PersistenceService implements PostService, GetService {
 				return betaError;
 			}
 
-			//TODO Remove this block and its tests
-			//check basic wellformedness of post
-			if (message == null || alpha == null || beta == null) {
-				Attributes betaError = new Attributes();
-				betaError.add(Attributes.REJECTED, new StringValue("Syntax error: incomplete post"));
-				logger.log(Level.WARNING, "Syntax error: incomplete post");
-				return betaError;
-			}
-
 			PersistedPost pp = new PersistedPost();
 			pp.setMessage(message);
 			pp.setAlpha(alpha);
 			pp.setBeta(beta);
 
-			this.connectionManager.getCollection().insert(pp.toDBObject());
+			MongoCollection collection = this.connectionManager.getCollection(DEFAULT_COLLECTION);
+			if (collection == null) {
+				Attributes betaError = new Attributes();
+				betaError.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
+				logger.log(Level.WARNING, "Collection not found: " + DEFAULT_COLLECTION);
+				return betaError;
+			}
+
+			collection.insertOne(pp.toDocument());
 
 			return beta;
 		} catch (Exception e) {
 			Attributes betaError = new Attributes();
-			betaError.add(Attributes.ERROR, new StringValue("General post error: " + e.getMessage()));
+			betaError.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
 			logger.log(Level.WARNING, "General post error", e);
 			return betaError;
 		}
@@ -85,15 +122,6 @@ public class PersistenceService implements PostService, GetService {
 				Attributes gamma = new Attributes();
 				gamma.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
 				logger.log(Level.WARNING, "Database error: unable to connect to database");
-				return new ResultContainer(new ArrayList<Post>(), gamma);
-			}
-
-			//TODO Remove this block and its tests
-			//check basic wellformedness of query
-			if (query == null || query.getConstraints() == null || query.getConstraints().isEmpty() || query.getConstraints().contains(null)) {
-				Attributes gamma = new Attributes();
-				gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Incomplete query"));
-				logger.log(Level.WARNING, "Syntax error: Incomplete query");
 				return new ResultContainer(new ArrayList<Post>(), gamma);
 			}
 
@@ -138,7 +166,8 @@ public class PersistenceService implements PostService, GetService {
 					for (Value v : op.getSet()) {
 						if (!(v.getClass().equals(valueClass))) {
 							Attributes gamma = new Attributes();
-							gamma.add(Attributes.REJECTED, new StringValue("Syntax error: not same value type for IN constraint"));
+							gamma.add(Attributes.REJECTED,
+									new StringValue("Syntax error: not same value type for IN constraint"));
 							logger.log(Level.WARNING, "Syntax error: not same value type for IN constraint");
 							return new ResultContainer(new ArrayList<Post>(), gamma);
 						}
@@ -149,11 +178,13 @@ public class PersistenceService implements PostService, GetService {
 					Between op = (Between) c;
 					if (!(op.getStart().getClass().equals(op.getEnd().getClass()))) {
 						Attributes gamma = new Attributes();
-						gamma.add(Attributes.REJECTED, new StringValue("Syntax error: not same value type for BETWEEN constraint"));
+						gamma.add(Attributes.REJECTED,
+								new StringValue("Syntax error: not same value type for BETWEEN constraint"));
 						logger.log(Level.WARNING, "Syntax error: not same value type for BETWEEN constraint");
 						return new ResultContainer(new ArrayList<Post>(), gamma);
 					}
-					actualConstraint.put(keyString, new BasicDBObject("$gt", op.getStart().getValue()).append("$lt", op.getEnd().getValue()));
+					actualConstraint.put(keyString,
+							new BasicDBObject("$gt", op.getStart().getValue()).append("$lt", op.getEnd().getValue()));
 				} else if (c instanceof Greater) {
 					Greater op = (Greater) c;
 					actualConstraint.put(keyString, new BasicDBObject("$gt", op.getValue().getValue()));
@@ -176,10 +207,10 @@ public class PersistenceService implements PostService, GetService {
 			}
 
 			//combine the different constrainst in an AND query
-			DBObject completeQuery = new BasicDBObject();
+			BasicDBObject completeQuery = new BasicDBObject();
 			completeQuery.put("$and", constraintsList);
 
-			DBCursor cursor;
+			FindIterable<Document> documents;
 
 			if (query.getOrder().size() > 0) {
 
@@ -211,19 +242,20 @@ public class PersistenceService implements PostService, GetService {
 					}
 					orderBy.append(identifier, ascDesc);
 				}
-				cursor = this.connectionManager.getCollection()
-						.find(completeQuery).sort(orderBy).limit(query.getLimit());
+				documents = this.connectionManager.getCollection(DEFAULT_COLLECTION).find(completeQuery).sort(orderBy).limit(query.getLimit());
 			} else {
 				//apply query on database
-				cursor = this.connectionManager.getCollection().find(completeQuery).limit(query.getLimit());
+				documents = this.connectionManager.getCollection(DEFAULT_COLLECTION).
+						find(completeQuery).limit(query.getLimit());
 			}
 
 			//creates the result container with the db result
 			List<Post> list = new ArrayList<>();
+			MongoCursor<Document> cursor = documents.iterator();
 			while (cursor.hasNext()) {
-				DBObject object = cursor.next();
+				Document object = cursor.next();
 				//convert to PersistedPost
-				list.add(PersistedPost.fromDBObject(object));
+				list.add(PersistedPost.fromDocument(object));
 			}
 			return new ResultContainer(list, new Attributes());
 		} catch (Exception e) {

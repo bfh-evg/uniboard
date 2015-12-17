@@ -12,14 +12,13 @@
 package ch.bfh.uniboard.certifiedget;
 
 import ch.bfh.uniboard.service.*;
-import ch.bfh.unicrypt.helper.Alphabet;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
-import ch.bfh.unicrypt.helper.converter.classes.bytearray.ByteArrayToByteArray;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.StringToByteArray;
 import ch.bfh.unicrypt.helper.hash.HashAlgorithm;
 import ch.bfh.unicrypt.helper.hash.HashMethod;
+import ch.bfh.unicrypt.helper.math.Alphabet;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
@@ -46,7 +45,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,19 +66,28 @@ public class CertifiedGetService extends GetComponent implements GetService {
 	private static final String CONFIG_ID = "id";
 	private static final String CONFIG_PRIVATEKEY_PASS = "privatekey-pass";
 
-	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(
-			HashAlgorithm.SHA256,
-			ConvertMethod.getInstance(
-					BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
-					ByteArrayToByteArray.getInstance(false),
-					StringToByteArray.getInstance(Charset.forName("UTF-8"))),
-			HashMethod.Mode.RECURSIVE);
+	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(HashAlgorithm.SHA256);
+	protected static final ConvertMethod CONVERT_METHOD = ConvertMethod.getInstance(
+			BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
+			StringToByteArray.getInstance(Charset.forName("UTF-8")));
 
-	private static final StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+	private static final StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 
 	private static final Logger logger = Logger.getLogger(CertifiedGetService.class.getName());
 
 	private SigningHelper signer = null;
+
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+	public static String bytesToHex(byte[] bytes) {
+		char[] hexChars = new char[bytes.length * 2];
+		for (int j = 0; j < bytes.length; j++) {
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
+	}
 
 	@EJB
 	GetService getSuccessor;
@@ -99,13 +106,15 @@ public class CertifiedGetService extends GetComponent implements GetService {
 		if (this.signer == null) {
 			logger.log(Level.SEVERE,
 					"Signer is not set. Check the configuration.");
-			gamma.add(Attributes.REJECTED,
+			gamma.add(Attributes.ERROR,
 					new StringValue("BCG-001 Internal server error."));
 			return gamma;
 		}
 		Element messageElement = this.createMessageElement(query, resultContainer);
-		Element signature = this.signer.sign(messageElement);
-		String signatureString = signature.getBigInteger().toString(10);
+		logger.log(Level.FINE, "message: {0}", messageElement.toString());
+		logger.log(Level.FINE, "complete: {0}",
+				bytesToHex(messageElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
+		String signatureString = this.signer.sign(messageElement).toString(10);
 		gamma.add(ATTRIBUTE_NAME, new StringValue(signatureString));
 		return gamma;
 
@@ -114,7 +123,11 @@ public class CertifiedGetService extends GetComponent implements GetService {
 	protected Element createMessageElement(Query query, ResultContainer resultContainer) {
 
 		Element queryElement = this.createQueryElement(query);
+		logger.log(Level.FINE, "query: {0}",
+				bytesToHex(queryElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
 		Element resultContainerElement = this.createResultContainerElement(resultContainer);
+		logger.log(Level.FINE, "result container: {0}",
+				bytesToHex(resultContainerElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
 		return Tuple.getInstance(queryElement, resultContainerElement);
 	}
 
@@ -143,16 +156,11 @@ public class CertifiedGetService extends GetComponent implements GetService {
 	protected Element createIdentifierElement(Identifier identifier) {
 		List<Element> identifierElements = new ArrayList<>();
 
-		if (identifier instanceof AlphaIdentifier) {
-			identifierElements.add(stringSpace.getElement("alpha"));
-		} else if (identifier instanceof BetaIdentifier) {
-			identifierElements.add(stringSpace.getElement("beta"));
-		} else if (identifier instanceof MessageIdentifier) {
-			identifierElements.add(stringSpace.getElement("message"));
-		} else {
-			logger.log(Level.SEVERE, "Unsupported Identifier type.");
-			return null;
-		}
+		char c[] = identifier.getClass().getSimpleName().toCharArray();
+		c[0] = Character.toLowerCase(c[0]);
+		String strIdentifier = new String(c);
+
+		identifierElements.add(stringSpace.getElement(strIdentifier));
 
 		for (String part : identifier.getParts()) {
 			identifierElements.add(stringSpace.getElement(part));
@@ -292,23 +300,23 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			}
 		}
 		DenseArray gammaDenseElements = DenseArray.getInstance(gammaElements);
-		Element gammeElement = Tuple.getInstance(gammaDenseElements);
+		Element gammaElement = Tuple.getInstance(gammaDenseElements);
 
-		return Tuple.getInstance(postElement, gammeElement);
+		return Tuple.getInstance(postElement, gammaElement);
 	}
 
 	@PostConstruct
 	private void init() {
 
-		Properties configuration = configurationManager.getConfiguration(CONFIG_NAME);
+		Configuration configuration = configurationManager.getConfiguration(CONFIG_NAME);
 		if (configuration == null) {
 			return;
 		}
 
-		String keyStorePath = configuration.getProperty(CONFIG_KEYSTORE_PATH);
-		String keyStorePass = configuration.getProperty(CONFIG_KEYSTORE_PASS);
-		String privateKeyPass = configuration.getProperty(CONFIG_PRIVATEKEY_PASS);
-		String id = configuration.getProperty(CONFIG_ID);
+		String keyStorePath = configuration.getEntries().get(CONFIG_KEYSTORE_PATH);
+		String keyStorePass = configuration.getEntries().get(CONFIG_KEYSTORE_PASS);
+		String privateKeyPass = configuration.getEntries().get(CONFIG_PRIVATEKEY_PASS);
+		String id = configuration.getEntries().get(CONFIG_ID);
 
 		KeyStore caKs;
 

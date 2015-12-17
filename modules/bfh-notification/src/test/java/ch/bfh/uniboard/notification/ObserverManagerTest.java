@@ -16,16 +16,9 @@ import ch.bfh.uniboard.service.Constraint;
 import ch.bfh.uniboard.service.Equal;
 import ch.bfh.uniboard.service.Query;
 import ch.bfh.uniboard.service.StringValue;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -66,55 +59,41 @@ public class ObserverManagerTest {
 
 	@Test
 	public void testEmpty() {
-		configurationManager.saveState(null, null);
+		configurationManager.saveState(null);
 		observerManager.init();
 		Map<String, Observer> observers = observerManager.getObservers();
 		assertTrue(observers.isEmpty());
 	}
 
 	@Test
-	public void testNotEmpty() throws IOException {
-		Properties config = new Properties();
+	public void testNotEmpty() throws Exception {
+		NotificationState state = new NotificationState();
 		List<Constraint> constraints = new ArrayList<>();
 		Constraint c = new Equal(new AlphaIdentifier("test"), new StringValue("test2"));
 		constraints.add(c);
 		Query q = new Query(constraints);
 		Observer obs = new Observer("URL", q);
+		state.getObservers().put("test", obs);
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-			oos.writeObject(obs);
-		}
-		String tmp = Base64.getEncoder().encodeToString(baos.toByteArray());
-		config.put("test3", tmp);
-
-		configurationManager.saveState(null, config);
+		configurationManager.saveState(state);
 		observerManager.init();
 		Map<String, Observer> observers = observerManager.getObservers();
 		assertFalse(observers.isEmpty());
 	}
 
 	@Test
-	public void testShutdown() throws IOException, ClassNotFoundException {
+	public void testShutdown() throws Exception {
 		observerManager.init();
-		Map<String, Observer> observers = observerManager.getObservers();
 		List<Constraint> constraints = new ArrayList<>();
 		Constraint c = new Equal(new AlphaIdentifier("test"), new StringValue("test2"));
 		constraints.add(c);
 		Query q = new Query(constraints);
 		Observer obs = new Observer("URL", q);
-		observers.put("testKey", obs);
+		observerManager.put("testKey", obs);
 		observerManager.stop();
 
-		Properties config = configurationManager.loadState("");
-		assertEquals(config.size(), 1);
-		String b64String = config.getProperty("testKey");
-		byte[] data = Base64.getDecoder().decode(b64String);
-		Observer tmp;
-		try (ObjectInputStream objectInputStream
-				= new ObjectInputStream(new ByteArrayInputStream(data))) {
-			tmp = (Observer) objectInputStream.readObject();
-		}
-		assertEquals(tmp.getUrl(), "URL");
+		NotificationState state = configurationManager.loadState("", NotificationState.class);
+		assertEquals(state.getObservers().size(), 1);
+		assertEquals(state.getObservers().get("testKey").getUrl(), "URL");
 	}
 }

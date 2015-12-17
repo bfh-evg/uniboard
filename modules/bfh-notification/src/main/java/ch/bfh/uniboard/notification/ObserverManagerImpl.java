@@ -12,23 +12,17 @@
 package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.xml.bind.JAXBContext;
 
 /**
  *
@@ -43,53 +37,48 @@ public class ObserverManagerImpl implements ObserverManager {
 
 	private static final String STATE_NAME = "bfh-notification-observer";
 	private static final Logger logger = Logger.getLogger(ObserverManagerImpl.class.getName());
-	private Map<String, Observer> observers;
+	private NotificationState state;
 
 	@PostConstruct
 	protected void init() {
-		Properties state = configurationManager.loadState(STATE_NAME);
-		this.observers = new HashMap<>();
+		state = configurationManager.loadState(STATE_NAME, NotificationState.class);
 		if (state == null) {
-			return;
-		}
-		for (Entry e : state.entrySet()) {
-			String key = (String) e.getKey();
-			String s = (String) e.getValue();
-
-			try {
-				byte[] data = Base64.getDecoder().decode(s);
-				Observer tmp;
-				try (ObjectInputStream objectInputStream
-						= new ObjectInputStream(new ByteArrayInputStream(data))) {
-					tmp = (Observer) objectInputStream.readObject();
-				}
-				this.observers.put(key, tmp);
-			} catch (IOException | ClassNotFoundException ex) {
-				logger.log(Level.WARNING, "Could not restore observer from configuration.", ex);
-			}
+			this.state = new NotificationState();
+			this.state.setKey(STATE_NAME);
 		}
 	}
 
 	@PreDestroy
 	protected void stop() {
-		Properties config = new Properties();
-		for (Entry<String, Observer> e : this.observers.entrySet()) {
-			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-					oos.writeObject(e.getValue());
-				}
-				String tmp = Base64.getEncoder().encodeToString(baos.toByteArray());
-				config.put(e.getKey(), tmp);
-			} catch (IOException ex) {
-				logger.log(Level.SEVERE, "Could not persist observer to configuraiton.", ex);
-			}
-		}
-		configurationManager.saveState(STATE_NAME, config);
+		configurationManager.saveState(state);
 	}
 
 	@Override
 	public Map<String, Observer> getObservers() {
-		return observers;
+		return new HashMap<>(state.getObservers());
+	}
+
+	@Override
+	@Lock(LockType.WRITE)
+	public Observer remove(String notificationCode) {
+		return this.state.getObservers().remove(notificationCode);
+	}
+
+	@Override
+	@Lock(LockType.WRITE)
+	public void put(String notificationCode, Observer observer) {
+		this.state.getObservers().put(notificationCode, observer);
+	}
+
+	/**
+	 * Initializes the JAXB context.
+	 *
+	 * @param <T> the Java type of the domain class the conversion takes place
+	 * @param type the actual type object
+	 * @return the JAXB context
+	 * @throws Exception if the context cannot be established
+	 */
+	private static <T> JAXBContext initJAXBContext(Class<T> type) throws Exception {
+		return JAXBContext.newInstance(new Class<?>[]{type});
 	}
 }

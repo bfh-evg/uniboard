@@ -45,7 +45,7 @@ public class ObserverClientImpl implements ObserverClient {
 			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointUrl);
 			observer.notify(notificationCode, post);
 		} catch (Exception ex) {
-			observerManager.getObservers().remove(notificationCode);
+			observerManager.remove(notificationCode);
 			logger.log(Level.SEVERE, "Unable to notify Observer: {0}, exception: {1}",
 					new Object[]{endpointUrl, ex});
 		}

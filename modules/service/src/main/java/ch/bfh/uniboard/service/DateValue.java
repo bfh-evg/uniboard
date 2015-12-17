@@ -14,15 +14,30 @@ package ch.bfh.uniboard.service;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Wrapper for date variables
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
-public class DateValue implements Value<Date>, Serializable {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "dateValue", propOrder = {
+	"value"
+})
+public class DateValue extends Value<Date> implements Serializable {
 
+	@XmlElement(required = true)
+	@XmlSchemaType(name = "dateTime")
 	private Date value;
+
+	public DateValue() {
+		super();
+	}
 
 	public DateValue(Date value) {
 		this.value = value;

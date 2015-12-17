@@ -15,7 +15,7 @@ import ch.bfh.uniboard.service.Attributes;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.unicrypt.helper.MathUtil;
+import ch.bfh.unicrypt.helper.math.MathUtil;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,12 +42,12 @@ public class MainUCRight {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String keyStorePath = "/home/phil/UniCert.jks";
-		String keyStorePass = "123456";
+		String keyStorePath = "../../../unicert/demo/UniCert.jks";
+		String keyStorePass = "12345678";
 		String boardAlias = "uniboardcert";
-		String boardPKPass = "123456";
+		String boardPKPass = "12345678";
 		String certAlias = "unicertbfh";
-		String certPKPass = "123456";
+		String certPKPass = "12345678";
 		String section = "unicert";
 
 		KeyStore caKs = KeyStore.getInstance(System.getProperty("javax.net.ssl.keyStoreType", "jks"));
@@ -83,14 +83,14 @@ public class MainUCRight {
 		alpha.add("section", new StringValue(section));
 		alpha.add("group", new StringValue("accessRight"));
 		Element ubMsgSig = PostCreator.createAlphaSignatureWithDL(authorization, alpha, dsaPrivKey);
-		alpha.add("signature", new StringValue(ubMsgSig.getBigInteger().toString(10)));
+		alpha.add("signature", new StringValue(ubMsgSig.convertToBigInteger().toString(10)));
 		alpha.add("publickey", new StringValue(uniboardPublicKey.toString(10)));
 
 		Attributes beta = new Attributes();
 		beta.add("timestamp", new DateValue(new Date()));
 		beta.add("rank", new IntegerValue(0));
 		Element initMsgBetaSig = PostCreator.createBetaSignature(authorization, alpha, beta, dsaPrivKey);
-		beta.add("boardSignature", new StringValue(initMsgBetaSig.getBigInteger().toString(10)));
+		beta.add("boardSignature", new StringValue(initMsgBetaSig.convertToBigInteger().toString(10)));
 
 		String post = PostCreator.createMessage(authorization, alpha, beta);
 		System.out.println(post);
@@ -104,14 +104,14 @@ public class MainUCRight {
 		alpha2.add("section", new StringValue(section));
 		alpha2.add("group", new StringValue("accessRight"));
 		Element ucMsgSig = PostCreator.createAlphaSignatureWithRSA(authorization2, alpha2, rsaPrivKey);
-		alpha2.add("signature", new StringValue(ucMsgSig.getBigInteger().toString(10)));
+		alpha2.add("signature", new StringValue(ucMsgSig.convertToBigInteger().toString(10)));
 		alpha2.add("publickey", new StringValue(unicertPublicKey.toString(10)));
 
 		Attributes beta2 = new Attributes();
 		beta2.add("timestamp", new DateValue(new Date()));
 		beta2.add("rank", new IntegerValue(1));
 		Element acMsgSig = PostCreator.createBetaSignature(authorization2, alpha2, beta2, dsaPrivKey);
-		beta2.add("boardSignature", new StringValue(acMsgSig.getBigInteger().toString(10)));
+		beta2.add("boardSignature", new StringValue(acMsgSig.convertToBigInteger().toString(10)));
 
 		//output post as json
 		String post2 = PostCreator.createMessage(authorization2, alpha2, beta2);

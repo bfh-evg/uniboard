@@ -31,15 +31,14 @@ import ch.bfh.uniboard.service.StringValue;
 import ch.bfh.uniboard.service.Value;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
-import ch.bfh.unicrypt.helper.Alphabet;
-import ch.bfh.unicrypt.helper.MathUtil;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
-import ch.bfh.unicrypt.helper.converter.classes.bytearray.ByteArrayToByteArray;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.StringToByteArray;
 import ch.bfh.unicrypt.helper.hash.HashAlgorithm;
 import ch.bfh.unicrypt.helper.hash.HashMethod;
+import ch.bfh.unicrypt.helper.math.Alphabet;
+import ch.bfh.unicrypt.helper.math.MathUtil;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
@@ -87,13 +86,10 @@ public class AccessControlledService extends PostComponent implements PostServic
 	private static final String AUTH = "accessRight";
 	private static final String AMOUNT = "amount";
 
-	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(
-			HashAlgorithm.SHA256,
-			ConvertMethod.getInstance(
-					BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
-					ByteArrayToByteArray.getInstance(false),
-					StringToByteArray.getInstance(Charset.forName("UTF-8"))),
-			HashMethod.Mode.RECURSIVE);
+	protected static final HashMethod HASH_METHOD = HashMethod.getInstance(HashAlgorithm.SHA256);
+	protected static final ConvertMethod CONVERT_METHOD = ConvertMethod.getInstance(
+			BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
+			StringToByteArray.getInstance(Charset.forName("UTF-8")));
 
 	private static final Logger logger = Logger.getLogger(AccessControlledService.class.getName());
 
@@ -171,7 +167,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 			//Check the signature
 			JsonNode key = data.get(ATTRIBUTE_NAME_CRYPTO);
-			
+
 			String type = key.get("type").textValue();
 
 			boolean signature = false;
@@ -275,34 +271,49 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 		Element messageElement = this.createMessageElement(message, alpha);
 
-		RSASignatureScheme rsa = RSASignatureScheme.getInstance(messageElement.getSet(), n, HASH_METHOD);
+		RSASignatureScheme rsa
+				= RSASignatureScheme.getInstance(messageElement.getSet(), n, CONVERT_METHOD, HASH_METHOD);
 		Element rsaPublicKeyElement = rsa.getVerificationKeySpace().getElement(rsaPublicKeyBI[0]);
 
 		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
-		Element signatureElement = rsa.getSignatureSpace().getElementFrom(signature);
+		BigInteger biSignature = new BigInteger(signature);
+		Element signatureElement = rsa.getSignatureSpace().getElementFrom(biSignature);
 
 		return rsa.verify(rsaPublicKeyElement, messageElement, signatureElement).getValue();
 	}
 
 	protected boolean checkDLSignature(JsonNode key, byte[] message, Attributes alpha) {
+		logger.log(Level.FINE, "Checking DL Signature");
 		BigInteger modulus = new BigInteger(key.get("p").textValue());
+		logger.log(Level.FINE, "Modulus: {0}", modulus);
 		BigInteger orderFactor = new BigInteger(key.get("q").textValue());
+		logger.log(Level.FINE, "Order: {0}", orderFactor);
 		GStarModPrime g_q = GStarModPrime.getInstance(modulus, orderFactor);
 		BigInteger generator = new BigInteger(key.get("g").textValue());
+		logger.log(Level.FINE, "Generator: {0}", generator);
 		GStarModElement g = g_q.getElement(generator);
 
 		Element messageElement = this.createMessageElement(message, alpha);
+		logger.log(Level.FINE, "Hash to sign: {0}", messageElement.getHashValue(CONVERT_METHOD, HASH_METHOD));
 
-		SchnorrSignatureScheme schnorr = SchnorrSignatureScheme.getInstance(
-				messageElement.getSet(), g, HASH_METHOD);
+		SchnorrSignatureScheme<?> schnorr = SchnorrSignatureScheme.getInstance(
+				messageElement.getSet(), g, CONVERT_METHOD, HASH_METHOD);
 
 		Element publicKey = schnorr.getVerificationKeySpace()
 				.getElement(new BigInteger(key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue()));
+		logger.log(Level.FINE, "PublicKey: {0}", key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue());
 
-		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
-		Element signatureElement = schnorr.getSignatureSpace().getElementFrom(signature);
+		String strSignature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
+		BigInteger biSignature = new BigInteger(strSignature);
+		BigInteger[] schnorrSignature = MathUtil.unpair(biSignature);
+		logger.log(Level.FINE, "Signature Value 1: {0}", schnorrSignature[0]);
+		logger.log(Level.FINE, "Signature Value 2: {0}", schnorrSignature[1]);
+		Tuple signature = schnorr.getSignatureSpace().getElementFrom(schnorrSignature[0], schnorrSignature[1]);
+		if (signature == null) {
+			return false;
+		}
 
-		return schnorr.verify(publicKey, messageElement, signatureElement).getValue();
+		return schnorr.verify(publicKey, messageElement, signature).getValue();
 	}
 
 	protected boolean checkECDLSignature(JsonNode key, byte[] message, Attributes alpha) {
@@ -310,11 +321,12 @@ public class AccessControlledService extends PostComponent implements PostServic
 	}
 
 	protected Element createMessageElement(byte[] message, Attributes alpha) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.PRINTABLE_ASCII);
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
 		Z z = Z.getInstance();
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 
 		Element messageElement = byteSpace.getElement(message);
+		logger.log(Level.FINE, "Message Hash: {0}", messageElement.getHashValue(CONVERT_METHOD, HASH_METHOD));
 
 		List<Element> alphaElements = new ArrayList<>();
 		//itterate over alpha until one reaches the property = signature
@@ -346,6 +358,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 		}
 		DenseArray immuElements = DenseArray.getInstance(alphaElements);
 		Element alphaElement = Tuple.getInstance(immuElements);
+		logger.log(Level.FINE, "Alpha Hash: {0}", alphaElement.getHashValue(CONVERT_METHOD, HASH_METHOD));
 		return Pair.getInstance(messageElement, alphaElement);
 	}
 }

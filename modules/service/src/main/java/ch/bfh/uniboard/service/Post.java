@@ -13,8 +13,12 @@ package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Objects;
-import javax.xml.bind.DatatypeConverter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * A post represents a posted message and all belonging attributes.
@@ -22,12 +26,21 @@ import javax.xml.bind.DatatypeConverter;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "post", propOrder = {
+	"message",
+	"alpha",
+	"beta"
+})
 public class Post implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@XmlElement(required = true)
 	protected byte[] message;
+	@XmlElement(required = true)
 	protected Attributes alpha;
+	@XmlElement(required = true)
 	protected Attributes beta;
 
 	public Post() {
@@ -95,7 +108,7 @@ public class Post implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Post{" + "message=" + DatatypeConverter.printBase64Binary(message)
+		return "Post{" + "message=" + Base64.getEncoder().encodeToString(message)
 				+ ", alpha=" + alpha + ", beta=" + beta + '}';
 	}
 

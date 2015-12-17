@@ -196,12 +196,14 @@ public class Transformer {
 
 	static public ResultDTO convertResulttoResultDTO(List<Post> result) throws TransformException {
 		ResultDTO result2 = new ResultDTO();
+		// create empty list of posts
+		List<PostDTO> posts = result2.getPost();
 		for (ch.bfh.uniboard.service.Post p : result) {
 			PostDTO pNew = new PostDTO();
 			pNew.setAlpha(Transformer.convertAttributesToDTO(p.getAlpha()));
 			pNew.setBeta(Transformer.convertAttributesToDTO(p.getBeta()));
 			pNew.setMessage(p.getMessage());
-			result2.getPost().add(pNew);
+			posts.add(pNew);
 		}
 		return result2;
 	}

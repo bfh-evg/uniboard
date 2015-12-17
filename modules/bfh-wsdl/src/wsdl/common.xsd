@@ -199,7 +199,7 @@
 
 	<xs:complexType name="result">
 		<xs:sequence>
-			<xs:element name="post" type="tns:post" maxOccurs="unbounded"/>
+			<xs:element name="post" type="tns:post" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 

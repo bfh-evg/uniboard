@@ -11,8 +11,9 @@
  */
 package ch.bfh.uniboard.notification;
 
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
-import java.util.Properties;
+import ch.bfh.uniboard.service.State;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
@@ -24,22 +25,27 @@ import javax.ejb.Singleton;
 @LocalBean
 public class ConfigurationManagerTestBean implements ConfigurationManager {
 
-	private Properties config = null;
+	private State state = null;
+	private Configuration config = null;
 
 	@Override
-	public Properties getConfiguration(String key) {
+	public Configuration getConfiguration(String key) {
 		//Rewired for test
 		return config;
 	}
 
-	@Override
-	public void saveState(String key, Properties configuration) {
-		this.config = configuration;
+	public void setConfiguration(Configuration config) {
+		this.config = config;
 	}
 
 	@Override
-	public Properties loadState(String key) {
-		return config;
+	public void saveState(State state) {
+		this.state = state;
+	}
+
+	@Override
+	public <T extends State> T loadState(String key, Class<T> t) {
+		return (T) state;
 	}
 
 }

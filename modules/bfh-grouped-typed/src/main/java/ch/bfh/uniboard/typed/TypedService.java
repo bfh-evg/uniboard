@@ -12,6 +12,7 @@
 package ch.bfh.uniboard.typed;
 
 import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.Configuration;
 import ch.bfh.uniboard.service.ConfigurationManager;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
@@ -24,7 +25,6 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -57,7 +57,7 @@ public class TypedService extends PostComponent implements PostService {
 	@Override
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
 
-		Properties p = this.configurationManager.getConfiguration(CONFIG_NAME);
+		Configuration p = this.configurationManager.getConfiguration(CONFIG_NAME);
 		if (p == null) {
 			logger.log(Level.SEVERE, "Configuration for component " + CONFIG_NAME + " is missing.");
 			beta.add(Attributes.ERROR,
@@ -65,8 +65,8 @@ public class TypedService extends PostComponent implements PostService {
 			return beta;
 		}
 
-		if (p.containsKey(NON_GROUPED_MODE)) {
-			String schemaPath = p.getProperty(NON_GROUPED_MODE);
+		if (p.getEntries().containsKey(NON_GROUPED_MODE)) {
+			String schemaPath = p.getEntries().get(NON_GROUPED_MODE);
 
 			if (this.validate(new String(message, Charset.forName("UTF-8")), schemaPath)) {
 				return beta;
@@ -86,12 +86,12 @@ public class TypedService extends PostComponent implements PostService {
 				return beta;
 			}
 			StringValue group = (StringValue) alpha.getValue(ATTRIBUTE_NAME);
-			if (!p.containsKey(group.getValue())) {
+			if (!p.getEntries().containsKey(group.getValue())) {
 				beta.add(Attributes.REJECTED,
 						new StringValue("BGT-004 Unknown " + ATTRIBUTE_NAME + ": " + group.getValue()));
 				return beta;
 			}
-			String schemaPath = p.getProperty(group.getValue());
+			String schemaPath = p.getEntries().get(group.getValue());
 
 			if (this.validate(new String(message, Charset.forName("UTF-8")), schemaPath)) {
 				return beta;
@@ -105,11 +105,11 @@ public class TypedService extends PostComponent implements PostService {
 	public boolean validate(String jsonData, String jsonSchema) {
 
 		try {
-			JsonNode schemaNode = JsonLoader.fromPath(jsonSchema);
+			//JsonNode schemaNode = JsonLoader.fromPath(jsonSchema);
 			JsonNode data = JsonLoader.fromString(jsonData);
 
 			JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-			JsonSchema schema = factory.getJsonSchema(schemaNode);
+			JsonSchema schema = factory.getJsonSchema("file://" + jsonSchema);
 			ProcessingReport report = schema.validate(data);
 
 			return report.isSuccess();

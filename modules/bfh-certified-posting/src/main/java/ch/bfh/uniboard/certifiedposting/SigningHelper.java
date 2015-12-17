@@ -12,6 +12,7 @@
 package ch.bfh.uniboard.certifiedposting;
 
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
+import java.math.BigInteger;
 
 /**
  *
@@ -19,5 +20,5 @@ import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
  */
 public interface SigningHelper {
 
-	public Element sign(Element message);
+	public BigInteger sign(Element message);
 }

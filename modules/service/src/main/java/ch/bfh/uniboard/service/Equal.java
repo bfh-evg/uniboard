@@ -11,14 +11,28 @@
  */
 package ch.bfh.uniboard.service;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "equal", propOrder = {
+	"value"
+})
 public class Equal extends Constraint {
 
-	private final Value value;
+	@XmlElement(required = true)
+	private Value value;
+
+	public Equal() {
+		super();
+	}
 
 	public Equal(Identifier identfier, Value value) {
 		super(identfier);
@@ -27,6 +41,11 @@ public class Equal extends Constraint {
 
 	public Value getValue() {
 		return value;
+	}
+
+	@Override
+	public String toString() {
+		return "Equal{" + super.getIdentifier().toString() + "value=" + value + '}';
 	}
 
 }

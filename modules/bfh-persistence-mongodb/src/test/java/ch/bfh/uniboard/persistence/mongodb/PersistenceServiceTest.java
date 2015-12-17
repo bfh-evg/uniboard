@@ -1,20 +1,48 @@
 /*
- * Copyright (c) 2014 Berner Fachhochschule, Switzerland.
- * Bern University of Applied Sciences, Engineering and Information Technology,
- * Research Institute for Security in the Information Society, E-Voting Group,
- * Biel, Switzerland.
+ * Uniboard
  *
- * Project UniBoard.
+ *  Copyright (c) 2015 Bern University of Applied Sciences (BFH),
+ *  Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *  Quellgasse 21, CH-2501 Biel, Switzerland
  *
- * Distributable under GPL license.
- * See terms of license at gnu.org.
+ *  Licensed under Dual License consisting of:
+ *  1. GNU Affero General Public License (AGPL) v3
+ *  and
+ *  2. Commercial license
+ *
+ *
+ *  1. This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *  2. Licensees holding valid commercial licenses for UniVote2 may use this file in
+ *   accordance with the commercial license agreement provided with the
+ *   Software or, alternatively, in accordance with the terms contained in
+ *   a written agreement between you and Bern University of Applied Sciences (BFH),
+ *   Research Institute for Security in the Information Society (RISIS), E-Voting Group (EVG),
+ *   Quellgasse 21, CH-2501 Biel, Switzerland.
+ *
+ *
+ *   For further information contact <e-mail: severin.hauser@bfh.ch>
+ *
+ *
+ * Redistributions of files must retain the above copyright notice.
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
 import ch.bfh.uniboard.service.*;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -23,6 +51,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import org.bson.Document;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -37,9 +66,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Test class of persistence componenent
+ * Test class of persistence component
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @RunWith(Arquillian.class)
 public class PersistenceServiceTest {
@@ -128,7 +158,7 @@ public class PersistenceServiceTest {
 		//empties the DB after each test
 		//conManager.getCollection().remove(pp.toDBObject());
 		//conManager.getCollection().remove(pp2.toDBObject());
-		conManager.getCollection().drop();
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).drop();
 	}
 
 	/**
@@ -138,23 +168,20 @@ public class PersistenceServiceTest {
 	public void postTest() {
 		Attributes returned = ps.post(message, alpha, beta);
 
-		DBCursor cursor = conManager.getCollection().find();
+		FindIterable<Document> cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find();
 
-		assertEquals(1, cursor.size());
+		assertEquals(1, conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).count());
 		assertEquals(beta, returned);
 
-		cursor = conManager.getCollection().find(pp.toDBObject());
+		cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(pp.toDocument());
 
-		assertEquals(1, cursor.size());
-
-		DBObject query = new BasicDBObject();
+		BasicDBObject query = new BasicDBObject();
 		query.put("alpha.first", "value1");
 
-		cursor = conManager.getCollection().find(query);
+		assertEquals(1, conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).count(query));
 
-		assertEquals(1, cursor.size());
-
-		assertEquals(pp, PersistedPost.fromDBObject(cursor.next()));
+		assertEquals(pp, PersistedPost.fromDocument(
+				conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(query).first()));
 	}
 
 	/**
@@ -744,34 +771,7 @@ public class PersistenceServiceTest {
 	 * ERROR TESTING
 	 * ------------------------------- */
 	/**
-	 * Test Post method with a null parameter
-	 */
-	@Test
-	public void postNullTest() {
-		Attributes returned = ps.post(message, null, beta);
-
-		assertTrue(returned.getKeys().contains(Attributes.REJECTED));
-
-		DBCursor cursor = conManager.getCollection().find();
-
-		assertEquals(0, cursor.size());
-
-	}
-
-	/**
-	 * Test Get method with a null parameter
-	 */
-	@Test
-	public void getNullTest() {
-		ResultContainer rc = gs.get(null);
-
-		assertTrue(rc.getGamma().getKeys().contains(Attributes.REJECTED));
-		assertEquals(0, rc.getResult().size());
-
-	}
-
-	/**
-	 * Test query constituted of a In constraint conataining different Value types
+	 * Test query constituted of a In constraint containing different Value types
 	 */
 	@Test
 	public void queryInDifferentTypeTest() {
@@ -793,7 +793,7 @@ public class PersistenceServiceTest {
 	}
 
 	/**
-	 * Test query consititued of a Between constraint conataining different Value types
+	 * Test query constituted of a Between constraint containing different Value types
 	 */
 	@Test
 	public void queryBetweenDifferentTypeTest() {
@@ -877,9 +877,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection().remove(p1.toDBObject());
-		conManager.getCollection().remove(p2.toDBObject());
-		conManager.getCollection().remove(p3.toDBObject());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
 	}
 
 	@Test
@@ -922,9 +922,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection().remove(p1.toDBObject());
-		conManager.getCollection().remove(p2.toDBObject());
-		conManager.getCollection().remove(p3.toDBObject());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
 	}
 
 	@Test
@@ -978,9 +978,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection().remove(p1.toDBObject());
-		conManager.getCollection().remove(p2.toDBObject());
-		conManager.getCollection().remove(p3.toDBObject());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
+		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
 	}
 
 	/* -------------------------------

@@ -13,6 +13,10 @@ package ch.bfh.uniboard.service;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * A data container for the result of a query and some other attributes. Values should be immutable.
@@ -20,10 +24,20 @@ import java.util.List;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "resultContainer", propOrder = {
+	"result",
+	"gamma"
+})
 public class ResultContainer implements Serializable {
 
-	private final List<Post> result;
+	@XmlElement(required = true)
+	private List<Post> result;
+	@XmlElement(required = true)
 	private Attributes gamma;
+
+	public ResultContainer() {
+	}
 
 	/**
 	 * Initialize the data container

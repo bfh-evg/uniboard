@@ -35,4 +35,14 @@ public class ObserverManagerMock implements ObserverManager {
 		this.observers.put(key, observer);
 	}
 
+	@Override
+	public Observer remove(String notificationCode) {
+		return this.observers.remove(notificationCode);
+	}
+
+	@Override
+	public void put(String notificationCode, Observer observer) {
+		this.observers.put(notificationCode, observer);
+	}
+
 }
