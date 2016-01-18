@@ -65,14 +65,14 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 
 /**
  * Component that checks if the author of the message has the right to post it on this board.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-@Stateless
+@Singleton
 public class AccessControlledService extends PostComponent implements PostService {
 
 	private static final String ATTRIBUTE_NAME_CRYPTO = "crypto";
@@ -107,7 +107,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 	@Override
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
 
-		//TODO Check if ATTRIBUTE_NAME_PUBLICKEY and ATTRIBUTE_NAME_SIG are set in alpha
+		//Check if ATTRIBUTE_NAME_PUBLICKEY and ATTRIBUTE_NAME_SIG are set in alpha
 		if (!alpha.containsKey(ATTRIBUTE_NAME_PUBLICKEY)) {
 			logger.log(Level.INFO, "Publickey missing in alpha.");
 			beta.add(Attributes.REJECTED,
