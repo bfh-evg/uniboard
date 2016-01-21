@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>ch.bfh.uniboard</groupId>
 		<artifactId>maven-base-config</artifactId>
-		<version>1.0</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>ch.bfh.uniboard</groupId>
 	<artifactId>singleinstance</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>ear</packaging>
 
 	<name>singleinstance</name>
