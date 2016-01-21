@@ -49,7 +49,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	public ResultContainerDTO query(QueryDTO queryDTO) {
 		try {
 			Query query = Transformer.convertQueryDTOtoQuery(queryDTO);
-			logger.info("Retrieve posts using " + query);
+			logger.log(Level.INFO, "Retrieve posts using {0}", query);
 			ResultContainer resultContainer = getSuccessor.get(query);
 			return Transformer.convertResultContainertoResultContainerDTO(resultContainer);
 		} catch (TransformException ex) {

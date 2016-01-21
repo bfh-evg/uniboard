@@ -46,7 +46,7 @@ public class OrderedService implements PostService {
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
 		Value sectionValue = alpha.getValue(SECTIONED_NAME);
 		String section = ((StringValue) sectionValue).getValue();
-		Integer order = this.state.getSections().getOrDefault(section, 1);
+		Integer order = this.state.getSections().getOrDefault(section, 0);
 		order++;
 		beta.add(ATTRIBUTE_NAME, new IntegerValue(order));
 		Attributes newBeta = this.postSuccessor.post(message, alpha, beta);
@@ -60,6 +60,10 @@ public class OrderedService implements PostService {
 	@PostConstruct
 	protected void init() {
 		this.state = configurationManager.loadState(STATE_NAME, OrderedState.class);
+		if (this.state == null) {
+			this.state = new OrderedState();
+			this.state.setKey(STATE_NAME);
+		}
 	}
 
 	@PreDestroy

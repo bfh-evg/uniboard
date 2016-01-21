@@ -37,6 +37,10 @@
 						</ejbModule>
 						<ejbModule>
 							<groupId>${project.groupId}</groupId>
+							<artifactId>bfh-mongodb-connector</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>bfh-configuration</artifactId>
 						</ejbModule>
 						<ejbModule>
@@ -169,6 +173,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bfh-certified-get</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-mongodb-connector</artifactId>
 			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>

@@ -30,7 +30,7 @@ This component doesn't require a EJB-Descriptor
 		 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd">
 	<enterprise-beans>
 		<session>
-			<ejb-name>ConnectionManagerImpl</ejb-name>
+			<ejb-name>PersistenceService</ejb-name>
 			<env-entry>
 				<env-entry-name>collection</env-entry-name>
 				<env-entry-type>java.lang.String</env-entry-type>

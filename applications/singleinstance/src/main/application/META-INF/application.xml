@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application version="7" xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
-			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<application version="7" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd" >
 	<display-name>UniBoard Single Instance</display-name>
 	<initialize-in-order>true</initialize-in-order>
 	<module>
+		<ejb>bfh-mongodb-connector-1.0.jar</ejb>
+		<alt-dd>META-INF/mongodb-connector-service-descriptor.xml</alt-dd>
+	</module>
+	<module>
 		<ejb>bfh-configuration-1.0.jar</ejb>
+		<alt-dd>META-INF/configuration-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
 		<ejb>bfh-webservice-1.0.jar</ejb>
@@ -13,6 +18,7 @@
 	</module>
 	<module>
 		<ejb>bfh-persistence-mongodb-1.0.jar</ejb>
+		<alt-dd>META-INF/persistence-mongodb-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
 		<ejb>bfh-sectioned-1.0.jar</ejb>

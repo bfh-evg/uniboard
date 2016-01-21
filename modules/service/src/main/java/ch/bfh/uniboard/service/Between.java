@@ -34,6 +34,9 @@ public class Between extends Constraint implements Serializable {
 	@XmlElement(required = true)
 	private Value end;
 
+	public Between() {
+	}
+
 	public Between(Identifier identifier) {
 		super(identifier);
 	}

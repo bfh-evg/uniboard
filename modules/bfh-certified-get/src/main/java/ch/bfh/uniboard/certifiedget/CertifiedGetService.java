@@ -310,6 +310,7 @@ public class CertifiedGetService extends GetComponent implements GetService {
 
 		Configuration configuration = configurationManager.getConfiguration(CONFIG_NAME);
 		if (configuration == null) {
+			logger.log(Level.SEVERE, "Could not load configuration: " + CONFIG_NAME);
 			return;
 		}
 
@@ -323,6 +324,8 @@ public class CertifiedGetService extends GetComponent implements GetService {
 		try {
 			caKs = KeyStore.getInstance(System.getProperty("javax.net.ssl.keyStoreType", "jks"));
 		} catch (KeyStoreException ex) {
+			logger.log(Level.SEVERE, "Could not create keystore type.");
+			logger.log(Level.SEVERE, ex.getMessage());
 			return;
 		}
 		InputStream in;
@@ -330,11 +333,13 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			File file = new File(keyStorePath);
 			in = new FileInputStream(file);
 		} catch (FileNotFoundException | RuntimeException ex) {
+			logger.log(Level.SEVERE, "Could not load keystore: {0}", keyStorePath);
 			return;
 		}
 		try {
 			caKs.load(in, keyStorePass.toCharArray());
 		} catch (IOException | NoSuchAlgorithmException | CertificateException ex) {
+			logger.log(Level.SEVERE, ex.getMessage());
 			return;
 		}
 
@@ -343,6 +348,7 @@ public class CertifiedGetService extends GetComponent implements GetService {
 		try {
 			key = caKs.getKey(id, privateKeyPass.toCharArray());
 		} catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
+			logger.log(Level.SEVERE, ex.getMessage());
 			return;
 		}
 
@@ -356,18 +362,21 @@ public class CertifiedGetService extends GetComponent implements GetService {
 				this.signer = new RSASigningHelper(rsaPrivKey);
 
 			} catch (RuntimeException ex) {
+				logger.log(Level.SEVERE, ex.getMessage());
 			}
 		} else if (algo.equals("DSA")) {
 			try {
 				DSAPrivateKey dsaPrivKey = (DSAPrivateKey) key;
 				this.signer = new SchnorrSigningHelper(dsaPrivKey);
 			} catch (RuntimeException ex) {
+				logger.log(Level.SEVERE, ex.getMessage());
 			}
 		} else if (algo.equals("EC")) {
 			try {
 				ECPrivateKey ecPrivKey = (ECPrivateKey) key;
 				//TODO
 			} catch (RuntimeException ex) {
+				logger.log(Level.SEVERE, ex.getMessage());
 			}
 		}
 	}
