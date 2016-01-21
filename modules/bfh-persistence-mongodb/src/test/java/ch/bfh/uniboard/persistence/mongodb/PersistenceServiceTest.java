@@ -158,7 +158,7 @@ public class PersistenceServiceTest {
 		//empties the DB after each test
 		//conManager.getCollection().remove(pp.toDBObject());
 		//conManager.getCollection().remove(pp2.toDBObject());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).drop();
+		conManager.getCollection("uniboard").drop();
 	}
 
 	/**
@@ -168,20 +168,20 @@ public class PersistenceServiceTest {
 	public void postTest() {
 		Attributes returned = ps.post(message, alpha, beta);
 
-		FindIterable<Document> cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find();
+		FindIterable<Document> cursor = conManager.getCollection("uniboard").find();
 
-		assertEquals(1, conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).count());
+		assertEquals(1, conManager.getCollection("uniboard").count());
 		assertEquals(beta, returned);
 
-		cursor = conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(pp.toDocument());
+		cursor = conManager.getCollection("uniboard").find(pp.toDocument());
 
 		BasicDBObject query = new BasicDBObject();
 		query.put("alpha.first", "value1");
 
-		assertEquals(1, conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).count(query));
+		assertEquals(1, conManager.getCollection("uniboard").count(query));
 
 		assertEquals(pp, PersistedPost.fromDocument(
-				conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).find(query).first()));
+				conManager.getCollection("uniboard").find(query).first()));
 	}
 
 	/**
@@ -877,9 +877,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p1.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p2.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p3.toDocument());
 	}
 
 	@Test
@@ -922,9 +922,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p1.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p2.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p3.toDocument());
 	}
 
 	@Test
@@ -978,9 +978,9 @@ public class PersistenceServiceTest {
 		PersistedPost p1 = new PersistedPost(message, a1, beta);
 		PersistedPost p2 = new PersistedPost(message, a2, beta);
 		PersistedPost p3 = new PersistedPost(message, a3, beta);
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p1.toDocument());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p2.toDocument());
-		conManager.getCollection(PersistenceService.DEFAULT_COLLECTION).deleteOne(p3.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p1.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p2.toDocument());
+		conManager.getCollection("uniboard").deleteOne(p3.toDocument());
 	}
 
 	/* -------------------------------

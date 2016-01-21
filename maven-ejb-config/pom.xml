@@ -10,7 +10,6 @@
 
 	<groupId>ch.bfh.uniboard</groupId>
 	<artifactId>maven-ejb-config</artifactId>
-	<version>1.0</version>
 	<packaging>pom</packaging>
 	<name>maven-ejb-config</name>
 	<description>

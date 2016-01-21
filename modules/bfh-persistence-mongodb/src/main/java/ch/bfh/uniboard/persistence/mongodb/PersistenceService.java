@@ -68,7 +68,7 @@ public class PersistenceService implements PostService, GetService {
 
 	private static final String SECTION = "section";
 	@Resource(name = "collection")
-	protected static final String DEFAULT_COLLECTION = "uniboard";
+	private String DEFAULT_COLLECTION = "uniboard";
 
 	@EJB
 	ConnectionManager connectionManager;
