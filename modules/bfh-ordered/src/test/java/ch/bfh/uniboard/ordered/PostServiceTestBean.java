@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.ordered;
 
-import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.StringValue;
 import javax.ejb.LocalBean;
@@ -25,13 +25,13 @@ import javax.ejb.Singleton;
 @LocalBean
 public class PostServiceTestBean implements PostService {
 
-    private ch.bfh.uniboard.service.Post lastPost;
+    private ch.bfh.uniboard.service.data.Post lastPost;
 
     private boolean error = false;
 
     @Override
     public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
-        this.lastPost = new ch.bfh.uniboard.service.Post();
+        this.lastPost = new ch.bfh.uniboard.service.data.Post();
         this.lastPost.setAlpha(alpha);
         this.lastPost.setMessage(message);
         if (error) {
@@ -44,7 +44,7 @@ public class PostServiceTestBean implements PostService {
         this.error = error;
     }
 
-    public ch.bfh.uniboard.service.Post getLastPost() {
+    public ch.bfh.uniboard.service.data.Post getLastPost() {
         return lastPost;
     }
 }

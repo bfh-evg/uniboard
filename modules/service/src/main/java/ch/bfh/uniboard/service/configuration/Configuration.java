@@ -38,7 +38,7 @@
  *
  * Redistributions of files must retain the above copyright notice.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.configuration;
 
 import java.util.HashMap;
 import java.util.Map;

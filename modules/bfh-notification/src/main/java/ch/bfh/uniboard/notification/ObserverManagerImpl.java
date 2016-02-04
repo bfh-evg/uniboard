@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.notification;
 
-import ch.bfh.uniboard.service.ConfigurationManager;
+import ch.bfh.uniboard.service.configuration.ConfigurationManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;

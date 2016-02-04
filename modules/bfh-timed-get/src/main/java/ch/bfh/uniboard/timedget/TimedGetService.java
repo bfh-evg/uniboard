@@ -11,12 +11,12 @@
  */
 package ch.bfh.uniboard.timedget;
 
-import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.GetComponent;
 import ch.bfh.uniboard.service.GetService;
-import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.ResultContainer;
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.ResultContainer;
 import java.util.Date;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

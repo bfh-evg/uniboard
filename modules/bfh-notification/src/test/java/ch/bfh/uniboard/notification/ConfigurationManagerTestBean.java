@@ -11,9 +11,9 @@
  */
 package ch.bfh.uniboard.notification;
 
-import ch.bfh.uniboard.service.Configuration;
-import ch.bfh.uniboard.service.ConfigurationManager;
-import ch.bfh.uniboard.service.State;
+import ch.bfh.uniboard.service.configuration.Configuration;
+import ch.bfh.uniboard.service.configuration.ConfigurationManager;
+import ch.bfh.uniboard.service.configuration.State;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 

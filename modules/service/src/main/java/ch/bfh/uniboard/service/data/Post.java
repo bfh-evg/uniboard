@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
 import java.io.Serializable;
 import java.util.Arrays;

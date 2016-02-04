@@ -11,8 +11,8 @@
  */
 package ch.bfh.uniboard.accesscontrolled;
 
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.Post;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.Post;
 import ch.bfh.uniboard.service.PostService;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
@@ -25,11 +25,11 @@ import javax.ejb.Singleton;
 @LocalBean
 public class PostServiceTestBean implements PostService {
 
-	private ch.bfh.uniboard.service.Post lastPost;
+	private ch.bfh.uniboard.service.data.Post lastPost;
 
 	@Override
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
-		this.lastPost = new ch.bfh.uniboard.service.Post();
+		this.lastPost = new ch.bfh.uniboard.service.data.Post();
 		this.lastPost.setAlpha(alpha);
 		this.lastPost.setMessage(message);
 		this.lastPost.setBeta(beta);

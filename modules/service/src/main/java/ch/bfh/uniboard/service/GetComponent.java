@@ -11,6 +11,10 @@
  */
 package ch.bfh.uniboard.service;
 
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.ResultContainer;
+import ch.bfh.uniboard.service.data.Attributes;
+
 /**
  *
  * @author Eric Dubuis &lt;eric.dubuis@bfh.ch&gt;

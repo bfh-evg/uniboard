@@ -9,36 +9,43 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
-import java.io.Serializable;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "betaIdentifier")
-public class BetaIdentifier extends Identifier implements Serializable {
+@XmlType(name = "greater", propOrder = {
+	"value"
+})
+public class Greater extends Constraint {
 
-	public BetaIdentifier() {
+	@XmlElement(required = true)
+	private String value;
+
+	public Greater() {
 		super();
 	}
 
-	public BetaIdentifier(List<String> parts) {
-		super(parts);
+	public Greater(Identifier identifier, String value) {
+		super(identifier);
+		this.value = value;
 	}
 
-	public BetaIdentifier(String[] identifier) {
-		super(identifier);
+	public String getValue() {
+		return value;
 	}
 
-	public BetaIdentifier(String identifier) {
-		super(identifier);
+	@Override
+	public String toString() {
+		return "Greater{" + super.getIdentifier().toString() + "value=" + value + '}';
 	}
 
 }

@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.service;
 
+import ch.bfh.uniboard.service.data.Attributes;
 import javax.ejb.Local;
 
 /**

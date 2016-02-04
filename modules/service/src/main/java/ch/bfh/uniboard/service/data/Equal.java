@@ -9,9 +9,8 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
-import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -23,41 +22,30 @@ import javax.xml.bind.annotation.XmlType;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "between", propOrder = {
-	"start",
-	"end"
+@XmlType(name = "equal", propOrder = {
+	"value"
 })
-public class Between extends Constraint implements Serializable {
+public class Equal extends Constraint {
 
 	@XmlElement(required = true)
-	private Value start;
-	@XmlElement(required = true)
-	private Value end;
+	private String value;
 
-	public Between() {
+	public Equal() {
+		super();
 	}
 
-	public Between(Identifier identifier) {
-		super(identifier);
+	public Equal(Identifier identfier, String value) {
+		super(identfier);
+		this.value = value;
 	}
 
-	public Between(Identifier identifier, Value start, Value end) {
-		super(identifier);
-		this.start = start;
-		this.end = end;
-	}
-
-	public Value getStart() {
-		return start;
-	}
-
-	public Value getEnd() {
-		return end;
+	public String getValue() {
+		return value;
 	}
 
 	@Override
 	public String toString() {
-		return "Between{" + super.getIdentifier().toString() + "start=" + start + ", end=" + end + '}';
+		return "Equal{" + super.getIdentifier().toString() + "value=" + value + '}';
 	}
 
 }

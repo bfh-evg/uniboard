@@ -40,10 +40,10 @@
  */
 package ch.bfh.uniboard.certifiedposting;
 
-import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.Configuration;
-import ch.bfh.uniboard.service.ConfigurationManager;
+import ch.bfh.uniboard.service.configuration.Configuration;
+import ch.bfh.uniboard.service.configuration.ConfigurationManager;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostComponent;

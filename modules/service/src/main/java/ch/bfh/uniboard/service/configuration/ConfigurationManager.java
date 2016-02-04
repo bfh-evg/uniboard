@@ -38,8 +38,9 @@
  *
  * Redistributions of files must retain the above copyright notice.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.configuration;
 
+import ch.bfh.uniboard.service.configuration.State;
 import javax.ejb.Local;
 
 /**

@@ -23,7 +23,7 @@ import java.security.cert.Certificate;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.DSAPublicKey;
 import java.util.Date;
-import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.StringValue;

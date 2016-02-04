@@ -11,9 +11,9 @@
  */
 package ch.bfh.uniboard.typed;
 
-import ch.bfh.uniboard.service.Configuration;
-import ch.bfh.uniboard.service.ConfigurationManager;
-import ch.bfh.uniboard.service.State;
+import ch.bfh.uniboard.service.configuration.Configuration;
+import ch.bfh.uniboard.service.configuration.ConfigurationManager;
+import ch.bfh.uniboard.service.configuration.State;
 import java.io.File;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;

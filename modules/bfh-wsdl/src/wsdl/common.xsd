@@ -1,61 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema version="1.0" targetNamespace="http://uniboard.bfh.ch/data" xmlns:tns="http://uniboard.bfh.ch/data" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+	<xs:simpleType name="attributeType">
+		<xs:union memberTypes="xs:string xs:integer"/>
+	</xs:simpleType>
+
 	<xs:complexType name="attributes">
 		<xs:sequence>
 			<xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="key" type="xs:string"/>
-						<xs:element name="value" type="tns:value"/>
+						<xs:element name="value" type="xs:anyType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="value" abstract="true">
-		<xs:sequence/>
-	</xs:complexType>
-
-	<xs:complexType name="byteArrayValue">
-		<xs:complexContent>
-			<xs:extension base="tns:value">
-				<xs:sequence>
-					<xs:element name="value" type="xs:base64Binary"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="dateValue">
-		<xs:complexContent>
-			<xs:extension base="tns:value">
-				<xs:sequence>
-					<xs:element name="value" type="xs:dateTime"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="integerValue">
-		<xs:complexContent>
-			<xs:extension base="tns:value">
-				<xs:sequence>
-					<xs:element name="value" type="xs:int"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="stringValue">
-		<xs:complexContent>
-			<xs:extension base="tns:value">
-				<xs:sequence>
-					<xs:element name="value" type="xs:string"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="query">
@@ -72,24 +32,32 @@
 		</xs:sequence>
 	</xs:complexType>
 
+
+	<xs:simpleType name="propertyIdentifierType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="alpha"/>
+			<xs:enumeration value="beta"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="dataType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="date"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:complexType name="identifier" abstract="true">
-		<xs:sequence>
-			<xs:element name="part" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="alphaIdentifier">
+	<xs:complexType name="propertyIdentifier">
 		<xs:complexContent>
 			<xs:extension base="tns:identifier">
-				<xs:sequence/>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="betaIdentifier">
-		<xs:complexContent>
-			<xs:extension base="tns:identifier">
-				<xs:sequence/>
+				<xs:sequence>
+					<xs:element name="type" type="tns:propertyIdentifierType"/>
+					<xs:element name="key" type="xs:string"/>
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -97,7 +65,10 @@
 	<xs:complexType name="messageIdentifier">
 		<xs:complexContent>
 			<xs:extension base="tns:identifier">
-				<xs:sequence/>
+				<xs:sequence>
+					<xs:element name="keyPath" type="xs:string"/>
+					<xs:element name="dataType" type="tns:dataType"/>
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -106,8 +77,8 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="lowerBound" type="tns:value"/>
-					<xs:element name="upperBound" type="tns:value"/>
+					<xs:element name="lowerBound" type="xs:string"/>
+					<xs:element name="upperBound" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -117,7 +88,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="element" type="tns:value" maxOccurs="unbounded"/>
+					<xs:element name="element" type="xs:string" maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -127,7 +98,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="value" type="tns:value"/>
+					<xs:element name="value" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -137,7 +108,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="value" type="tns:value"/>
+					<xs:element name="value" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -147,7 +118,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="value" type="tns:value"/>
+					<xs:element name="value" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -157,7 +128,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="value" type="tns:value"/>
+					<xs:element name="value" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -167,7 +138,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="value" type="tns:value"/>
+					<xs:element name="value" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -177,7 +148,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:constraint">
 				<xs:sequence>
-					<xs:element name="value" type="tns:value"/>
+					<xs:element name="value" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

@@ -13,12 +13,12 @@ package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.data.PostDTO;
 import ch.bfh.uniboard.service.AlphaIdentifier;
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.Configuration;
-import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.Equal;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.configuration.Configuration;
+import ch.bfh.uniboard.service.data.Constraint;
+import ch.bfh.uniboard.service.data.Equal;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.Query;
+import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.service.StringValue;
 import java.io.File;
 import java.util.ArrayList;

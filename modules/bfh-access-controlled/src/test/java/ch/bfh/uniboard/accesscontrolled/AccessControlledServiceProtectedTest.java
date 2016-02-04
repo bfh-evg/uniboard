@@ -12,17 +12,12 @@
 package ch.bfh.uniboard.accesscontrolled;
 
 import static ch.bfh.uniboard.accesscontrolled.AccessControlledService.HASH_METHOD;
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
 import ch.bfh.unicrypt.helper.math.MathUtil;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayElement;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringElement;
-import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZElement;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZModPrimePair;
 import ch.bfh.unicrypt.math.algebra.general.classes.Pair;
 import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
@@ -33,10 +28,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -59,15 +50,8 @@ public class AccessControlledServiceProtectedTest {
 		byte[] message = new byte[1];
 		message[0] = 0x6;
 		String string = "test";
-		int integer = 10;
-		byte[] byteA = new byte[1];
-		byteA[0] = 0x7;
-		Date date = new Date();
 		Attributes alpha = new Attributes();
-		alpha.add("a1", new StringValue(string));
-		alpha.add("a2", new IntegerValue(integer));
-		alpha.add("a3", new ByteArrayValue(byteA));
-		alpha.add("a4", new DateValue(date));
+		alpha.add("a1", string);
 		Element result = service.createMessageElement(message, alpha);
 		assertTrue(result instanceof Pair);
 		Pair resultPair = (Pair) result;
@@ -77,14 +61,6 @@ public class AccessControlledServiceProtectedTest {
 		assertTrue(resultPair.getSecond().isTuple());
 		Tuple alphaResult = (Tuple) resultPair.getSecond();
 		assertEquals(string, ((StringElement) alphaResult.getAt(0)).getValue());
-		assertEquals(integer, ((ZElement) alphaResult.getAt(1)).getValue().intValue());
-		assertArrayEquals(byteA, ((ByteArrayElement) alphaResult.getAt(2)).getValue().getBytes());
-		TimeZone timeZone = TimeZone.getTimeZone("UTC");
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		dateFormat.setTimeZone(timeZone);
-		String expectedDateString = dateFormat.format(date);
-		assertEquals(expectedDateString, ((StringElement) alphaResult.getAt(3)).getValue());
-
 	}
 
 	@Test
@@ -96,8 +72,8 @@ public class AccessControlledServiceProtectedTest {
 		byte[] message = new byte[1];
 		message[0] = 0x5;
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("bfh-test"));
-		alpha.add("group", new StringValue("accessRight"));
+		alpha.add("section", "bfh-test");
+		alpha.add("group", "accessRight");
 
 		BigInteger modulus = new BigInteger("1907");
 		BigInteger orderFactor = new BigInteger("953");
@@ -116,7 +92,7 @@ public class AccessControlledServiceProtectedTest {
 		String sigString = MathUtil.pair(signature.getFirst().convertToBigInteger(),
 				signature.getSecond().convertToBigInteger()).toString(10);
 
-		alpha.add("signature", new StringValue(sigString));
+		alpha.add("signature", sigString);
 
 		assertTrue(service.checkDLSignature(key, message, alpha));
 
@@ -131,8 +107,8 @@ public class AccessControlledServiceProtectedTest {
 		byte[] message = new byte[1];
 		message[0] = 0x5;
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("bfh-test"));
-		alpha.add("group", new StringValue("accessRight"));
+		alpha.add("section", "bfh-test");
+		alpha.add("group", "accessRight");
 
 		Element messageElement = service.createMessageElement(message, alpha);
 
@@ -150,7 +126,7 @@ public class AccessControlledServiceProtectedTest {
 		System.out.println(MathUtil.pair(new BigInteger("2753"), p.multiply(q)).toString(10));
 
 		String sigString = signature.convertToBigInteger().toString(10);
-		alpha.add("signature", new StringValue(sigString));
+		alpha.add("signature", sigString);
 
 		assertTrue(service.checkRSASignature(key, message, alpha));
 	}

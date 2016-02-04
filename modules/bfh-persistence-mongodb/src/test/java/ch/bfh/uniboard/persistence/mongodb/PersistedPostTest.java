@@ -40,21 +40,14 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attributes;
 import com.mongodb.util.JSON;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import org.bson.Document;
-import org.bson.types.Binary;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -81,15 +74,15 @@ public class PersistedPostTest {
 		message = new byte[]{1, 2, 3, 4};
 
 		alpha = new Attributes();
-		alpha.add("first", new StringValue("value1"));
-		alpha.add("second", new IntegerValue(2));
-		alpha.add("third", new ByteArrayValue(new byte[]{3, 3}));
-		alpha.add("fourth", new DateValue(new Date(System.currentTimeMillis())));
+		alpha.add("first", "value1");
+		alpha.add("second", "2");
+		alpha.add("third", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
+		alpha.add("fourth", "2014-10-15T13:00:00Z");
 
 		beta = new Attributes();
-		beta.add("fifth", new StringValue("value5"));
-		beta.add("seventh", new IntegerValue(7));
-		beta.add("eighth", new ByteArrayValue(new byte[]{8, 8}));
+		beta.add("fifth", "value5");
+		beta.add("seventh", "7");
+		beta.add("eighth", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
 
 		pp = new PersistedPost(message, alpha, beta);
 	}
@@ -153,20 +146,18 @@ public class PersistedPostTest {
 		assertTrue(((Document) dbObj.get("alpha")).containsKey("third"));
 		assertTrue(((Document) dbObj.get("alpha")).containsKey("fourth"));
 
-		assertEquals(alpha.getValue("first").getValue(), ((Document) dbObj.get("alpha")).get("first"));
-		assertEquals(alpha.getValue("second").getValue(), ((Document) dbObj.get("alpha")).get("second"));
-		assertArrayEquals(((ByteArrayValue) alpha.getValue("third")).getValue(),
-				((Binary) ((Document) dbObj.get("alpha")).get("third")).getData());
-		assertEquals(alpha.getValue("fourth").getValue(), ((Document) dbObj.get("alpha")).get("fourth"));
+		assertEquals(alpha.getValue("first"), ((Document) dbObj.get("alpha")).get("first"));
+		assertEquals(alpha.getValue("second"), ((Document) dbObj.get("alpha")).get("second"));
+		assertEquals(alpha.getValue("third"), ((Document) dbObj.get("alpha")).get("third"));
+		assertEquals(alpha.getValue("fourth"), ((Document) dbObj.get("alpha")).get("fourth"));
 
 		assertTrue(((Document) dbObj.get("beta")).containsKey("fifth"));
 		assertTrue(((Document) dbObj.get("beta")).containsKey("seventh"));
 		assertTrue(((Document) dbObj.get("beta")).containsKey("eighth"));
 
-		assertEquals(beta.getValue("fifth").getValue(), ((Document) dbObj.get("beta")).get("fifth"));
-		assertEquals(beta.getValue("seventh").getValue(), ((Document) dbObj.get("beta")).get("seventh"));
-		assertArrayEquals(((ByteArrayValue) beta.getValue("eighth")).getValue(),
-				((Binary) ((Document) dbObj.get("beta")).get("eighth")).getData());
+		assertEquals(beta.getValue("fifth"), ((Document) dbObj.get("beta")).get("fifth"));
+		assertEquals(beta.getValue("seventh"), ((Document) dbObj.get("beta")).get("seventh"));
+		assertEquals(beta.getValue("eighth"), ((Document) dbObj.get("beta")).get("eighth"));
 
 	}
 

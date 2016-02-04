@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -40,7 +40,7 @@ public class Attributes implements Serializable {
 	/**
 	 * Holder of key/value pairs.
 	 */
-	private final LinkedHashMap<String, Value> map;
+	private final LinkedHashMap<String, String> map;
 
 	public Attributes() {
 		map = new LinkedHashMap<>();
@@ -51,7 +51,7 @@ public class Attributes implements Serializable {
 	 *
 	 * @param map a map initialized with key/value pairs; values should be immutable
 	 */
-	public Attributes(LinkedHashMap<String, Value> map) {
+	public Attributes(LinkedHashMap<String, String> map) {
 		this.map = map;
 	}
 
@@ -61,7 +61,7 @@ public class Attributes implements Serializable {
 	 * @param key a key
 	 * @return associated value, or null
 	 */
-	public Value getValue(String key) {
+	public String getValue(String key) {
 		return this.map.get(key);
 	}
 
@@ -78,7 +78,7 @@ public class Attributes implements Serializable {
 	 *
 	 * @return the set of entries
 	 */
-	public Set<Map.Entry<String, Value>> getEntries() {
+	public Set<Map.Entry<String, String>> getEntries() {
 		return this.map.entrySet();
 	}
 
@@ -88,7 +88,7 @@ public class Attributes implements Serializable {
 	 * @param key a key
 	 * @param value associated value, or null
 	 */
-	public void add(String key, Value value) {
+	public void add(String key, String value) {
 		this.map.put(key, value);
 	}
 

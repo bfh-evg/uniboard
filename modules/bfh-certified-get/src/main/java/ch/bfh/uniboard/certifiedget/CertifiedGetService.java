@@ -11,6 +11,23 @@
  */
 package ch.bfh.uniboard.certifiedget;
 
+import ch.bfh.uniboard.service.data.In;
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.Order;
+import ch.bfh.uniboard.service.data.ResultContainer;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.Less;
+import ch.bfh.uniboard.service.data.Equal;
+import ch.bfh.uniboard.service.data.Greater;
+import ch.bfh.uniboard.service.data.Identifier;
+import ch.bfh.uniboard.service.data.GreaterEqual;
+import ch.bfh.uniboard.service.data.NotEqual;
+import ch.bfh.uniboard.service.data.Post;
+import ch.bfh.uniboard.service.data.Between;
+import ch.bfh.uniboard.service.data.Constraint;
+import ch.bfh.uniboard.service.data.LessEqual;
+import ch.bfh.uniboard.service.configuration.ConfigurationManager;
+import ch.bfh.uniboard.service.configuration.Configuration;
 import ch.bfh.uniboard.service.*;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
@@ -175,8 +192,8 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			constraintElements.add(stringSpace.getElement("between"));
 			Between between = (Between) constraint;
 			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
-			constraintElements.add(this.createValueElement(between.getStart()));
-			constraintElements.add(this.createValueElement(between.getEnd()));
+			constraintElements.add(this.createValueElement(between.getLowerBound()));
+			constraintElements.add(this.createValueElement(between.getUpperBound()));
 		} else if (constraint instanceof Equal) {
 			constraintElements.add(stringSpace.getElement("equal"));
 			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));

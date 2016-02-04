@@ -5,7 +5,7 @@
  */
 package ch.bfh.uniboard.ordered;
 
-import ch.bfh.uniboard.service.State;
+import ch.bfh.uniboard.service.configuration.State;
 import java.util.HashMap;
 import java.util.Map;
 

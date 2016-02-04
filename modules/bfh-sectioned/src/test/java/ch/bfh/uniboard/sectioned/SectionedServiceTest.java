@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.sectioned;
 
-import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.StringValue;

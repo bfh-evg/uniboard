@@ -11,9 +11,9 @@
  */
 package ch.bfh.uniboard.typed;
 
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.Configuration;
-import ch.bfh.uniboard.service.ConfigurationManager;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.configuration.Configuration;
+import ch.bfh.uniboard.service.configuration.ConfigurationManager;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.StringValue;

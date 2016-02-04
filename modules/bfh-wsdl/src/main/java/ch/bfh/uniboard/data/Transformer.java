@@ -11,38 +11,31 @@
  */
 package ch.bfh.uniboard.data;
 
-import ch.bfh.uniboard.service.AlphaIdentifier;
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.BetaIdentifier;
-import ch.bfh.uniboard.service.Between;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.Equal;
-import ch.bfh.uniboard.service.Greater;
-import ch.bfh.uniboard.service.GreaterEqual;
-import ch.bfh.uniboard.service.Identifier;
-import ch.bfh.uniboard.service.In;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.Less;
-import ch.bfh.uniboard.service.LessEqual;
-import ch.bfh.uniboard.service.MessageIdentifier;
-import ch.bfh.uniboard.service.NotEqual;
-import ch.bfh.uniboard.service.Order;
-import ch.bfh.uniboard.service.Post;
-import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.ResultContainer;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.Constraint;
+import ch.bfh.uniboard.service.data.LessEqual;
+import ch.bfh.uniboard.service.data.Post;
+import ch.bfh.uniboard.service.data.Less;
+import ch.bfh.uniboard.service.data.PropertyIdentifier;
+import ch.bfh.uniboard.service.data.NotEqual;
+import ch.bfh.uniboard.service.data.ResultContainer;
+import ch.bfh.uniboard.service.data.MessageIdentifier;
+import ch.bfh.uniboard.service.data.GreaterEqual;
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.PropertyIdentifierType;
+import ch.bfh.uniboard.service.data.In;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.DataType;
+import ch.bfh.uniboard.service.data.Greater;
+import ch.bfh.uniboard.service.data.Identifier;
+import ch.bfh.uniboard.service.data.Equal;
+import ch.bfh.uniboard.service.data.Order;
+import ch.bfh.uniboard.service.data.Between;
+import ch.bfh.uniboard.service.*;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  *
@@ -55,10 +48,10 @@ public class Transformer {
 	static public AttributesDTO convertAttributesToDTO(Attributes attributes) throws TransformException {
 
 		AttributesDTO aDTO = new AttributesDTO();
-		for (Map.Entry<String, Value> e : attributes.getEntries()) {
+		for (Map.Entry<String, String> e : attributes.getEntries()) {
 			AttributesDTO.AttributeDTO ent = new AttributesDTO.AttributeDTO();
 			ent.setKey(e.getKey());
-			ent.setValue(Transformer.convertValueToDTO(e.getValue()));
+			ent.setValue(e.getValue());
 			aDTO.getAttribute().add(ent);
 		}
 		return aDTO;
@@ -68,68 +61,19 @@ public class Transformer {
 
 		Attributes attributes = new Attributes();
 		for (AttributesDTO.AttributeDTO attr : attributesDTO.getAttribute()) {
-			attributes.add(attr.getKey(), Transformer.convertValueDTOToValue(attr.getValue()));
+			attributes.add(attr.getKey(), attr.getValue());
 		}
 		return attributes;
 	}
 
-	static public Value convertValueDTOToValue(ValueDTO valueDTO) throws TransformException {
-
-		if (valueDTO instanceof ByteArrayValueDTO) {
-			ByteArrayValueDTO tmpValue = (ByteArrayValueDTO) valueDTO;
-			return new ByteArrayValue(tmpValue.getValue());
-		} else if (valueDTO instanceof DateValueDTO) {
-			DateValueDTO tmpValue = (DateValueDTO) valueDTO;
-			return new DateValue(tmpValue.getValue().toGregorianCalendar().getTime());
-		} else if (valueDTO instanceof IntegerValueDTO) {
-			IntegerValueDTO tmpValue = (IntegerValueDTO) valueDTO;
-			return new IntegerValue(tmpValue.getValue());
-		} else if (valueDTO instanceof StringValueDTO) {
-			StringValueDTO tmpValue = (StringValueDTO) valueDTO;
-			return new StringValue(tmpValue.getValue());
-		}
-		logger.log(Level.SEVERE, "Unsupported ValueDTO type: {0}", valueDTO.getClass().getCanonicalName());
-		throw new TransformException("Unsupported ValueDTO type");
-	}
-
-	static public ValueDTO convertValueToDTO(Value value) throws TransformException {
-		if (value instanceof ByteArrayValue) {
-			ByteArrayValue tmpValue = (ByteArrayValue) value;
-			return new ByteArrayValueDTO(tmpValue.getValue());
-		} else if (value instanceof DateValue) {
-			DateValue tmpValue = (DateValue) value;
-			DateValueDTO tmpValueDTO = new DateValueDTO();
-
-			try {
-				GregorianCalendar c = new GregorianCalendar();
-				c.setTime(tmpValue.getValue());
-				XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(c).normalize();
-				tmpValueDTO.setValue(date);
-				return tmpValueDTO;
-			} catch (DatatypeConfigurationException ex) {
-				logger.log(Level.WARNING, "{0}Could not convert date to gregorian calendar: ",
-						ex.getMessage());
-				throw new TransformException("Could not convert date to gregorian calendar");
-			}
-		} else if (value instanceof IntegerValue) {
-			IntegerValue tmpValue = (IntegerValue) value;
-			return new IntegerValueDTO(tmpValue.getValue());
-		} else if (value instanceof StringValue) {
-			StringValue tmpValue = (StringValue) value;
-			return new StringValueDTO(tmpValue.getValue());
-		}
-		logger.log(Level.SEVERE, "Unsupported Value type: {0}", value.getClass().getCanonicalName());
-		throw new TransformException("Unsupported Value type");
-	}
-
 	static public Identifier convertIdentifierDTOtoIdentifier(IdentifierDTO identifierDTO) throws TransformException {
 
-		if (identifierDTO instanceof AlphaIdentifierDTO) {
-			return new AlphaIdentifier(identifierDTO.getPart());
-		} else if (identifierDTO instanceof BetaIdentifierDTO) {
-			return new BetaIdentifier(identifierDTO.getPart());
+		if (identifierDTO instanceof PropertyIdentifierDTO) {
+			PropertyIdentifierDTO tmp = (PropertyIdentifierDTO) identifierDTO;
+			return new PropertyIdentifier(PropertyIdentifierType.fromValue(tmp.type.value()), tmp.key);
 		} else if (identifierDTO instanceof MessageIdentifierDTO) {
-			return new MessageIdentifier(identifierDTO.getPart());
+			MessageIdentifierDTO tmp = (MessageIdentifierDTO) identifierDTO;
+			return new MessageIdentifier(tmp.keyPath, DataType.fromValue(tmp.dataType.value()));
 		} else {
 			logger.log(Level.SEVERE, "Unsupported Identifier: {0}", identifierDTO.getClass().getCanonicalName());
 			throw new TransformException("Unsupported Identitifer");
@@ -144,42 +88,35 @@ public class Transformer {
 			Identifier identifier = Transformer.convertIdentifierDTOtoIdentifier(cDTO.getIdentifier());
 			if (cDTO instanceof BetweenDTO) {
 				BetweenDTO cTmp = (BetweenDTO) cDTO;
-				Value lowB = Transformer.convertValueDTOToValue(cTmp.getLowerBound());
-				Value upB = Transformer.convertValueDTOToValue(cTmp.getUpperBound());
-				Between cNew = new Between(identifier, lowB, upB);
+				Between cNew = new Between(identifier, cTmp.getLowerBound(), cTmp.getUpperBound());
 				constraints.add(cNew);
 			} else if (cDTO instanceof EqualDTO) {
 				EqualDTO cTmp = (EqualDTO) cDTO;
-				Equal cNew = new Equal(identifier, Transformer.convertValueDTOToValue(cTmp.getValue()));
+				Equal cNew = new Equal(identifier, cTmp.getValue());
 				constraints.add(cNew);
 			} else if (cDTO instanceof GreaterDTO) {
 				GreaterDTO cTmp = (GreaterDTO) cDTO;
-				Greater cNew = new Greater(identifier, Transformer.convertValueDTOToValue(cTmp.getValue()));
+				Greater cNew = new Greater(identifier, cTmp.getValue());
 				constraints.add(cNew);
 			} else if (cDTO instanceof GreaterEqualDTO) {
 				GreaterEqualDTO cTmp = (GreaterEqualDTO) cDTO;
-				GreaterEqual cNew = new GreaterEqual(identifier,
-						Transformer.convertValueDTOToValue(cTmp.getValue()));
+				GreaterEqual cNew = new GreaterEqual(identifier, cTmp.getValue());
 				constraints.add(cNew);
 			} else if (cDTO instanceof InDTO) {
 				InDTO cTmp = (InDTO) cDTO;
-				List<Value> list = new ArrayList<>();
-				for (ValueDTO valueDTO : cTmp.getElement()) {
-					list.add(Transformer.convertValueDTOToValue(valueDTO));
-				}
-				In cNew = new In(identifier, list);
+				In cNew = new In(identifier, cTmp.getElement());
 				constraints.add(cNew);
 			} else if (cDTO instanceof LessDTO) {
 				LessDTO cTmp = (LessDTO) cDTO;
-				Less cNew = new Less(identifier, Transformer.convertValueDTOToValue(cTmp.getValue()));
+				Less cNew = new Less(identifier, cTmp.getValue());
 				constraints.add(cNew);
 			} else if (cDTO instanceof LessEqualDTO) {
 				LessEqualDTO cTmp = (LessEqualDTO) cDTO;
-				LessEqual cNew = new LessEqual(identifier, Transformer.convertValueDTOToValue(cTmp.getValue()));
+				LessEqual cNew = new LessEqual(identifier, cTmp.getValue());
 				constraints.add(cNew);
 			} else if (cDTO instanceof NotEqualDTO) {
 				NotEqualDTO cTmp = (NotEqualDTO) cDTO;
-				NotEqual cNew = new NotEqual(identifier, Transformer.convertValueDTOToValue(cTmp.getValue()));
+				NotEqual cNew = new NotEqual(identifier, cTmp.getValue());
 				constraints.add(cNew);
 			}
 		}
@@ -198,7 +135,7 @@ public class Transformer {
 		ResultDTO result2 = new ResultDTO();
 		// create empty list of posts
 		List<PostDTO> posts = result2.getPost();
-		for (ch.bfh.uniboard.service.Post p : result) {
+		for (ch.bfh.uniboard.service.data.Post p : result) {
 			PostDTO pNew = new PostDTO();
 			pNew.setAlpha(Transformer.convertAttributesToDTO(p.getAlpha()));
 			pNew.setBeta(Transformer.convertAttributesToDTO(p.getBeta()));

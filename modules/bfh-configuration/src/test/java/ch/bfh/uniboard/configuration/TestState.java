@@ -5,7 +5,7 @@
  */
 package ch.bfh.uniboard.configuration;
 
-import ch.bfh.uniboard.service.State;
+import ch.bfh.uniboard.service.configuration.State;
 
 /**
  *

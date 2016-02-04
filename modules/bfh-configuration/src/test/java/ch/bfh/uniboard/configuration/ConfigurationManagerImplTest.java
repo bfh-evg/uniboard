@@ -12,7 +12,7 @@
 package ch.bfh.uniboard.configuration;
 
 import ch.bfh.uniboard.persistence.mongodb.ConnectionManager;
-import ch.bfh.uniboard.service.Configuration;
+import ch.bfh.uniboard.service.configuration.Configuration;
 import com.mongodb.client.MongoCollection;
 import static com.mongodb.client.model.Filters.eq;
 import javax.ejb.EJB;

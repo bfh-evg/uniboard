@@ -40,23 +40,20 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.Post;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.Post;
 import com.mongodb.util.JSON;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.Document;
 import org.bson.json.JsonParseException;
-import org.bson.types.Binary;
 
 /**
  * A persisted post represents the posted message and all belonging attributes in the format in which it is persisted
@@ -114,23 +111,15 @@ public class PersistedPost extends Post {
 
 		//Prepares the Alpha attributes
 		Document alphaList = new Document();
-		for (Entry<String, Value> entry : alpha.getEntries()) {
-			if (entry.getValue() instanceof ByteArrayValue) {
-				alphaList.put(entry.getKey(), new Binary(((ByteArrayValue) entry.getValue()).getValue()));
-			} else {
-				alphaList.put(entry.getKey(), entry.getValue().getValue());
-			}
+		for (Entry<String, String> entry : alpha.getEntries()) {
+			alphaList.put(entry.getKey(), entry.getValue());
 		}
 		doc.put("alpha", alphaList);
 
 		//Prepares the Beta attributes
 		Document betaList = new Document();
-		for (Entry<String, Value> entry : beta.getEntries()) {
-			if (entry.getValue() instanceof ByteArrayValue) {
-				betaList.put(entry.getKey(), new Binary(((ByteArrayValue) entry.getValue()).getValue()));
-			} else {
-				betaList.put(entry.getKey(), entry.getValue().getValue());
-			}
+		for (Entry<String, String> entry : beta.getEntries()) {
+			betaList.put(entry.getKey(), entry.getValue());
 		}
 		doc.put("beta", betaList);
 
@@ -183,17 +172,18 @@ public class PersistedPost extends Post {
 	 * @param o object to check
 	 * @return an object of the corresponding Type or null if the type of o is unknown
 	 */
-	private static Value inflateType(Object o) {
+	private static String inflateType(Object o) {
 		if (o instanceof Integer) {
-			return new IntegerValue((int) o);
+			return ((Integer) o).toString();
 		} else if (o instanceof Double) {
-			return new IntegerValue(((Double) o).intValue());
+			return ((Double) o).toString();
 		} else if (o instanceof String) {
-			return new StringValue((String) o);
+			return ((String) o);
 		} else if (o instanceof Date) {
-			return new DateValue((Date) o);
-		} else if (o instanceof Binary) {
-			return new ByteArrayValue(((Binary) o).getData());
+			TimeZone timeZone = TimeZone.getTimeZone("UTC");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmX");
+			dateFormat.setTimeZone(timeZone);
+			return dateFormat.format(o);
 		} else {
 			return null;
 		}

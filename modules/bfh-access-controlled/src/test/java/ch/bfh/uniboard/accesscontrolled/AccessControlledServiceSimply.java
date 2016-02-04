@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.accesscontrolled;
 
-import ch.bfh.uniboard.service.Attributes;
+import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.PostService;
 import com.fasterxml.jackson.databind.JsonNode;
 import javax.ejb.Stateless;

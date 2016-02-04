@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.notification;
 
-import ch.bfh.uniboard.service.Query;
+import ch.bfh.uniboard.service.data.Query;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

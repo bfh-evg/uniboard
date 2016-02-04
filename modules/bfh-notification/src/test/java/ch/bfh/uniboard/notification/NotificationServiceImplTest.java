@@ -12,7 +12,7 @@
 package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.data.QueryDTO;
-import ch.bfh.uniboard.service.Query;
+import ch.bfh.uniboard.service.data.Query;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

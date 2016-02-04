@@ -9,45 +9,50 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Order allows to indicate the persistence layer what ordering one wishes for the result.
+ * A constraint allows to restrict the result retrieved from the persistence layer. A constraint consists of an
+ * identifier of the element to restrict and other elements depending on the type of constraint.
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "order", propOrder = {
-	"identifier",
-	"ascDesc"
+@XmlType(name = "constraint", propOrder = {
+	"identifier"
 })
-public class Order implements Serializable {
+@XmlSeeAlso({
+	In.class,
+	NotEqual.class,
+	Less.class,
+	Equal.class,
+	GreaterEqual.class,
+	LessEqual.class,
+	Greater.class,
+	Between.class
+})
+public abstract class Constraint implements Serializable {
 
 	@XmlElement(required = true)
 	private Identifier identifier;
-	//True indicates asc and false desc
-	private boolean ascDesc;
 
-	public Order() {
+	public Constraint() {
+		super();
 	}
 
-	public Order(Identifier identifier, boolean ascDesc) {
+	public Constraint(Identifier identifier) {
 		this.identifier = identifier;
-		this.ascDesc = ascDesc;
 	}
 
 	public Identifier getIdentifier() {
 		return identifier;
 	}
-
-	public boolean isAscDesc() {
-		return ascDesc;
-	}
-
 }

@@ -38,28 +38,61 @@
  *
  * Redistributions of files must retain the above copyright notice.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.configuration;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public abstract class State {
+public class ConfigurationAdapter extends XmlAdapter<ConfigurationAdapter.AdaptedMap, Map<String, String>> {
 
-	private String state_key;
+	public static class AdaptedMap {
 
-	public String getKey() {
-		return state_key;
+		@XmlVariableNode("key")
+		List<AdaptedEntry> entries = new ArrayList<>();
+
 	}
 
-	public void setKey(String key) {
-		this.state_key = key;
+	public static class AdaptedEntry {
+
+		@XmlTransient
+		public String key;
+
+		@XmlValue
+		public String value;
+
+	}
+
+	@Override
+	public AdaptedMap marshal(Map<String, String> map) throws Exception {
+		AdaptedMap adaptedMap = new AdaptedMap();
+		for (Entry<String, String> entry : map.entrySet()) {
+			AdaptedEntry adaptedEntry = new AdaptedEntry();
+			adaptedEntry.key = entry.getKey();
+			adaptedEntry.value = entry.getValue();
+			adaptedMap.entries.add(adaptedEntry);
+		}
+		return adaptedMap;
+	}
+
+	@Override
+	public Map<String, String> unmarshal(AdaptedMap adaptedMap) throws Exception {
+		List<AdaptedEntry> adaptedEntries = adaptedMap.entries;
+		Map<String, String> map = new HashMap<>(adaptedEntries.size());
+		for (AdaptedEntry adaptedEntry : adaptedEntries) {
+			map.put(adaptedEntry.key, adaptedEntry.value);
+		}
+		return map;
 	}
 
 }

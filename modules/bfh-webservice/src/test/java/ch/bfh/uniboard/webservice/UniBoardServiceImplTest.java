@@ -18,8 +18,8 @@ import ch.bfh.uniboard.data.MessageIdentifierDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
 import ch.bfh.uniboard.data.StringValueDTO;
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.ResultContainer;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.ResultContainer;
 import ch.bfh.uniboard.service.StringValue;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +92,7 @@ public class UniBoardServiceImplTest {
 
 		service.post(message, adto);
 
-		ch.bfh.uniboard.service.Post p = postService.getLastPost();
+		ch.bfh.uniboard.service.data.Post p = postService.getLastPost();
 
 		assertEquals(2, p.getAlpha().getEntries().size());
 		assertEquals(new StringValue("test"), p.getAlpha().getValue("test"));
@@ -117,8 +117,8 @@ public class UniBoardServiceImplTest {
 		query.getConstraint().add(constraint);
 
 		//Setup the expected result
-		List<ch.bfh.uniboard.service.Post> posts = new ArrayList<>();
-		ch.bfh.uniboard.service.Post post = new ch.bfh.uniboard.service.Post();
+		List<ch.bfh.uniboard.service.data.Post> posts = new ArrayList<>();
+		ch.bfh.uniboard.service.data.Post post = new ch.bfh.uniboard.service.data.Post();
 		post.setAlpha(new Attributes());
 		post.getAlpha().add("alpha", new StringValue("alpha"));
 		post.setBeta(new Attributes());

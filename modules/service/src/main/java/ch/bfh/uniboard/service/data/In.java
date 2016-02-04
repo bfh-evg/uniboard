@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -29,18 +29,18 @@ import javax.xml.bind.annotation.XmlType;
 public class In extends Constraint {
 
 	@XmlElement(required = true)
-	private List<Value> element;
+	private List<String> element;
 
 	public In() {
 		super();
 	}
 
-	public In(Identifier identifier, List<Value> element) {
+	public In(Identifier identifier, List<String> element) {
 		super(identifier);
 		this.element = element;
 	}
 
-	public List<Value> getSet() {
+	public List<String> getSet() {
 		return element;
 	}
 

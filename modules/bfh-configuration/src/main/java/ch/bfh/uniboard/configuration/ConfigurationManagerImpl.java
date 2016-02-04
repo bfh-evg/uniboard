@@ -42,9 +42,9 @@ package ch.bfh.uniboard.configuration;
 
 import static com.mongodb.client.model.Filters.*;
 import ch.bfh.uniboard.persistence.mongodb.ConnectionManager;
-import ch.bfh.uniboard.service.Configuration;
-import ch.bfh.uniboard.service.ConfigurationManager;
-import ch.bfh.uniboard.service.State;
+import ch.bfh.uniboard.service.configuration.Configuration;
+import ch.bfh.uniboard.service.configuration.ConfigurationManager;
+import ch.bfh.uniboard.service.configuration.State;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
 import java.io.Reader;

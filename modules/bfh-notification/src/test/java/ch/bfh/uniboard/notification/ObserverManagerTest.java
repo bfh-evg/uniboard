@@ -12,9 +12,9 @@
 package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.service.AlphaIdentifier;
-import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.Equal;
-import ch.bfh.uniboard.service.Query;
+import ch.bfh.uniboard.service.data.Constraint;
+import ch.bfh.uniboard.service.data.Equal;
+import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.service.StringValue;
 import java.util.ArrayList;
 import java.util.List;

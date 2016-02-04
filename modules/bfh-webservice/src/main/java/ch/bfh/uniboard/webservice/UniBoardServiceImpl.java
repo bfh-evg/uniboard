@@ -11,6 +11,9 @@
  */
 package ch.bfh.uniboard.webservice;
 
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.ResultContainer;
+import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.data.*;
 import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;

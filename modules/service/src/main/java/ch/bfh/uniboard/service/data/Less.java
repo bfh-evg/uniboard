@@ -9,66 +9,42 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
-import java.io.Serializable;
-import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Wrapper for string variables
  *
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "stringValue", propOrder = {
+@XmlType(name = "less", propOrder = {
 	"value"
 })
-public class StringValue extends Value<String> implements Serializable {
+public class Less extends Constraint {
 
 	@XmlElement(required = true)
 	private String value;
 
-	public StringValue() {
+	public Less() {
 	}
 
-	public StringValue(String value) {
+	public Less(Identifier identifier, String value) {
+		super(identifier);
 		this.value = value;
 	}
 
-	@Override
 	public String getValue() {
-		return this.value;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 7;
-		hash = 79 * hash + Objects.hashCode(this.value);
-		return hash;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final StringValue other = (StringValue) obj;
-		if (!Objects.equals(this.value, other.value)) {
-			return false;
-		}
-		return true;
+		return value;
 	}
 
 	@Override
 	public String toString() {
-		return "StringValue{" + "value=" + value + '}';
+		return "Less{" + super.getIdentifier().toString() + " value=" + value + '}';
 	}
 
 }

@@ -40,20 +40,42 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.Post;
+import ch.bfh.uniboard.service.data.ResultContainer;
+import ch.bfh.uniboard.service.data.Constraint;
 import ch.bfh.uniboard.service.*;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import ch.bfh.uniboard.service.data.Between;
+import ch.bfh.uniboard.service.data.DataType;
+import ch.bfh.uniboard.service.data.Equal;
+import ch.bfh.uniboard.service.data.Greater;
+import ch.bfh.uniboard.service.data.GreaterEqual;
+import ch.bfh.uniboard.service.data.In;
+import ch.bfh.uniboard.service.data.Less;
+import ch.bfh.uniboard.service.data.LessEqual;
+import ch.bfh.uniboard.service.data.MessageIdentifier;
+import ch.bfh.uniboard.service.data.NotEqual;
+import ch.bfh.uniboard.service.data.Order;
+import ch.bfh.uniboard.service.data.PropertyIdentifier;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 /**
  * Service responsible for persisting the received posts
@@ -85,7 +107,7 @@ public class PersistenceService implements PostService, GetService {
 			//Check Database connection
 			if (!this.connectionManager.isConnected()) {
 				Attributes betaError = new Attributes();
-				betaError.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
+				betaError.add(Attributes.ERROR, "Internal Server Error. Service not available");
 				logger.log(Level.WARNING, "Database error: unable to connect to database");
 				return betaError;
 			}
@@ -98,8 +120,8 @@ public class PersistenceService implements PostService, GetService {
 			MongoCollection collection = this.connectionManager.getCollection(DEFAULT_COLLECTION);
 			if (collection == null) {
 				Attributes betaError = new Attributes();
-				betaError.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
-				logger.log(Level.WARNING, "Collection not found: " + DEFAULT_COLLECTION);
+				betaError.add(Attributes.ERROR, "Internal Server Error. Service not available");
+				logger.log(Level.WARNING, "Collection not found: {0}", DEFAULT_COLLECTION);
 				return betaError;
 			}
 
@@ -108,7 +130,7 @@ public class PersistenceService implements PostService, GetService {
 			return beta;
 		} catch (Exception e) {
 			Attributes betaError = new Attributes();
-			betaError.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
+			betaError.add(Attributes.ERROR, "Internal Server Error. Service not available");
 			logger.log(Level.WARNING, "General post error", e);
 			return betaError;
 		}
@@ -120,135 +142,100 @@ public class PersistenceService implements PostService, GetService {
 			//Check Database connection
 			if (!this.connectionManager.isConnected()) {
 				Attributes gamma = new Attributes();
-				gamma.add(Attributes.ERROR, new StringValue("Internal Server Error. Service not available"));
+				gamma.add(Attributes.ERROR, "Internal Server Error. Service not available");
 				logger.log(Level.WARNING, "Database error: unable to connect to database");
 				return new ResultContainer(new ArrayList<Post>(), gamma);
 			}
 
-			List<DBObject> constraintsList = new ArrayList<>();
+			List<Bson> constraintsList = new ArrayList<>();
 
 			//iterates over the constraints and constructs the corresponding query string
 			for (Constraint c : query.getConstraints()) {
 
 				//constructs the key
 				String keyString = "";
+				DataType dt;
 				if (c.getIdentifier() instanceof MessageIdentifier) {
-					//TODO constraint that wants to compare the raw byte[]
+					MessageIdentifier tmp = (MessageIdentifier) c.getIdentifier();
 					keyString += "searchable-message";
-				} else if (c.getIdentifier() instanceof AlphaIdentifier) {
-					keyString += "alpha";
-				} else if (c.getIdentifier() instanceof BetaIdentifier) {
-					keyString += "beta";
+					keyString += "." + tmp.getKeyPath();
+					dt = tmp.getDataType();
+				} else if (c.getIdentifier() instanceof PropertyIdentifier) {
+					PropertyIdentifier tmp = (PropertyIdentifier) c.getIdentifier();
+					keyString += tmp.getType().value();
+					keyString += "." + tmp.getKeyPath();
+					dt = DataType.STRING;
 				} else {
 					Attributes gamma = new Attributes();
-					gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown identifier"));
+					gamma.add(Attributes.REJECTED, "Syntax error: Unknown identifier");
 					logger.log(Level.WARNING, "Syntax error: Unknown identifier");
 					return new ResultContainer(new ArrayList<Post>(), gamma);
 				}
 
-				//constructs the hierarchy of the keys
-				for (String key : c.getIdentifier().getParts()) {
-					keyString += "." + key;
-				}
-
-				//constructs the researched value string by checking the type of constraints and getting the searched values
-				DBObject actualConstraint = new BasicDBObject();
 				if (c instanceof Equal) {
 					Equal op = (Equal) c;
-					actualConstraint.put(keyString, op.getValue().getValue());
+					constraintsList.add(Filters.eq(keyString, castValue(op.getValue(), dt)));
 				} else if (c instanceof NotEqual) {
 					NotEqual op = (NotEqual) c;
-					actualConstraint.put(keyString, new BasicDBObject("$ne", op.getValue().getValue()));
+					constraintsList.add(Filters.ne(keyString, castValue(op.getValue(), dt)));
 				} else if (c instanceof In) {
 					In op = (In) c;
 					List<Object> values = new ArrayList<>();
-					Class valueClass = op.getSet().get(0).getClass();
-					for (Value v : op.getSet()) {
-						if (!(v.getClass().equals(valueClass))) {
-							Attributes gamma = new Attributes();
-							gamma.add(Attributes.REJECTED,
-									new StringValue("Syntax error: not same value type for IN constraint"));
-							logger.log(Level.WARNING, "Syntax error: not same value type for IN constraint");
-							return new ResultContainer(new ArrayList<Post>(), gamma);
-						}
-						values.add(v.getValue());
+					for (String in : op.getSet()) {
+						values.add(this.castValue(in, dt));
 					}
-					actualConstraint.put(keyString, new BasicDBObject("$in", values));
+					constraintsList.add(Filters.in(keyString, values));
 				} else if (c instanceof Between) {
 					Between op = (Between) c;
-					if (!(op.getStart().getClass().equals(op.getEnd().getClass()))) {
-						Attributes gamma = new Attributes();
-						gamma.add(Attributes.REJECTED,
-								new StringValue("Syntax error: not same value type for BETWEEN constraint"));
-						logger.log(Level.WARNING, "Syntax error: not same value type for BETWEEN constraint");
-						return new ResultContainer(new ArrayList<Post>(), gamma);
-					}
-					actualConstraint.put(keyString,
-							new BasicDBObject("$gt", op.getStart().getValue()).append("$lt", op.getEnd().getValue()));
+					constraintsList.add(Filters.gt(keyString, castValue(op.getLowerBound(), dt)));
+					constraintsList.add(Filters.lt(keyString, castValue(op.getUpperBound(), dt)));
 				} else if (c instanceof Greater) {
 					Greater op = (Greater) c;
-					actualConstraint.put(keyString, new BasicDBObject("$gt", op.getValue().getValue()));
+					constraintsList.add(Filters.gt(keyString, castValue(op.getValue(), dt)));
 				} else if (c instanceof GreaterEqual) {
 					GreaterEqual op = (GreaterEqual) c;
-					actualConstraint.put(keyString, new BasicDBObject("$gte", op.getValue().getValue()));
+					constraintsList.add(Filters.gte(keyString, castValue(op.getValue(), dt)));
 				} else if (c instanceof Less) {
 					Less op = (Less) c;
-					actualConstraint.put(keyString, new BasicDBObject("$lt", op.getValue().getValue()));
+					constraintsList.add(Filters.lt(keyString, castValue(op.getValue(), dt)));
 				} else if (c instanceof LessEqual) {
 					LessEqual op = (LessEqual) c;
-					actualConstraint.put(keyString, new BasicDBObject("$lte", op.getValue().getValue()));
+					constraintsList.add(Filters.lte(keyString, castValue(op.getValue(), dt)));
 				} else {
 					Attributes gamma = new Attributes();
-					gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown type of constraint"));
+					gamma.add(Attributes.REJECTED, "Syntax error: Unknown type of constraint");
 					logger.log(Level.WARNING, "Syntax error: Unknown type of constraint");
 					return new ResultContainer(new ArrayList<Post>(), gamma);
 				}
-				constraintsList.add(actualConstraint);
 			}
+			Bson constraints = Filters.and(constraintsList);
 
-			//combine the different constrainst in an AND query
-			BasicDBObject completeQuery = new BasicDBObject();
-			completeQuery.put("$and", constraintsList);
-
-			FindIterable<Document> documents;
-
-			if (query.getOrder().size() > 0) {
-
-				//Create orderBy
-				BasicDBObject orderBy = new BasicDBObject();
-
-				for (Order order : query.getOrder()) {
-					String identifier;
-					if (order.getIdentifier() instanceof MessageIdentifier) {
-						identifier = "message";
-					} else if (order.getIdentifier() instanceof AlphaIdentifier) {
-						identifier = "alpha";
-					} else if (order.getIdentifier() instanceof BetaIdentifier) {
-						identifier = "beta";
-					} else {
-						Attributes gamma = new Attributes();
-						gamma.add(Attributes.REJECTED, new StringValue("Syntax error: Unknown identifier"));
-						logger.log(Level.WARNING, "Syntax error: Unknown identifier");
-						return new ResultContainer(new ArrayList<Post>(), gamma);
-					}
-					for (String key : order.getIdentifier().getParts()) {
-						identifier += "." + key;
-					}
-					int ascDesc;
-					if (order.isAscDesc()) {
-						ascDesc = 1;
-					} else {
-						ascDesc = -1;
-					}
-					orderBy.append(identifier, ascDesc);
+			List<Bson> ordersList = new ArrayList<>();
+			for (Order order : query.getOrder()) {
+				String identifier;
+				if (order.getIdentifier() instanceof MessageIdentifier) {
+					MessageIdentifier tmp = (MessageIdentifier) order.getIdentifier();
+					identifier = "searchable-message";
+					identifier += "." + tmp.getKeyPath();
+				} else if (order.getIdentifier() instanceof PropertyIdentifier) {
+					PropertyIdentifier tmp = (PropertyIdentifier) order.getIdentifier();
+					identifier = tmp.getType().value();
+					identifier += "." + tmp.getKeyPath();
+				} else {
+					Attributes gamma = new Attributes();
+					gamma.add(Attributes.REJECTED, "Syntax error: Unknown identifier");
+					logger.log(Level.WARNING, "Syntax error: Unknown identifier");
+					return new ResultContainer(new ArrayList<Post>(), gamma);
 				}
-				documents = this.connectionManager.getCollection(DEFAULT_COLLECTION).find(completeQuery).sort(orderBy).limit(query.getLimit());
-			} else {
-				//apply query on database
-				documents = this.connectionManager.getCollection(DEFAULT_COLLECTION).
-						find(completeQuery).limit(query.getLimit());
+				if (order.isAscDesc()) {
+					ordersList.add(Sorts.ascending(identifier));
+				} else {
+					ordersList.add(Sorts.descending(identifier));
+				}
 			}
-
+			Bson order = Sorts.orderBy(ordersList);
+			FindIterable<Document> documents = this.connectionManager.getCollection(DEFAULT_COLLECTION)
+					.find(constraints).sort(order).limit(query.getLimit());
 			//creates the result container with the db result
 			List<Post> list = new ArrayList<>();
 			MongoCursor<Document> cursor = documents.iterator();
@@ -258,12 +245,27 @@ public class PersistenceService implements PostService, GetService {
 				list.add(PersistedPost.fromDocument(object));
 			}
 			return new ResultContainer(list, new Attributes());
-		} catch (Exception e) {
+		} catch (ParseException e) {
 			Attributes gamma = new Attributes();
-			gamma.add(Attributes.ERROR, new StringValue("General error: " + e.getMessage()));
-			logger.log(Level.WARNING, "General Get error", e);
+			gamma.add(Attributes.ERROR, "Could not parse constraint: " + e.getMessage());
+			logger.log(Level.SEVERE, "Could not parse constraint.", e);
 			return new ResultContainer(new ArrayList<Post>(), gamma);
 		}
 	}
 
+	private Object castValue(String value, DataType dataType) throws ParseException {
+		switch (dataType) {
+			case STRING:
+				return value;
+			case INTEGER:
+				return Integer.getInteger(value);
+			case DATE:
+				TimeZone timeZone = TimeZone.getTimeZone("UTC");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmX");
+				dateFormat.setTimeZone(timeZone);
+				return dateFormat.parse(value);
+			default:
+				return null;
+		}
+	}
 }

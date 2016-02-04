@@ -12,8 +12,8 @@
 package ch.bfh.uniboard.accesscontrolled;
 
 import ch.bfh.uniboard.service.GetService;
-import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.ResultContainer;
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.ResultContainer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;

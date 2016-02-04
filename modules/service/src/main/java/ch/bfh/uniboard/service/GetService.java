@@ -11,6 +11,8 @@
  */
 package ch.bfh.uniboard.service;
 
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.ResultContainer;
 import javax.ejb.Local;
 
 /**

@@ -9,36 +9,42 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
-import java.io.Serializable;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
+ * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "alphaIdentifier")
-public class AlphaIdentifier extends Identifier implements Serializable {
+@XmlType(name = "notEqual", propOrder = {
+	"value"
+})
+public class NotEqual extends Constraint {
 
-	public AlphaIdentifier() {
-		super();
+	@XmlElement(required = true)
+	private String value;
+
+	public NotEqual() {
 	}
 
-	public AlphaIdentifier(List<String> parts) {
-		super(parts);
-	}
-
-	public AlphaIdentifier(String[] identifier) {
+	public NotEqual(Identifier identifier, String value) {
 		super(identifier);
+		this.value = value;
 	}
 
-	public AlphaIdentifier(String identifier) {
-		super(identifier);
+	public String getValue() {
+		return value;
+	}
+
+	@Override
+	public String toString() {
+		return "NotEqual{" + super.getIdentifier().toString() + " value=" + value + '}';
 	}
 
 }

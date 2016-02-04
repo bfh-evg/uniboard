@@ -9,12 +9,9 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -27,49 +24,11 @@ import javax.xml.bind.annotation.XmlType;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "identifier", propOrder = {
-	"part"
-})
+@XmlType(name = "identifier")
 @XmlSeeAlso({
-	BetaIdentifier.class,
-	AlphaIdentifier.class,
+	PropertyIdentifierType.class,
 	MessageIdentifier.class
 })
 public abstract class Identifier implements Serializable {
-
-	private List<String> part;
-
-	public Identifier() {
-		part = new ArrayList<>();
-	}
-
-	public Identifier(List<String> parts) {
-		this.part = parts;
-	}
-
-	public Identifier(String[] identifier) {
-		part = new ArrayList<>();
-		part.addAll(Arrays.asList(identifier));
-	}
-
-	public Identifier(String identifier) {
-		this(identifier.split("\\."));
-	}
-
-	public List<String> getParts() {
-		return part;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (String tmpPart : part) {
-			if (builder.length() > 0) {
-				builder.append(".");
-			}
-			builder.append(tmpPart);
-		}
-		return builder.toString();
-	}
 
 }

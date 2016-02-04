@@ -40,16 +40,30 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
+import ch.bfh.uniboard.service.data.Equal;
+import ch.bfh.uniboard.service.data.GreaterEqual;
+import ch.bfh.uniboard.service.data.ResultContainer;
+import ch.bfh.uniboard.service.data.Between;
+import ch.bfh.uniboard.service.data.In;
+import ch.bfh.uniboard.service.data.Order;
+import ch.bfh.uniboard.service.data.Less;
+import ch.bfh.uniboard.service.data.Greater;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.NotEqual;
+import ch.bfh.uniboard.service.data.LessEqual;
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.Constraint;
+import ch.bfh.uniboard.service.data.MessageIdentifier;
 import ch.bfh.uniboard.service.*;
+import ch.bfh.uniboard.service.data.DataType;
+import ch.bfh.uniboard.service.data.PropertyIdentifier;
+import ch.bfh.uniboard.service.data.PropertyIdentifierType;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import org.bson.Document;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -116,34 +130,30 @@ public class PersistenceServiceTest {
 		message = new byte[]{1, 2, 3, 4};
 
 		alpha = new Attributes();
-		alpha.add("first", new StringValue("value1"));
-		alpha.add("second", new IntegerValue(2));
-		alpha.add("third", new ByteArrayValue(new byte[]{3, 3}));
-		alpha.add("fourth", new DateValue(new Date(System.currentTimeMillis())));
+		alpha.add("first", "value1");
+		alpha.add("second", "2");
+		alpha.add("third", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
+		alpha.add("fourth", "2014-10-15T13:00:00Z");
 
 		beta = new Attributes();
-		beta.add("fifth", new StringValue("value5"));
-		beta.add("seventh", new IntegerValue(7));
-		beta.add("eighth", new ByteArrayValue(new byte[]{8, 8}));
+		beta.add("fifth", "value5");
+		beta.add("seventh", "7");
+		beta.add("eighth", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
 
 		pp = new PersistedPost(message, alpha, beta);
 
-		try {
-			message2 = "{ \"sub1\" : { \"subsub1\" : \"subsubvalue1\"} , \"sub2\" : 2}".getBytes("UTF-8");
-		} catch (UnsupportedEncodingException ex) {
-			Logger.getLogger(PersistenceServiceTest.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		message2 = "{ \"sub1\" : { \"subsub1\" : \"subsubvalue1\"} , \"sub2\" : 2}".getBytes("UTF-8");
 
 		alpha2 = new Attributes();
-		alpha2.add("first", new StringValue("value12"));
-		alpha2.add("second", new IntegerValue(22));
-		alpha2.add("third", new ByteArrayValue(new byte[]{3, 3, 2}));
-		alpha2.add("fourth", new DateValue(new Date(System.currentTimeMillis() + 100)));
+		alpha2.add("first", "value12");
+		alpha2.add("second", "22");
+		alpha2.add("third", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
+		alpha2.add("fourth", "2015-10-15T13:00:00Z");
 
 		beta2 = new Attributes();
-		beta2.add("fifth", new StringValue("value52"));
-		beta2.add("seventh", new IntegerValue(72));
-		beta2.add("eighth", new ByteArrayValue(new byte[]{8, 8, 2}));
+		beta2.add("fifth", "value55");
+		beta2.add("seventh", "77");
+		beta2.add("eighth", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
 
 		pp2 = new PersistedPost(message2, alpha2, beta2);
 	}
@@ -192,13 +202,10 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("sub1");
-		keys.add("subsub1");
-		constraints.add(new Equal(new MessageIdentifier(keys), new StringValue("subsubvalue1")));
-		List<String> keys2 = new ArrayList<>();
-		keys2.add("sub2");
-		constraints.add(new Equal(new MessageIdentifier(keys2), new IntegerValue(2)));
+		String key = "sub1.subsub1";
+		constraints.add(new Equal(new MessageIdentifier(key, DataType.STRING), "subsubvalue1"));
+		String key2 = "sub2";
+		constraints.add(new Equal(new MessageIdentifier(key2, DataType.INTEGER), "2"));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -214,9 +221,7 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("first");
-		constraints.add(new Equal(new AlphaIdentifier(keys), new StringValue("value1")));
+		constraints.add(new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "first"), "value1"));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -233,9 +238,7 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("second");
-		constraints.add(new Equal(new AlphaIdentifier(keys), new IntegerValue(2)));
+		constraints.add(new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "second"), "2"));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -253,9 +256,7 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("third");
-		constraints.add(new Equal(new AlphaIdentifier(keys), new ByteArrayValue(new byte[]{3, 3})));
+		constraints.add(new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "third"), "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO"));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -274,8 +275,7 @@ public class PersistenceServiceTest {
 
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
-		keys.add("fourth");
-		constraints.add(new Equal(new AlphaIdentifier(keys), (DateValue) pp.getAlpha().getValue("fourth")));
+		constraints.add(new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "fourth"), "2014-10-15T13:00:00Z"));
 
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
@@ -293,12 +293,10 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("first");
-		constraints.add(new Equal(new AlphaIdentifier(keys), new StringValue("value1")));
-		List<String> keys2 = new ArrayList<>();
-		keys2.add("fifth");
-		constraints.add(new Equal(new BetaIdentifier(keys2), new StringValue("value5")));
+		constraints.add(new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "first"), "value1"));
+
+		constraints.add(new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "fifth"), "value5"));
+
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -315,9 +313,7 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("first");
-		constraints.add(new NotEqual(new AlphaIdentifier(keys), new StringValue("value4")));
+		constraints.add(new NotEqual(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "first"), "value4"));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -338,11 +334,11 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("first");
-		List<Value> values = new ArrayList<>();
-		values.add(new StringValue("value0"));
-		values.add(new StringValue("value1"));
-		values.add(new StringValue("value12"));
-		constraints.add(new In(new AlphaIdentifier(keys), values));
+		List<String> values = new ArrayList<>();
+		values.add("value0");
+		values.add("value1");
+		values.add("value12");
+		constraints.add(new In(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "first"), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -363,45 +359,43 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("second");
-		List<Value> values = new ArrayList<>();
-		values.add(new IntegerValue(1));
-		values.add(new IntegerValue(2));
-		values.add(new IntegerValue(22));
-		constraints.add(new In(new AlphaIdentifier(keys), values));
+		List<String> values = new ArrayList<>();
+		values.add("1");
+		values.add("2");
+		values.add("22");
+		constraints.add(new In(new MessageIdentifier("sub2", DataType.INTEGER), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
-		assertEquals(2, rc.getResult().size());
+		assertEquals(1, rc.getResult().size());
 
-		assertTrue(rc.getResult().contains(pp));
 		assertTrue(rc.getResult().contains(pp2));
 	}
 
 	/**
 	 * Test In constraint for byte[] Type
 	 */
-	@Test
-	public void inByteArrayQueryTest() {
-		ps.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
-		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
-
-		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("third");
-		List<Value> values = new ArrayList<>();
-		values.add(new ByteArrayValue(new byte[]{1, 1}));
-		values.add(new ByteArrayValue(new byte[]{3, 3}));
-		values.add(new ByteArrayValue(new byte[]{3, 3, 2}));
-		constraints.add(new In(new AlphaIdentifier(keys), values));
-		Query q = new Query(constraints);
-		ResultContainer rc = gs.get(q);
-
-		assertEquals(2, rc.getResult().size());
-
-		assertTrue(rc.getResult().contains(pp));
-		assertTrue(rc.getResult().contains(pp2));
-	}
-
+//	@Test
+//	public void inByteArrayQueryTest() {
+//		ps.post(pp.getMessage(), pp.getAlpha(), pp.getBeta());
+//		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
+//
+//		List<Constraint> constraints = new ArrayList<>();
+//		List<String> keys = new ArrayList<>();
+//		keys.add("third");
+//		List<Value> values = new ArrayList<>();
+//		values.add(new ByteArrayValue(new byte[]{1, 1}));
+//		values.add(new ByteArrayValue(new byte[]{3, 3}));
+//		values.add(new ByteArrayValue(new byte[]{3, 3, 2}));
+//		constraints.add(new In(new AlphaIdentifier(keys), values));
+//		Query q = new Query(constraints);
+//		ResultContainer rc = gs.get(q);
+//
+//		assertEquals(2, rc.getResult().size());
+//
+//		assertTrue(rc.getResult().contains(pp));
+//		assertTrue(rc.getResult().contains(pp2));
+//	}
 	/**
 	 * Test In constraint for Date Type
 	 */
@@ -411,13 +405,11 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("fourth");
-		List<Value> values = new ArrayList<>();
-		values.add(new DateValue(new Date(System.currentTimeMillis())));
+		List<String> values = new ArrayList<>();
+		values.add("2066-10-15T13:00:00Z");
 		values.add(pp.getAlpha().getValue("fourth"));
 		values.add(pp2.getAlpha().getValue("fourth"));
-		constraints.add(new In(new AlphaIdentifier(keys), values));
+		constraints.add(new In(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "fourth"), values));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -436,9 +428,7 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("first");
-		constraints.add(new Between(new AlphaIdentifier(keys), new StringValue("a"), new StringValue("z")));
+		constraints.add(new Between(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "first"), "a", "z"));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -456,9 +446,7 @@ public class PersistenceServiceTest {
 		ps.post(pp2.getMessage(), pp2.getAlpha(), pp2.getBeta());
 
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> keys = new ArrayList<>();
-		keys.add("second");
-		constraints.add(new Between(new AlphaIdentifier(keys), new IntegerValue(1), new IntegerValue(4)));
+		constraints.add(new Between(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "second"), "1", "4"));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 
@@ -498,10 +486,10 @@ public class PersistenceServiceTest {
 		List<Constraint> constraints = new ArrayList<>();
 		List<String> keys = new ArrayList<>();
 		keys.add("fourth");
-		DateValue startDate = new DateValue(new Date(((Date) pp.getAlpha().getValue("fourth").getValue()).getTime() - 1000));
-		DateValue endDate = new DateValue(new Date(System.currentTimeMillis()));
+		String startDate = "2014-10-15T12:00:00Z";
+		String endDate = "2015-10-15T14:00:00Z";
 
-		constraints.add(new Between(new AlphaIdentifier(keys), startDate, endDate));
+		constraints.add(new Between(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "fourth"), startDate, endDate));
 		Query q = new Query(constraints);
 		ResultContainer rc = gs.get(q);
 

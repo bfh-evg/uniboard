@@ -14,7 +14,7 @@ package ch.bfh.uniboard.notification;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.TransformException;
 import ch.bfh.uniboard.data.Transformer;
-import ch.bfh.uniboard.service.Query;
+import ch.bfh.uniboard.service.data.Query;
 import static ch.bfh.unicrypt.helper.math.Alphabet.UPPER_CASE;
 import ch.bfh.unicrypt.math.algebra.general.classes.FixedStringSet;
 import java.util.logging.Level;

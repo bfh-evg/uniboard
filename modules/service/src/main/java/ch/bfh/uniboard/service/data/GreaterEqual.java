@@ -9,7 +9,7 @@
  * Distributable under GPL license.
  * See terms of license at gnu.org.
  */
-package ch.bfh.uniboard.service;
+package ch.bfh.uniboard.service.data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -28,18 +28,18 @@ import javax.xml.bind.annotation.XmlType;
 public class GreaterEqual extends Constraint {
 
 	@XmlElement(required = true)
-	private Value value;
+	private String value;
 
 	public GreaterEqual() {
 		super();
 	}
 
-	public GreaterEqual(Identifier identifier, Value value) {
+	public GreaterEqual(Identifier identifier, String value) {
 		super(identifier);
 		this.value = value;
 	}
 
-	public Value getValue() {
+	public String getValue() {
 		return value;
 	}
 

@@ -11,24 +11,21 @@
  */
 package ch.bfh.uniboard.accesscontrolled;
 
-import ch.bfh.uniboard.service.AlphaIdentifier;
-import ch.bfh.uniboard.service.Attributes;
-import ch.bfh.uniboard.service.BetaIdentifier;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.Constraint;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.Equal;
+import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.Constraint;
+import ch.bfh.uniboard.service.data.Equal;
 import ch.bfh.uniboard.service.GetService;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.MessageIdentifier;
-import ch.bfh.uniboard.service.Order;
-import ch.bfh.uniboard.service.Post;
+import ch.bfh.uniboard.service.data.MessageIdentifier;
+import ch.bfh.uniboard.service.data.Order;
+import ch.bfh.uniboard.service.data.Post;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.Query;
-import ch.bfh.uniboard.service.ResultContainer;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.Query;
+import ch.bfh.uniboard.service.data.ResultContainer;
+import ch.bfh.uniboard.service.data.DataType;
+import ch.bfh.uniboard.service.data.PropertyIdentifier;
+import static ch.bfh.uniboard.service.data.PropertyIdentifierType.ALPHA;
+import static ch.bfh.uniboard.service.data.PropertyIdentifierType.BETA;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
@@ -56,6 +53,7 @@ import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -110,40 +108,32 @@ public class AccessControlledService extends PostComponent implements PostServic
 		//Check if ATTRIBUTE_NAME_PUBLICKEY and ATTRIBUTE_NAME_SIG are set in alpha
 		if (!alpha.containsKey(ATTRIBUTE_NAME_PUBLICKEY)) {
 			logger.log(Level.INFO, "Publickey missing in alpha.");
-			beta.add(Attributes.REJECTED,
-					new StringValue("BAC-001 Publickey missing in alpha."));
+			beta.add(Attributes.REJECTED, "BAC-001 Publickey missing in alpha.");
 			return beta;
 		}
 		//Get the latest authorization with key and group in the current section in the authorization group
 		//Contraint for the publickey
 		List<Constraint> constraints = new ArrayList<>();
-		List<String> sListKey = new ArrayList<>();
-		sListKey.add(ATTRIBUTE_NAME_CRYPTO);
-		sListKey.add(ATTRIBUTE_NAME_PUBLICKEY);
-		Constraint cKey = new Equal(new MessageIdentifier(sListKey), alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
+		String pathKey = ATTRIBUTE_NAME_CRYPTO + "." + ATTRIBUTE_NAME_PUBLICKEY;
+		Constraint cKey = new Equal(new MessageIdentifier(pathKey, DataType.STRING),
+				alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
 		constraints.add(cKey);
 
 		//Contraint of the group in the message
-		List<String> sListGroup = new ArrayList<>();
-		sListGroup.add(GROUPED);
-		Constraint cGroup = new Equal(new MessageIdentifier(sListGroup), alpha.getValue(GROUPED));
+		Constraint cGroup = new Equal(new MessageIdentifier(GROUPED, DataType.STRING), alpha.getValue(GROUPED));
 		constraints.add(cGroup);
 
 		//Constraint of the section
-		List<String> sListSection = new ArrayList<>();
-		sListSection.add(SECTIONED);
-		Constraint cSection = new Equal(new AlphaIdentifier(sListSection), alpha.getValue(SECTIONED));
+		Constraint cSection = new Equal(new PropertyIdentifier(ALPHA, SECTIONED), alpha.getValue(SECTIONED));
 		constraints.add(cSection);
 
 		//Constraint of the group
-		List<String> sListGroup2 = new ArrayList<>();
-		sListGroup2.add(GROUPED);
-		Constraint cGroup2 = new Equal(new AlphaIdentifier(sListGroup2), new StringValue(AUTH));
+		Constraint cGroup2 = new Equal(new PropertyIdentifier(ALPHA, GROUPED), AUTH);
 		constraints.add(cGroup2);
 
 		//Sort by time of posting desc
 		List<Order> orderBy = new ArrayList<>();
-		Order byTime = new Order(new BetaIdentifier(CHRONOLOGICAL), false);
+		Order byTime = new Order(new PropertyIdentifier(BETA, CHRONOLOGICAL), false);
 		orderBy.add(byTime);
 
 		//Limit to one result
@@ -154,13 +144,11 @@ public class AccessControlledService extends PostComponent implements PostServic
 			logger.log(Level.INFO, "No authorization for publickey {0}" + " section {1}" + " group {2}",
 					new Object[]{alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY), alpha.getValue(SECTIONED),
 						alpha.getValue(GROUPED)});
-			beta.add(Attributes.REJECTED,
-					new StringValue("BAC-002 No authorization for this publickey."));
+			beta.add(Attributes.REJECTED, "BAC-002 No authorization for this publickey.");
 			return beta;
 		}
 		Post authPost = rc.getResult().get(0);
 
-		DateValue currentPostTime = (DateValue) beta.getValue(CHRONOLOGICAL);
 		try {
 			JsonNode data = JsonLoader.fromString(new String(authPost.getMessage(), Charset.forName("UTF-8")));
 			ObjectMapper mapper = new ObjectMapper();
@@ -190,33 +178,47 @@ public class AccessControlledService extends PostComponent implements PostServic
 				logger.log(Level.INFO,
 						"Signature for group {0} and key  {1} is not valid.",
 						new Object[]{alpha.getValue(GROUPED), key.get("publickey").asText()});
-				beta.add(Attributes.REJECTED,
-						new StringValue("BAC-003 Signature is not valid."));
+				beta.add(Attributes.REJECTED, "BAC-003 Signature is not valid.");
 				return beta;
+			}
+
+			String currentPostTimeStr = beta.getValue(CHRONOLOGICAL);
+			Date currentPostTime;
+			if (currentPostTimeStr == null) {
+				currentPostTime = new Date();
+			} else {
+				TimeZone timeZone = TimeZone.getTimeZone("UTC");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmX");
+				dateFormat.setTimeZone(timeZone);
+				try {
+					currentPostTime = dateFormat.parse(currentPostTimeStr);
+				} catch (ParseException ex) {
+					logger.log(Level.SEVERE, ex.getMessage());
+					beta.add(Attributes.ERROR, "BAC-006 Internal server error.");
+					return beta;
+				}
 			}
 
 			//Check if startTime and endTime are set and if the post time is in between.
 			if (data.has(STARTTIME)) {
 				Date startDate = mapper.readValue(data.get(STARTTIME).traverse(), Date.class);
-				if (startDate.after(currentPostTime.getValue())) {
+				if (startDate.after(currentPostTime)) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} is not active yet. Start at {3}",
 							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), startDate});
-					beta.add(Attributes.REJECTED,
-							new StringValue("BAC-004 Authorization is not active yet."));
+					beta.add(Attributes.REJECTED, "BAC-004 Authorization is not active yet.");
 					return beta;
 				}
 			}
 			if (data.has(ENDTIME)) {
 				Date endDate = mapper.readValue(data.get(ENDTIME).traverse(), Date.class);
-				if (endDate.before(currentPostTime.getValue())) {
+				if (endDate.before(currentPostTime)) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} has expired at {3}.",
 							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), endDate});
-					beta.add(Attributes.REJECTED,
-							new StringValue("BAC-005 Authorization expired."));
+					beta.add(Attributes.REJECTED, "BAC-005 Authorization expired.");
 					return beta;
 				}
 			}
@@ -225,13 +227,13 @@ public class AccessControlledService extends PostComponent implements PostServic
 				//If check the group for the amount of existing posts
 				List<Constraint> constraintsAmount = new ArrayList<>();
 
-				Constraint cASection = new Equal(new AlphaIdentifier(SECTIONED), alpha.getValue(SECTIONED));
+				Constraint cASection = new Equal(new PropertyIdentifier(ALPHA, SECTIONED), alpha.getValue(SECTIONED));
 				constraintsAmount.add(cASection);
 
-				Constraint cAGroup = new Equal(new AlphaIdentifier(GROUPED), alpha.getValue(GROUPED));
+				Constraint cAGroup = new Equal(new PropertyIdentifier(ALPHA, GROUPED), alpha.getValue(GROUPED));
 				constraintsAmount.add(cAGroup);
 
-				Constraint cAKey = new Equal(new AlphaIdentifier(ATTRIBUTE_NAME_PUBLICKEY),
+				Constraint cAKey = new Equal(new PropertyIdentifier(ALPHA, ATTRIBUTE_NAME_PUBLICKEY),
 						alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
 				constraintsAmount.add(cAKey);
 
@@ -243,16 +245,14 @@ public class AccessControlledService extends PostComponent implements PostServic
 							"Authorization for key {0}" + " section {1}" + " group {2} has used the allowed posts {3}.",
 							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
 								alpha.getValue(GROUPED), data.get("amount").asInt()});
-					beta.add(Attributes.REJECTED,
-							new StringValue("BAC-007 Amount of allowed posts used up."));
+					beta.add(Attributes.REJECTED, "BAC-007 Amount of allowed posts used up.");
 					return beta;
 				}
 			}
 
 		} catch (IOException ex) {
 			logger.log(Level.SEVERE, "Error occoured while parsing authorization {0}", ex.getMessage());
-			beta.add(Attributes.ERROR,
-					new StringValue("BAC-006 Internal server error."));
+			beta.add(Attributes.ERROR, "BAC-006 Internal server error.");
 			return beta;
 		}
 
@@ -275,7 +275,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 				= RSASignatureScheme.getInstance(messageElement.getSet(), n, CONVERT_METHOD, HASH_METHOD);
 		Element rsaPublicKeyElement = rsa.getVerificationKeySpace().getElement(rsaPublicKeyBI[0]);
 
-		String signature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
+		String signature = alpha.getValue(ATTRIBUTE_NAME_SIG);
 		BigInteger biSignature = new BigInteger(signature);
 		Element signatureElement = rsa.getSignatureSpace().getElementFrom(biSignature);
 
@@ -303,7 +303,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 				.getElement(new BigInteger(key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue()));
 		logger.log(Level.FINE, "PublicKey: {0}", key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue());
 
-		String strSignature = ((StringValue) alpha.getValue(ATTRIBUTE_NAME_SIG)).getValue();
+		String strSignature = alpha.getValue(ATTRIBUTE_NAME_SIG);
 		BigInteger biSignature = new BigInteger(strSignature);
 		BigInteger[] schnorrSignature = MathUtil.unpair(biSignature);
 		logger.log(Level.FINE, "Signature Value 1: {0}", schnorrSignature[0]);
@@ -330,30 +330,13 @@ public class AccessControlledService extends PostComponent implements PostServic
 
 		List<Element> alphaElements = new ArrayList<>();
 		//itterate over alpha until one reaches the property = signature
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
+		for (Map.Entry<String, String> e : alpha.getEntries()) {
 			if (e.getKey().equals(ATTRIBUTE_NAME_SIG)) {
 				break;
 			}
 			Element tmp;
-			if (e.getValue() instanceof ByteArrayValue) {
-				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof DateValue) {
-				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				dateFormat.setTimeZone(timeZone);
-				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
-				tmp = stringSpace.getElement(stringDate);
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof IntegerValue) {
-				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof StringValue) {
-				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else {
-				logger.log(Level.SEVERE, "Unsupported Value type.");
-			}
+			tmp = stringSpace.getElement(e.getValue());
+			alphaElements.add(tmp);
 
 		}
 		DenseArray immuElements = DenseArray.getInstance(alphaElements);
