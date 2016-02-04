@@ -13,6 +13,7 @@ package ch.bfh.uniboard.data;
 
 import ch.bfh.uniboard.service.data.Between;
 import ch.bfh.uniboard.service.data.Constraint;
+import ch.bfh.uniboard.service.data.DataType;
 import ch.bfh.uniboard.service.data.Equal;
 import ch.bfh.uniboard.service.data.Greater;
 import ch.bfh.uniboard.service.data.GreaterEqual;
@@ -45,9 +46,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		BetweenDTO constraint = new BetweenDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";
 		constraint.setLowerBound(string);
@@ -63,6 +64,7 @@ public class TransformerTest {
 		Between bconstraint = (Between) resultingConstraint;
 		assertEquals(bconstraint.getLowerBound(), "test2");
 		assertEquals(bconstraint.getUpperBound(), "test2");
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");
 	}
@@ -75,9 +77,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		EqualDTO constraint = new EqualDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";
 		constraint.setValue(string);
@@ -92,6 +94,7 @@ public class TransformerTest {
 		Equal bconstraint = (Equal) resultingConstraint;
 		assertEquals(bconstraint.getValue(), "test2");
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");;
 	}
 
@@ -103,9 +106,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		GreaterDTO constraint = new GreaterDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";
 		constraint.setValue(string);
@@ -119,6 +122,7 @@ public class TransformerTest {
 		}
 		Greater bconstraint = (Greater) resultingConstraint;
 		assertEquals(bconstraint.getValue(), "test2");
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");
 	}
@@ -131,9 +135,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		GreaterEqualDTO constraint = new GreaterEqualDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";;
 		constraint.setValue(string);
@@ -147,6 +151,7 @@ public class TransformerTest {
 		}
 		GreaterEqual bconstraint = (GreaterEqual) resultingConstraint;
 		assertEquals(bconstraint.getValue(), "test2");
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");
 	}
@@ -159,9 +164,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		InDTO constraint = new InDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";
 		constraint.getElement().add(string);
@@ -175,6 +180,7 @@ public class TransformerTest {
 		}
 		In bconstraint = (In) resultingConstraint;
 		assertEquals(bconstraint.getSet().get(0), "test2");
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");
 	}
@@ -187,9 +193,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		LessDTO constraint = new LessDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";
 		constraint.setValue(string);
@@ -203,6 +209,7 @@ public class TransformerTest {
 		}
 		Less bconstraint = (Less) resultingConstraint;
 		assertEquals(bconstraint.getValue(), "test2");
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");
 	}
@@ -215,9 +222,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		LessEqualDTO constraint = new LessEqualDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";
 		constraint.setValue(string);
@@ -231,6 +238,7 @@ public class TransformerTest {
 		}
 		LessEqual bconstraint = (LessEqual) resultingConstraint;
 		assertEquals(bconstraint.getValue(), "test2");
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");
 	}
@@ -243,9 +251,9 @@ public class TransformerTest {
 		//Set the input
 		QueryDTO query = new QueryDTO();
 		NotEqualDTO constraint = new NotEqualDTO();
+		constraint.setDataType(DataTypeDTO.DATE);
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		constraint.setIdentifier(identifier);
 		String string = "test2";
 		constraint.setValue(string);
@@ -259,6 +267,7 @@ public class TransformerTest {
 		}
 		NotEqual bconstraint = (NotEqual) resultingConstraint;
 		assertEquals(bconstraint.getValue(), "test2");
+		assertEquals(bconstraint.getDataType(), DataType.DATE);
 		assertEquals(bconstraint.getIdentifier().getClass(), MessageIdentifier.class);
 		assertEquals(((MessageIdentifier) bconstraint.getIdentifier()).getKeyPath(), "test");
 	}
@@ -272,7 +281,6 @@ public class TransformerTest {
 		QueryDTO query = new QueryDTO();
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
 		identifier.setKeyPath("test");
-		identifier.setDataType(DataTypeDTO.DATE);
 		OrderDTO order = new OrderDTO(identifier, true);
 
 		query.getOrder().add(order);

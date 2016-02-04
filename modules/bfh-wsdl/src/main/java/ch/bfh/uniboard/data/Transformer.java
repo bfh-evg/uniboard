@@ -11,26 +11,8 @@
  */
 package ch.bfh.uniboard.data;
 
-import ch.bfh.uniboard.service.data.Constraint;
-import ch.bfh.uniboard.service.data.LessEqual;
-import ch.bfh.uniboard.service.data.Post;
-import ch.bfh.uniboard.service.data.Less;
-import ch.bfh.uniboard.service.data.PropertyIdentifier;
-import ch.bfh.uniboard.service.data.NotEqual;
-import ch.bfh.uniboard.service.data.ResultContainer;
-import ch.bfh.uniboard.service.data.MessageIdentifier;
-import ch.bfh.uniboard.service.data.GreaterEqual;
-import ch.bfh.uniboard.service.data.Query;
-import ch.bfh.uniboard.service.data.PropertyIdentifierType;
-import ch.bfh.uniboard.service.data.In;
-import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.data.DataType;
-import ch.bfh.uniboard.service.data.Greater;
-import ch.bfh.uniboard.service.data.Identifier;
-import ch.bfh.uniboard.service.data.Equal;
-import ch.bfh.uniboard.service.data.Order;
-import ch.bfh.uniboard.service.data.Between;
-import ch.bfh.uniboard.service.*;
+import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
+import ch.bfh.uniboard.service.data.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,11 +30,15 @@ public class Transformer {
 	static public AttributesDTO convertAttributesToDTO(Attributes attributes) throws TransformException {
 
 		AttributesDTO aDTO = new AttributesDTO();
-		for (Map.Entry<String, String> e : attributes.getEntries()) {
-			AttributesDTO.AttributeDTO ent = new AttributesDTO.AttributeDTO();
-			ent.setKey(e.getKey());
-			ent.setValue(e.getValue());
-			aDTO.getAttribute().add(ent);
+		for (Map.Entry<String, Attribute> e : attributes.getEntries()) {
+			Attribute a = e.getValue();
+			AttributeDTO attributeDTO = new AttributesDTO.AttributeDTO();
+			attributeDTO.setKey(a.getKey());
+			attributeDTO.setValue(a.getValue());
+			if (a.getDataType() != null) {
+				attributeDTO.setDataType(DataTypeDTO.fromValue(a.getDataType().value()));
+			}
+			aDTO.getAttribute().add(attributeDTO);
 		}
 		return aDTO;
 	}
@@ -61,7 +47,14 @@ public class Transformer {
 
 		Attributes attributes = new Attributes();
 		for (AttributesDTO.AttributeDTO attr : attributesDTO.getAttribute()) {
-			attributes.add(attr.getKey(), attr.getValue());
+			Attribute attribute;
+			if (attr.getDataType() != null) {
+				attribute = new Attribute(attr.getKey(), attr.getValue(),
+						DataType.fromValue(attr.getDataType().value()));
+			} else {
+				attribute = new Attribute(attr.getKey(), attr.getValue());
+			}
+			attributes.add(attribute);
 		}
 		return attributes;
 	}
@@ -73,7 +66,7 @@ public class Transformer {
 			return new PropertyIdentifier(PropertyIdentifierType.fromValue(tmp.type.value()), tmp.key);
 		} else if (identifierDTO instanceof MessageIdentifierDTO) {
 			MessageIdentifierDTO tmp = (MessageIdentifierDTO) identifierDTO;
-			return new MessageIdentifier(tmp.keyPath, DataType.fromValue(tmp.dataType.value()));
+			return new MessageIdentifier(tmp.keyPath);
 		} else {
 			logger.log(Level.SEVERE, "Unsupported Identifier: {0}", identifierDTO.getClass().getCanonicalName());
 			throw new TransformException("Unsupported Identitifer");
@@ -86,39 +79,39 @@ public class Transformer {
 
 		for (ConstraintDTO cDTO : queryDTO.getConstraint()) {
 			Identifier identifier = Transformer.convertIdentifierDTOtoIdentifier(cDTO.getIdentifier());
+			Constraint cNew;
 			if (cDTO instanceof BetweenDTO) {
 				BetweenDTO cTmp = (BetweenDTO) cDTO;
-				Between cNew = new Between(identifier, cTmp.getLowerBound(), cTmp.getUpperBound());
-				constraints.add(cNew);
+				cNew = new Between(identifier, cTmp.getLowerBound(), cTmp.getUpperBound());
+
 			} else if (cDTO instanceof EqualDTO) {
 				EqualDTO cTmp = (EqualDTO) cDTO;
-				Equal cNew = new Equal(identifier, cTmp.getValue());
-				constraints.add(cNew);
+				cNew = new Equal(identifier, cTmp.getValue());
 			} else if (cDTO instanceof GreaterDTO) {
 				GreaterDTO cTmp = (GreaterDTO) cDTO;
-				Greater cNew = new Greater(identifier, cTmp.getValue());
-				constraints.add(cNew);
+				cNew = new Greater(identifier, cTmp.getValue());
 			} else if (cDTO instanceof GreaterEqualDTO) {
 				GreaterEqualDTO cTmp = (GreaterEqualDTO) cDTO;
-				GreaterEqual cNew = new GreaterEqual(identifier, cTmp.getValue());
-				constraints.add(cNew);
+				cNew = new GreaterEqual(identifier, cTmp.getValue());
 			} else if (cDTO instanceof InDTO) {
 				InDTO cTmp = (InDTO) cDTO;
-				In cNew = new In(identifier, cTmp.getElement());
-				constraints.add(cNew);
+				cNew = new In(identifier, cTmp.getElement());
 			} else if (cDTO instanceof LessDTO) {
 				LessDTO cTmp = (LessDTO) cDTO;
-				Less cNew = new Less(identifier, cTmp.getValue());
-				constraints.add(cNew);
+				cNew = new Less(identifier, cTmp.getValue());
 			} else if (cDTO instanceof LessEqualDTO) {
 				LessEqualDTO cTmp = (LessEqualDTO) cDTO;
-				LessEqual cNew = new LessEqual(identifier, cTmp.getValue());
-				constraints.add(cNew);
+				cNew = new LessEqual(identifier, cTmp.getValue());
 			} else if (cDTO instanceof NotEqualDTO) {
 				NotEqualDTO cTmp = (NotEqualDTO) cDTO;
-				NotEqual cNew = new NotEqual(identifier, cTmp.getValue());
-				constraints.add(cNew);
+				cNew = new NotEqual(identifier, cTmp.getValue());
+			} else {
+				throw new TransformException("Unsupported constraint type");
 			}
+			if (cDTO.getDataType() != null) {
+				cNew.setDataType(DataType.fromValue(cDTO.getDataType().value()));
+			}
+			constraints.add(cNew);
 		}
 		List<Order> orders = new ArrayList<>();
 
