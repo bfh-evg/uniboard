@@ -38,6 +38,11 @@ public class LessEqual extends Constraint {
 		this.value = value;
 	}
 
+	public LessEqual(Identifier identifier, String value, DataType dataType) {
+		super(identifier, dataType);
+		this.value = value;
+	}
+
 	public String getValue() {
 		return value;
 	}

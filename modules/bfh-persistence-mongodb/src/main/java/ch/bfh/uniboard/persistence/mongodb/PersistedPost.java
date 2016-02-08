@@ -40,11 +40,14 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.DataType;
 import ch.bfh.uniboard.service.data.Post;
 import com.mongodb.util.JSON;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
@@ -59,6 +62,7 @@ import org.bson.json.JsonParseException;
  * A persisted post represents the posted message and all belonging attributes in the format in which it is persisted
  *
  * @author Philémon von Bergen &lt;philemon.vonbergen@bfh.ch&gt;
+ * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 public class PersistedPost extends Post {
 
@@ -87,9 +91,10 @@ public class PersistedPost extends Post {
 
     /**
      * Method allowing to convert the current PersistedPost to the format supported by the database
-     * @return a DBObject format of the PersistedPost
+     * @return a Document format of the PersistedPost
+	 * @throws java.text.ParseException thrown when some data from the database can not be parsed.
      */
-    public Document toDocument() {
+    public Document toDocument() throws ParseException {
 		Document doc = new Document();
 
 		//Save raw message
@@ -100,7 +105,8 @@ public class PersistedPost extends Post {
 		try {
 			jsonMessageContent = Document.parse(new String(message, "UTF-8"));
 		} catch (JsonParseException | UnsupportedEncodingException ex) {
-			Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Message is not a JSON string {0}", ex.getMessage());
+			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+					"Message is not a JSON string {0}", ex.getMessage());
 		}
 
 		if (jsonMessageContent != null) {
@@ -111,15 +117,25 @@ public class PersistedPost extends Post {
 
 		//Prepares the Alpha attributes
 		Document alphaList = new Document();
-		for (Entry<String, String> entry : alpha.getEntries()) {
-			alphaList.put(entry.getKey(), entry.getValue());
+		for (Entry<String, Attribute> entry : alpha.getEntries()) {
+			if (entry.getValue().getDataType() != null && entry.getValue().getDataType() != DataType.STRING) {
+				alphaList.put(entry.getKey(),
+						transformFromString(entry.getValue().getValue(), entry.getValue().getDataType()));
+			} else {
+				alphaList.put(entry.getKey(), entry.getValue().getValue());
+			}
 		}
 		doc.put("alpha", alphaList);
 
 		//Prepares the Beta attributes
 		Document betaList = new Document();
-		for (Entry<String, String> entry : beta.getEntries()) {
-			betaList.put(entry.getKey(), entry.getValue());
+		for (Entry<String, Attribute> entry : beta.getEntries()) {
+			if (entry.getValue().getDataType() != null && entry.getValue().getDataType() != DataType.STRING) {
+				betaList.put(entry.getKey(),
+						transformFromString(entry.getValue().getValue(), entry.getValue().getDataType()));
+			} else {
+				betaList.put(entry.getKey(), entry.getValue().getValue());
+			}
 		}
 		doc.put("beta", betaList);
 
@@ -127,10 +143,10 @@ public class PersistedPost extends Post {
 	}
 
 	/**
-	 * Method allowing to retrieve a PersistedPost out of the DBObject returned by the database. If the passed DBObject
-	 * does not represent a PersistedPost, an empty PersistedPost is retuned
+	 * Method allowing to retrieve a PersistedPost out of the DBObject returned by the database. If the passed Document
+	 * does not represent a PersistedPost, an empty PersistedPost is returned
 	 *
-	 * @param doc the DBObject returned by the database
+	 * @param doc the Document returned by the database
 	 * @return the corresponding persisted post
 	 */
 	public static PersistedPost fromDocument(Document doc) {
@@ -150,7 +166,7 @@ public class PersistedPost extends Post {
 		Document alphaList = doc.get("alpha", Document.class);
 		for (String key : alphaList.keySet()) {
 			//String key = dbObj.keySet().iterator().next();
-			alpha.add(key, inflateType(alphaList.get(key)));
+			alpha.add(transformToAttribute(key, alphaList.get(key)));
 		}
 		pp.alpha = alpha;
 
@@ -159,7 +175,7 @@ public class PersistedPost extends Post {
 		Document betaList = doc.get("beta", Document.class);
 		for (String key : betaList.keySet()) {
 			//String key = dbObj.keySet().iterator().next();
-			beta.add(key, inflateType(betaList.get(key)));
+			beta.add(transformToAttribute(key, betaList.get(key)));
 		}
 		pp.beta = beta;
 
@@ -172,20 +188,35 @@ public class PersistedPost extends Post {
 	 * @param o object to check
 	 * @return an object of the corresponding Type or null if the type of o is unknown
 	 */
-	private static String inflateType(Object o) {
+	private static Attribute transformToAttribute(String key, Object o) {
 		if (o instanceof Integer) {
-			return ((Integer) o).toString();
+			Integer tmp = (Integer) o;
+			return new Attribute(key, Integer.toString(tmp, 10), DataType.INTEGER);
 		} else if (o instanceof Double) {
-			return ((Double) o).toString();
+			Double tmp = (Double) o;
+			return new Attribute(key, Double.toString(tmp), DataType.INTEGER);
 		} else if (o instanceof String) {
-			return ((String) o);
+			String tmp = (String) o;
+			return new Attribute(key, tmp);
 		} else if (o instanceof Date) {
 			TimeZone timeZone = TimeZone.getTimeZone("UTC");
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmX");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 			dateFormat.setTimeZone(timeZone);
-			return dateFormat.format(o);
+			return new Attribute(key, dateFormat.format(o), DataType.DATE);
 		} else {
 			return null;
 		}
+	}
+
+	private static Object transformFromString(String value, DataType dataType) throws ParseException {
+		if (dataType == DataType.INTEGER) {
+			return Integer.parseInt(value);
+		} else if (dataType == DataType.DATE) {
+			TimeZone timeZone = TimeZone.getTimeZone("UTC");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+			dateFormat.setTimeZone(timeZone);
+			return dateFormat.parse(value);
+		}
+		return null;
 	}
 }

@@ -44,7 +44,7 @@ public class OrderedService implements PostService {
 
 	@Override
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
-		Value sectionValue = alpha.getValue(SECTIONED_NAME);
+		Value sectionValue = alpha.getAttribute(SECTIONED_NAME);
 		String section = ((StringValue) sectionValue).getValue();
 		Integer order = this.state.getSections().getOrDefault(section, 0);
 		order++;

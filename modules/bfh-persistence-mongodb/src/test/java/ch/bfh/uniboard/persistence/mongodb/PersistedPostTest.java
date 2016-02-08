@@ -40,9 +40,16 @@
  */
 package ch.bfh.uniboard.persistence.mongodb;
 
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Attributes;
+import ch.bfh.uniboard.service.data.DataType;
 import com.mongodb.util.JSON;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import org.bson.Document;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -74,15 +81,15 @@ public class PersistedPostTest {
 		message = new byte[]{1, 2, 3, 4};
 
 		alpha = new Attributes();
-		alpha.add("first", "value1");
-		alpha.add("second", "2");
-		alpha.add("third", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
-		alpha.add("fourth", "2014-10-15T13:00:00Z");
+		alpha.add(new Attribute("first", "value1"));
+		alpha.add(new Attribute("second", "2", DataType.INTEGER));
+		alpha.add(new Attribute("third", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO"));
+		alpha.add(new Attribute("fourth", "2014-10-15T13:00:00Z", DataType.DATE));
 
 		beta = new Attributes();
-		beta.add("fifth", "value5");
-		beta.add("seventh", "7");
-		beta.add("eighth", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO");
+		beta.add(new Attribute("fifth", "value5"));
+		beta.add(new Attribute("seventh", "7", DataType.INTEGER));
+		beta.add(new Attribute("eighth", "0xNDEwMjEwOTM5MDZaFw0xNjEwMjEwnO"));
 
 		pp = new PersistedPost(message, alpha, beta);
 	}
@@ -111,17 +118,17 @@ public class PersistedPostTest {
 		assertEquals(message[2], pp.getMessage()[2]);
 		assertEquals(message[3], pp.getMessage()[3]);
 
-		assertEquals(alpha.getValue("first"), pp.getAlpha().getValue("first"));
-		assertEquals(alpha.getValue("second"), pp.getAlpha().getValue("second"));
-		assertEquals(alpha.getValue("third"), pp.getAlpha().getValue("third"));
-		assertEquals(alpha.getValue("fourth"), pp.getAlpha().getValue("fourth"));
-		assertEquals(null, pp.getAlpha().getValue("fifth"));
+		assertEquals(alpha.getAttribute("first"), pp.getAlpha().getAttribute("first"));
+		assertEquals(alpha.getAttribute("second"), pp.getAlpha().getAttribute("second"));
+		assertEquals(alpha.getAttribute("third"), pp.getAlpha().getAttribute("third"));
+		assertEquals(alpha.getAttribute("fourth"), pp.getAlpha().getAttribute("fourth"));
+		assertEquals(null, pp.getAlpha().getAttribute("fifth"));
 
-		assertEquals(beta.getValue("fifth"), pp.getBeta().getValue("fifth"));
-		assertEquals(beta.getValue("sixth"), pp.getBeta().getValue("sixth"));
-		assertEquals(beta.getValue("seventh"), pp.getBeta().getValue("seventh"));
-		assertEquals(beta.getValue("eighth"), pp.getBeta().getValue("eighth"));
-		assertEquals(null, pp.getBeta().getValue("first"));
+		assertEquals(beta.getAttribute("fifth"), pp.getBeta().getAttribute("fifth"));
+		assertEquals(beta.getAttribute("sixth"), pp.getBeta().getAttribute("sixth"));
+		assertEquals(beta.getAttribute("seventh"), pp.getBeta().getAttribute("seventh"));
+		assertEquals(beta.getAttribute("eighth"), pp.getBeta().getAttribute("eighth"));
+		assertEquals(null, pp.getBeta().getAttribute("first"));
 
 	}
 
@@ -129,7 +136,7 @@ public class PersistedPostTest {
 	 * Test the conversion from a PersistedPost to a Document
 	 */
 	@Test
-	public void toDbObjectTest() {
+	public void toDocumentTest() throws ParseException {
 		Document dbObj = pp.toDocument();
 
 		assertTrue(dbObj.containsKey("message"));
@@ -146,18 +153,24 @@ public class PersistedPostTest {
 		assertTrue(((Document) dbObj.get("alpha")).containsKey("third"));
 		assertTrue(((Document) dbObj.get("alpha")).containsKey("fourth"));
 
-		assertEquals(alpha.getValue("first"), ((Document) dbObj.get("alpha")).get("first"));
-		assertEquals(alpha.getValue("second"), ((Document) dbObj.get("alpha")).get("second"));
-		assertEquals(alpha.getValue("third"), ((Document) dbObj.get("alpha")).get("third"));
-		assertEquals(alpha.getValue("fourth"), ((Document) dbObj.get("alpha")).get("fourth"));
+		assertEquals(alpha.getAttribute("first").getValue(), ((Document) dbObj.get("alpha")).get("first"));
+		Integer int2 = Integer.parseInt(alpha.getAttribute("second").getValue());
+		assertEquals(int2, ((Document) dbObj.get("alpha")).get("second"));
+		assertEquals(alpha.getAttribute("third").getValue(), ((Document) dbObj.get("alpha")).get("third"));
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		dateFormat.setTimeZone(timeZone);
+		Date d4 = dateFormat.parse(alpha.getAttribute("fourth").getValue());
+		assertEquals(d4, ((Document) dbObj.get("alpha")).get("fourth"));
 
 		assertTrue(((Document) dbObj.get("beta")).containsKey("fifth"));
 		assertTrue(((Document) dbObj.get("beta")).containsKey("seventh"));
 		assertTrue(((Document) dbObj.get("beta")).containsKey("eighth"));
 
-		assertEquals(beta.getValue("fifth"), ((Document) dbObj.get("beta")).get("fifth"));
-		assertEquals(beta.getValue("seventh"), ((Document) dbObj.get("beta")).get("seventh"));
-		assertEquals(beta.getValue("eighth"), ((Document) dbObj.get("beta")).get("eighth"));
+		assertEquals(beta.getAttribute("fifth").getValue(), ((Document) dbObj.get("beta")).get("fifth"));
+		Integer int7 = Integer.parseInt(beta.getAttribute("seventh").getValue());
+		assertEquals(int7, ((Document) dbObj.get("beta")).get("seventh"));
+		assertEquals(beta.getAttribute("eighth").getValue(), ((Document) dbObj.get("beta")).get("eighth"));
 
 	}
 
@@ -165,24 +178,24 @@ public class PersistedPostTest {
 	 * Test the conversion from Document to PersistedPost
 	 */
 	@Test
-	public void fromDbObjectTest() {
-		Document dbObj = pp.toDocument();
+	public void fromDocumentTest() throws ParseException {
+		Document doc = pp.toDocument();
 
-		PersistedPost newPP = PersistedPost.fromDocument(dbObj);
+		PersistedPost newPP = PersistedPost.fromDocument(doc);
 
-		assertEquals(this.message[0], newPP.getMessage()[0]);
-		assertEquals(this.message[1], newPP.getMessage()[1]);
-		assertEquals(this.message[2], newPP.getMessage()[2]);
-		assertEquals(this.message[3], newPP.getMessage()[3]);
+		assertEquals(message[0], newPP.getMessage()[0]);
+		assertEquals(message[1], newPP.getMessage()[1]);
+		assertEquals(message[2], newPP.getMessage()[2]);
+		assertEquals(message[3], newPP.getMessage()[3]);
 
-		assertEquals(this.alpha.getValue("first"), newPP.getAlpha().getValue("first"));
-		assertEquals(this.alpha.getValue("second"), newPP.getAlpha().getValue("second"));
-		assertEquals(this.alpha.getValue("third"), newPP.getAlpha().getValue("third"));
-		assertEquals(this.alpha.getValue("fourth"), newPP.getAlpha().getValue("fourth"));
+		assertEquals(alpha.getAttribute("first"), newPP.getAlpha().getAttribute("first"));
+		assertEquals(alpha.getAttribute("second"), newPP.getAlpha().getAttribute("second"));
+		assertEquals(alpha.getAttribute("third"), newPP.getAlpha().getAttribute("third"));
+		assertEquals(alpha.getAttribute("fourth"), newPP.getAlpha().getAttribute("fourth"));
 
-		assertEquals(this.beta.getValue("fifth"), newPP.getBeta().getValue("fifth"));
-		assertEquals(this.beta.getValue("seventh"), newPP.getBeta().getValue("seventh"));
-		assertEquals(this.beta.getValue("eighth"), newPP.getBeta().getValue("eighth"));
+		assertEquals(beta.getAttribute("fifth"), newPP.getBeta().getAttribute("fifth"));
+		assertEquals(beta.getAttribute("seventh"), newPP.getBeta().getAttribute("seventh"));
+		assertEquals(beta.getAttribute("eighth"), newPP.getBeta().getAttribute("eighth"));
 	}
 
 	/**
@@ -191,7 +204,7 @@ public class PersistedPostTest {
 	 * @throws UnsupportedEncodingException
 	 */
 	@Test
-	public void jsonMessageTest() throws UnsupportedEncodingException {
+	public void jsonMessageTest() throws UnsupportedEncodingException, ParseException {
 		String jsonMessage = "{ \"alpha\" : [ { \"first\" : \"value1\"} , { \"second\" : \"value2\"}] , \"beta\" : [ { \"fifth\" : \"value5\"} , { \"sixth\" : \"value6\"}]}";
 
 		PersistedPost pp2 = new PersistedPost(jsonMessage.getBytes("UTF-8"), alpha, beta);

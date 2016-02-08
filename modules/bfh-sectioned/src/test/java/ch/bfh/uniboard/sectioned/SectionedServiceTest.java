@@ -87,7 +87,7 @@ public class SectionedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-001", tmp2);
 	}
@@ -103,7 +103,7 @@ public class SectionedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-002", tmp2);
 	}
@@ -119,7 +119,7 @@ public class SectionedServiceTest {
 		if (!beta.containsKey(Attributes.ERROR)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.ERROR);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.ERROR);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-003", tmp2);
 	}
@@ -135,7 +135,7 @@ public class SectionedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-004", tmp2);
 	}

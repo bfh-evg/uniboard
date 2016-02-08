@@ -83,7 +83,7 @@ public class NotifyingService extends PostComponent implements PostService {
 			logger.log(Level.FINE, this.observerManager.getObservers().toString());
 			for (Entry<String, Observer> entry : this.observerManager.getObservers().entrySet()) {
 				Query query = entry.getValue().getQuery();
-				Constraint c = new Equal(new BetaIdentifier(uniqueAttribute), beta.getValue(uniqueAttribute));
+				Constraint c = new Equal(new BetaIdentifier(uniqueAttribute), beta.getAttribute(uniqueAttribute));
 				query.getConstraints().add(c);
 				logger.log(Level.FINE, query.toString());
 				ResultContainer result = getService.get(query);

@@ -46,6 +46,7 @@ import ch.bfh.uniboard.service.data.Post;
 import ch.bfh.uniboard.service.data.ResultContainer;
 import ch.bfh.uniboard.service.data.Constraint;
 import ch.bfh.uniboard.service.*;
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Between;
 import ch.bfh.uniboard.service.data.DataType;
 import ch.bfh.uniboard.service.data.Equal;
@@ -107,7 +108,7 @@ public class PersistenceService implements PostService, GetService {
 			//Check Database connection
 			if (!this.connectionManager.isConnected()) {
 				Attributes betaError = new Attributes();
-				betaError.add(Attributes.ERROR, "Internal Server Error. Service not available");
+				betaError.add(new Attribute(Attributes.ERROR, "Internal Server Error. Service not available"));
 				logger.log(Level.WARNING, "Database error: unable to connect to database");
 				return betaError;
 			}
@@ -120,7 +121,7 @@ public class PersistenceService implements PostService, GetService {
 			MongoCollection collection = this.connectionManager.getCollection(DEFAULT_COLLECTION);
 			if (collection == null) {
 				Attributes betaError = new Attributes();
-				betaError.add(Attributes.ERROR, "Internal Server Error. Service not available");
+				betaError.add(new Attribute(Attributes.ERROR, "Internal Server Error. Service not available"));
 				logger.log(Level.WARNING, "Collection not found: {0}", DEFAULT_COLLECTION);
 				return betaError;
 			}
@@ -130,7 +131,7 @@ public class PersistenceService implements PostService, GetService {
 			return beta;
 		} catch (Exception e) {
 			Attributes betaError = new Attributes();
-			betaError.add(Attributes.ERROR, "Internal Server Error. Service not available");
+			betaError.add(new Attribute(Attributes.ERROR, "Internal Server Error. Service not available"));
 			logger.log(Level.WARNING, "General post error", e);
 			return betaError;
 		}
@@ -142,7 +143,7 @@ public class PersistenceService implements PostService, GetService {
 			//Check Database connection
 			if (!this.connectionManager.isConnected()) {
 				Attributes gamma = new Attributes();
-				gamma.add(Attributes.ERROR, "Internal Server Error. Service not available");
+				gamma.add(new Attribute(Attributes.ERROR, "Internal Server Error. Service not available"));
 				logger.log(Level.WARNING, "Database error: unable to connect to database");
 				return new ResultContainer(new ArrayList<Post>(), gamma);
 			}
@@ -154,22 +155,26 @@ public class PersistenceService implements PostService, GetService {
 
 				//constructs the key
 				String keyString = "";
-				DataType dt;
 				if (c.getIdentifier() instanceof MessageIdentifier) {
 					MessageIdentifier tmp = (MessageIdentifier) c.getIdentifier();
 					keyString += "searchable-message";
 					keyString += "." + tmp.getKeyPath();
-					dt = tmp.getDataType();
 				} else if (c.getIdentifier() instanceof PropertyIdentifier) {
 					PropertyIdentifier tmp = (PropertyIdentifier) c.getIdentifier();
 					keyString += tmp.getType().value();
 					keyString += "." + tmp.getKeyPath();
-					dt = DataType.STRING;
 				} else {
 					Attributes gamma = new Attributes();
-					gamma.add(Attributes.REJECTED, "Syntax error: Unknown identifier");
+					gamma.add(new Attribute(Attributes.REJECTED, "Syntax error: Unknown identifier"));
 					logger.log(Level.WARNING, "Syntax error: Unknown identifier");
 					return new ResultContainer(new ArrayList<Post>(), gamma);
+				}
+
+				DataType dt;
+				if (c.getDataType() != null) {
+					dt = c.getDataType();
+				} else {
+					dt = DataType.STRING;
 				}
 
 				if (c instanceof Equal) {
@@ -203,7 +208,7 @@ public class PersistenceService implements PostService, GetService {
 					constraintsList.add(Filters.lte(keyString, castValue(op.getValue(), dt)));
 				} else {
 					Attributes gamma = new Attributes();
-					gamma.add(Attributes.REJECTED, "Syntax error: Unknown type of constraint");
+					gamma.add(new Attribute(Attributes.REJECTED, "Syntax error: Unknown type of constraint"));
 					logger.log(Level.WARNING, "Syntax error: Unknown type of constraint");
 					return new ResultContainer(new ArrayList<Post>(), gamma);
 				}
@@ -223,7 +228,7 @@ public class PersistenceService implements PostService, GetService {
 					identifier += "." + tmp.getKeyPath();
 				} else {
 					Attributes gamma = new Attributes();
-					gamma.add(Attributes.REJECTED, "Syntax error: Unknown identifier");
+					gamma.add(new Attribute(Attributes.REJECTED, "Syntax error: Unknown identifier"));
 					logger.log(Level.WARNING, "Syntax error: Unknown identifier");
 					return new ResultContainer(new ArrayList<Post>(), gamma);
 				}
@@ -247,7 +252,7 @@ public class PersistenceService implements PostService, GetService {
 			return new ResultContainer(list, new Attributes());
 		} catch (ParseException e) {
 			Attributes gamma = new Attributes();
-			gamma.add(Attributes.ERROR, "Could not parse constraint: " + e.getMessage());
+			gamma.add(new Attribute(Attributes.ERROR, "Could not parse constraint: " + e.getMessage()));
 			logger.log(Level.SEVERE, "Could not parse constraint.", e);
 			return new ResultContainer(new ArrayList<Post>(), gamma);
 		}
@@ -258,14 +263,14 @@ public class PersistenceService implements PostService, GetService {
 			case STRING:
 				return value;
 			case INTEGER:
-				return Integer.getInteger(value);
+				return Integer.parseInt(value);
 			case DATE:
 				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmX");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 				dateFormat.setTimeZone(timeZone);
 				return dateFormat.parse(value);
 			default:
-				return null;
+				return value;
 		}
 	}
 }

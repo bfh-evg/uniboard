@@ -40,7 +40,7 @@ public class TimedGetServiceTest {
 		gamma = service.afterGet(q, rc);
 		Date after = new Date(1000 * (new Date().getTime() / 1000));
 
-		Value tmp = gamma.getValue("timestamp");
+		Value tmp = gamma.getAttribute("timestamp");
 		if (!(tmp instanceof DateValue)) {
 			fail();
 		}

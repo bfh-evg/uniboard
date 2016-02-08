@@ -38,7 +38,7 @@ public class ChronologicalServiceTest {
 		service.beforePost(message, alpha, beta);
 		Date after = new Date(1000 * (new Date().getTime() / 1000));
 
-		Value tmp = beta.getValue("timestamp");
+		Value tmp = beta.getAttribute("timestamp");
 		if (!(tmp instanceof DateValue)) {
 			fail();
 		}

@@ -39,6 +39,11 @@ public class Equal extends Constraint {
 		this.value = value;
 	}
 
+	public Equal(Identifier identifier, String value, DataType dataType) {
+		super(identifier, dataType);
+		this.value = value;
+	}
+
 	public String getValue() {
 		return value;
 	}

@@ -43,6 +43,7 @@ public abstract class Constraint implements Serializable {
 
 	@XmlElement(required = true)
 	private Identifier identifier;
+	private DataType dataType;
 
 	public Constraint() {
 		super();
@@ -52,7 +53,21 @@ public abstract class Constraint implements Serializable {
 		this.identifier = identifier;
 	}
 
+	public Constraint(Identifier identifier, DataType dataType) {
+		this.identifier = identifier;
+		this.dataType = dataType;
+	}
+
 	public Identifier getIdentifier() {
 		return identifier;
 	}
+
+	public DataType getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(DataType dataType) {
+		this.dataType = dataType;
+	}
+
 }

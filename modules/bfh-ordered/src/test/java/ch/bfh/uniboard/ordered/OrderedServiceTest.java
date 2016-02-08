@@ -78,7 +78,7 @@ public class OrderedServiceTest {
 		this.postServiceMock.setError(false);
 		this.postService.init();
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
-		Value tmp = resultingBeta.getValue("rank");
+		Value tmp = resultingBeta.getAttribute("rank");
 		assertTrue(tmp instanceof IntegerValue);
 		IntegerValue order = (IntegerValue) tmp;
 		assertEquals(new Integer(2), order.getValue());
@@ -117,7 +117,7 @@ public class OrderedServiceTest {
 		this.postService.init();
 		assertNull(this.postService.getHeads().getSections().get("section3"));
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
-		Value tmp = resultingBeta.getValue("rank");
+		Value tmp = resultingBeta.getAttribute("rank");
 		assertTrue(tmp instanceof IntegerValue);
 		IntegerValue order = (IntegerValue) tmp;
 		assertEquals(new Integer(1), order.getValue());
@@ -139,7 +139,7 @@ public class OrderedServiceTest {
 		this.postService.init();
 		assertNull(this.postService.getHeads().getSections().get("section4"));
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
-		Value tmp = resultingBeta.getValue("rank");
+		Value tmp = resultingBeta.getAttribute("rank");
 		assertTrue(tmp instanceof IntegerValue);
 		IntegerValue order = (IntegerValue) tmp;
 		assertEquals(new Integer(1), order.getValue());

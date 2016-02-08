@@ -39,6 +39,11 @@ public class GreaterEqual extends Constraint {
 		this.value = value;
 	}
 
+	public GreaterEqual(Identifier identifier, String value, DataType dataType) {
+		super(identifier, dataType);
+		this.value = value;
+	}
+
 	public String getValue() {
 		return value;
 	}

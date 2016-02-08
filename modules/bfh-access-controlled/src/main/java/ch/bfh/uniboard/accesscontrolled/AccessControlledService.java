@@ -116,15 +116,15 @@ public class AccessControlledService extends PostComponent implements PostServic
 		List<Constraint> constraints = new ArrayList<>();
 		String pathKey = ATTRIBUTE_NAME_CRYPTO + "." + ATTRIBUTE_NAME_PUBLICKEY;
 		Constraint cKey = new Equal(new MessageIdentifier(pathKey, DataType.STRING),
-				alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
+				alpha.getAttribute(ATTRIBUTE_NAME_PUBLICKEY));
 		constraints.add(cKey);
 
 		//Contraint of the group in the message
-		Constraint cGroup = new Equal(new MessageIdentifier(GROUPED, DataType.STRING), alpha.getValue(GROUPED));
+		Constraint cGroup = new Equal(new MessageIdentifier(GROUPED, DataType.STRING), alpha.getAttribute(GROUPED));
 		constraints.add(cGroup);
 
 		//Constraint of the section
-		Constraint cSection = new Equal(new PropertyIdentifier(ALPHA, SECTIONED), alpha.getValue(SECTIONED));
+		Constraint cSection = new Equal(new PropertyIdentifier(ALPHA, SECTIONED), alpha.getAttribute(SECTIONED));
 		constraints.add(cSection);
 
 		//Constraint of the group
@@ -142,8 +142,8 @@ public class AccessControlledService extends PostComponent implements PostServic
 		ResultContainer rc = this.getService.get(q);
 		if (rc.getResult().isEmpty() || rc.getResult().size() != 1) {
 			logger.log(Level.INFO, "No authorization for publickey {0}" + " section {1}" + " group {2}",
-					new Object[]{alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY), alpha.getValue(SECTIONED),
-						alpha.getValue(GROUPED)});
+					new Object[]{alpha.getAttribute(ATTRIBUTE_NAME_PUBLICKEY), alpha.getAttribute(SECTIONED),
+						alpha.getAttribute(GROUPED)});
 			beta.add(Attributes.REJECTED, "BAC-002 No authorization for this publickey.");
 			return beta;
 		}
@@ -177,18 +177,18 @@ public class AccessControlledService extends PostComponent implements PostServic
 			if (!signature) {
 				logger.log(Level.INFO,
 						"Signature for group {0} and key  {1} is not valid.",
-						new Object[]{alpha.getValue(GROUPED), key.get("publickey").asText()});
+						new Object[]{alpha.getAttribute(GROUPED), key.get("publickey").asText()});
 				beta.add(Attributes.REJECTED, "BAC-003 Signature is not valid.");
 				return beta;
 			}
 
-			String currentPostTimeStr = beta.getValue(CHRONOLOGICAL);
+			String currentPostTimeStr = beta.getAttribute(CHRONOLOGICAL);
 			Date currentPostTime;
 			if (currentPostTimeStr == null) {
 				currentPostTime = new Date();
 			} else {
 				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmX");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 				dateFormat.setTimeZone(timeZone);
 				try {
 					currentPostTime = dateFormat.parse(currentPostTimeStr);
@@ -205,8 +205,8 @@ public class AccessControlledService extends PostComponent implements PostServic
 				if (startDate.after(currentPostTime)) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} is not active yet. Start at {3}",
-							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
-								alpha.getValue(GROUPED), startDate});
+							new Object[]{alpha.getAttribute(ATTRIBUTE_NAME_CRYPTO), alpha.getAttribute(SECTIONED),
+								alpha.getAttribute(GROUPED), startDate});
 					beta.add(Attributes.REJECTED, "BAC-004 Authorization is not active yet.");
 					return beta;
 				}
@@ -216,8 +216,8 @@ public class AccessControlledService extends PostComponent implements PostServic
 				if (endDate.before(currentPostTime)) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} has expired at {3}.",
-							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
-								alpha.getValue(GROUPED), endDate});
+							new Object[]{alpha.getAttribute(ATTRIBUTE_NAME_CRYPTO), alpha.getAttribute(SECTIONED),
+								alpha.getAttribute(GROUPED), endDate});
 					beta.add(Attributes.REJECTED, "BAC-005 Authorization expired.");
 					return beta;
 				}
@@ -227,14 +227,14 @@ public class AccessControlledService extends PostComponent implements PostServic
 				//If check the group for the amount of existing posts
 				List<Constraint> constraintsAmount = new ArrayList<>();
 
-				Constraint cASection = new Equal(new PropertyIdentifier(ALPHA, SECTIONED), alpha.getValue(SECTIONED));
+				Constraint cASection = new Equal(new PropertyIdentifier(ALPHA, SECTIONED), alpha.getAttribute(SECTIONED));
 				constraintsAmount.add(cASection);
 
-				Constraint cAGroup = new Equal(new PropertyIdentifier(ALPHA, GROUPED), alpha.getValue(GROUPED));
+				Constraint cAGroup = new Equal(new PropertyIdentifier(ALPHA, GROUPED), alpha.getAttribute(GROUPED));
 				constraintsAmount.add(cAGroup);
 
 				Constraint cAKey = new Equal(new PropertyIdentifier(ALPHA, ATTRIBUTE_NAME_PUBLICKEY),
-						alpha.getValue(ATTRIBUTE_NAME_PUBLICKEY));
+						alpha.getAttribute(ATTRIBUTE_NAME_PUBLICKEY));
 				constraintsAmount.add(cAKey);
 
 				Query qAmount = new Query(constraintsAmount);
@@ -243,8 +243,8 @@ public class AccessControlledService extends PostComponent implements PostServic
 				if (rcAmount.getResult().size() >= data.get(AMOUNT).asInt()) {
 					logger.log(Level.INFO,
 							"Authorization for key {0}" + " section {1}" + " group {2} has used the allowed posts {3}.",
-							new Object[]{alpha.getValue(ATTRIBUTE_NAME_CRYPTO), alpha.getValue(SECTIONED),
-								alpha.getValue(GROUPED), data.get("amount").asInt()});
+							new Object[]{alpha.getAttribute(ATTRIBUTE_NAME_CRYPTO), alpha.getAttribute(SECTIONED),
+								alpha.getAttribute(GROUPED), data.get("amount").asInt()});
 					beta.add(Attributes.REJECTED, "BAC-007 Amount of allowed posts used up.");
 					return beta;
 				}
@@ -275,7 +275,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 				= RSASignatureScheme.getInstance(messageElement.getSet(), n, CONVERT_METHOD, HASH_METHOD);
 		Element rsaPublicKeyElement = rsa.getVerificationKeySpace().getElement(rsaPublicKeyBI[0]);
 
-		String signature = alpha.getValue(ATTRIBUTE_NAME_SIG);
+		String signature = alpha.getAttribute(ATTRIBUTE_NAME_SIG);
 		BigInteger biSignature = new BigInteger(signature);
 		Element signatureElement = rsa.getSignatureSpace().getElementFrom(biSignature);
 
@@ -303,7 +303,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 				.getElement(new BigInteger(key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue()));
 		logger.log(Level.FINE, "PublicKey: {0}", key.get(ATTRIBUTE_NAME_PUBLICKEY).textValue());
 
-		String strSignature = alpha.getValue(ATTRIBUTE_NAME_SIG);
+		String strSignature = alpha.getAttribute(ATTRIBUTE_NAME_SIG);
 		BigInteger biSignature = new BigInteger(strSignature);
 		BigInteger[] schnorrSignature = MathUtil.unpair(biSignature);
 		logger.log(Level.FINE, "Signature Value 1: {0}", schnorrSignature[0]);

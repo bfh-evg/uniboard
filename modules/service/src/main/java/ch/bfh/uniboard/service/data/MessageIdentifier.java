@@ -17,13 +17,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "messageIdentifier", propOrder = {"keyPath", "dataType"})
+@XmlType(name = "messageIdentifier", propOrder = {"keyPath"})
 public class MessageIdentifier extends Identifier {
 
 	@XmlElement(required = true)
 	protected String keyPath;
-	@XmlElement(required = true)
-	protected DataType dataType;
+
+	;
 
 	/**
 	 * Default no-arg constructor
@@ -37,10 +37,9 @@ public class MessageIdentifier extends Identifier {
 	 * Fully-initialising value constructor
 	 *
 	 */
-	public MessageIdentifier(final String keyPath, final DataType dataType) {
+	public MessageIdentifier(final String keyPath) {
 		super();
 		this.keyPath = keyPath;
-		this.dataType = dataType;
 	}
 
 	/**
@@ -61,26 +60,6 @@ public class MessageIdentifier extends Identifier {
 	 */
 	public void setKeyPath(String value) {
 		this.keyPath = value;
-	}
-
-	/**
-	 * Gets the value of the dataType property.
-	 *
-	 * @return possible object is {@link DataTypeDTO }
-	 *
-	 */
-	public DataType getDataType() {
-		return dataType;
-	}
-
-	/**
-	 * Sets the value of the dataType property.
-	 *
-	 * @param value allowed object is {@link DataTypeDTO }
-	 *
-	 */
-	public void setDataType(DataType value) {
-		this.dataType = value;
 	}
 
 }

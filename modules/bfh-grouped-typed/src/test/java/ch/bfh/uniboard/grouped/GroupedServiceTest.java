@@ -88,7 +88,7 @@ public class GroupedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-001", tmp2);
 	}
@@ -104,7 +104,7 @@ public class GroupedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-002", tmp2);
 	}
@@ -120,7 +120,7 @@ public class GroupedServiceTest {
 		if (!beta.containsKey(Attributes.ERROR)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.ERROR);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.ERROR);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-003", tmp2);
 	}
@@ -136,7 +136,7 @@ public class GroupedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getValue(Attributes.REJECTED);
+		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-004", tmp2);
 	}

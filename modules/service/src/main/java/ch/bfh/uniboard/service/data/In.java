@@ -40,6 +40,11 @@ public class In extends Constraint {
 		this.element = element;
 	}
 
+	public In(Identifier identifier, List<String> element, DataType dataType) {
+		super(identifier, dataType);
+		this.element = element;
+	}
+
 	public List<String> getSet() {
 		return element;
 	}

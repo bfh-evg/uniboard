@@ -95,8 +95,8 @@ public class UniBoardServiceImplTest {
 		ch.bfh.uniboard.service.data.Post p = postService.getLastPost();
 
 		assertEquals(2, p.getAlpha().getEntries().size());
-		assertEquals(new StringValue("test"), p.getAlpha().getValue("test"));
-		assertEquals(new StringValue("test2"), p.getAlpha().getValue("test2"));
+		assertEquals(new StringValue("test"), p.getAlpha().getAttribute("test"));
+		assertEquals(new StringValue("test2"), p.getAlpha().getAttribute("test2"));
 		Assert.assertArrayEquals(message, p.getMessage());
 
 	}

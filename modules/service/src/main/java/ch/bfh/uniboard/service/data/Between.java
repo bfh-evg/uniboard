@@ -47,6 +47,12 @@ public class Between extends Constraint implements Serializable {
 		this.upperBound = upperBound;
 	}
 
+	public Between(Identifier identifier, String lowerBound, String upperBound, DataType dataType) {
+		super(identifier, dataType);
+		this.lowerBound = lowerBound;
+		this.upperBound = upperBound;
+	}
+
 	public String getLowerBound() {
 		return lowerBound;
 	}

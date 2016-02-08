@@ -54,12 +54,12 @@ public class SectionedService extends PostComponent implements PostService {
 			beta.add(Attributes.REJECTED, new StringValue("BSE-001 Missing required attribute: " + ATTRIBUTE_NAME));
 			return beta;
 		}
-		if (!(alpha.getValue(ATTRIBUTE_NAME) instanceof StringValue)) {
+		if (!(alpha.getAttribute(ATTRIBUTE_NAME) instanceof StringValue)) {
 			beta.add(Attributes.REJECTED, new StringValue("BSE-002 Required attribute: " + ATTRIBUTE_NAME
 					+ " is not of type string."));
 			return beta;
 		}
-		StringValue section = (StringValue) alpha.getValue(ATTRIBUTE_NAME);
+		StringValue section = (StringValue) alpha.getAttribute(ATTRIBUTE_NAME);
 		Configuration p = this.configurationManager.getConfiguration(CONFIG_NAME);
 		if (p == null) {
 			logger.log(Level.SEVERE, "Configuration for component " + CONFIG_NAME + " is missing.");

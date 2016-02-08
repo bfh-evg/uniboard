@@ -199,7 +199,7 @@ public class AccessControlledServiceTest {
 		Attributes beta = new Attributes();
 		Attributes result = postService.post(message, alpha, beta);
 		assertEquals(1, result.getEntries().size());
-		assertEquals("BAC-007", result.getValue(Attributes.REJECTED).subSequence(0, 7));
+		assertEquals("BAC-007", result.getAttribute(Attributes.REJECTED).subSequence(0, 7));
 		assertNull(this.postServiceTestBean.getLastPost());
 	}
 
@@ -272,7 +272,7 @@ public class AccessControlledServiceTest {
 		getServiceTestBean.addFeedback(rc);
 		Attributes result = postService.post(message, alpha, beta);
 		assertTrue(result.containsKey(Attributes.REJECTED));
-		assertEquals("BAC-004", result.getValue(Attributes.REJECTED).subSequence(0, 7));
+		assertEquals("BAC-004", result.getAttribute(Attributes.REJECTED).subSequence(0, 7));
 		assertNull(this.postServiceTestBean.getLastPost());
 	}
 
@@ -345,7 +345,7 @@ public class AccessControlledServiceTest {
 		getServiceTestBean.addFeedback(rc);
 		Attributes result = postService.post(message, alpha, beta);
 		assertTrue(result.containsKey(Attributes.REJECTED));
-		assertEquals("BAC-005", result.getValue(Attributes.REJECTED).subSequence(0, 7));
+		assertEquals("BAC-005", result.getAttribute(Attributes.REJECTED).subSequence(0, 7));
 		assertNull(this.postServiceTestBean.getLastPost());
 	}
 }

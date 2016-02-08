@@ -80,12 +80,12 @@ public class TypedService extends PostComponent implements PostService {
 				beta.add(Attributes.REJECTED, new StringValue("BGT-001 Missing required attribute: " + ATTRIBUTE_NAME));
 				return beta;
 			}
-			if (!(alpha.getValue(ATTRIBUTE_NAME) instanceof StringValue)) {
+			if (!(alpha.getAttribute(ATTRIBUTE_NAME) instanceof StringValue)) {
 				beta.add(Attributes.REJECTED, new StringValue("BGT-002 Required attribute: " + ATTRIBUTE_NAME
 						+ " is not of type string."));
 				return beta;
 			}
-			StringValue group = (StringValue) alpha.getValue(ATTRIBUTE_NAME);
+			StringValue group = (StringValue) alpha.getAttribute(ATTRIBUTE_NAME);
 			if (!p.getEntries().containsKey(group.getValue())) {
 				beta.add(Attributes.REJECTED,
 						new StringValue("BGT-004 Unknown " + ATTRIBUTE_NAME + ": " + group.getValue()));

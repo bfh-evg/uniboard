@@ -27,12 +27,12 @@ public abstract class PostComponent implements PostService {
 		//Check if the preprocessing created an error
 		if (beforePost.getKeys().contains(Attributes.ERROR)) {
 			Attributes errorBeta = new Attributes();
-			errorBeta.add(Attributes.ERROR, beforePost.getValue(Attributes.ERROR));
+			errorBeta.add(beforePost.getAttribute(Attributes.ERROR));
 			return errorBeta;
 		} //Check if the preprocessing created an rejected the message
 		else if (beforePost.getKeys().contains(Attributes.REJECTED)) {
 			Attributes rejectBeta = new Attributes();
-			rejectBeta.add(Attributes.REJECTED, beforePost.getValue(Attributes.REJECTED));
+			rejectBeta.add(beforePost.getAttribute(Attributes.REJECTED));
 			return rejectBeta;
 		} else {
 			//pass the processed content to the successor
