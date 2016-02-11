@@ -16,7 +16,8 @@ import ch.bfh.uniboard.service.configuration.Configuration;
 import ch.bfh.uniboard.service.configuration.ConfigurationManager;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -51,25 +52,26 @@ public class SectionedService extends PostComponent implements PostService {
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
 
 		if (!alpha.containsKey(ATTRIBUTE_NAME)) {
-			beta.add(Attributes.REJECTED, new StringValue("BSE-001 Missing required attribute: " + ATTRIBUTE_NAME));
+			beta.add(new Attribute(Attributes.REJECTED, "BSE-001 Missing required attribute: " + ATTRIBUTE_NAME));
 			return beta;
 		}
-		if (!(alpha.getAttribute(ATTRIBUTE_NAME) instanceof StringValue)) {
-			beta.add(Attributes.REJECTED, new StringValue("BSE-002 Required attribute: " + ATTRIBUTE_NAME
+		if (alpha.getAttribute(ATTRIBUTE_NAME).getDataType() != null
+				&& alpha.getAttribute(ATTRIBUTE_NAME).getDataType() != DataType.STRING) {
+			beta.add(new Attribute(Attributes.REJECTED, "BSE-002 Required attribute: " + ATTRIBUTE_NAME
 					+ " is not of type string."));
 			return beta;
 		}
-		StringValue section = (StringValue) alpha.getAttribute(ATTRIBUTE_NAME);
+		String section = alpha.getAttribute(ATTRIBUTE_NAME).getValue();
 		Configuration p = this.configurationManager.getConfiguration(CONFIG_NAME);
 		if (p == null) {
 			logger.log(Level.SEVERE, "Configuration for component " + CONFIG_NAME + " is missing.");
-			beta.add(Attributes.ERROR,
-					new StringValue("BSE-003 This UniBoard instance is down due to a configuration error."));
+			beta.add(new Attribute(Attributes.ERROR,
+					"BSE-003 This UniBoard instance is down due to a configuration error."));
 			return beta;
 		}
-		if (!p.getEntries().containsValue(section.getValue())) {
-			beta.add(Attributes.REJECTED,
-					new StringValue("BSE-004 Unknown " + ATTRIBUTE_NAME + ": " + section.getValue()));
+		if (!p.getEntries().containsValue(section)) {
+			beta.add(new Attribute(Attributes.REJECTED,
+					"BSE-004 Unknown " + ATTRIBUTE_NAME + ": " + section));
 			return beta;
 		}
 		return beta;

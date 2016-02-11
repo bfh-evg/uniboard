@@ -41,15 +41,11 @@
 package ch.bfh.uniboard.certifiedposting;
 
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.ByteArrayValue;
 import ch.bfh.uniboard.service.configuration.Configuration;
 import ch.bfh.uniboard.service.configuration.ConfigurationManager;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
@@ -59,7 +55,6 @@ import ch.bfh.unicrypt.helper.hash.HashMethod;
 import ch.bfh.unicrypt.helper.math.Alphabet;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
-import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
 import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import java.io.File;
@@ -78,12 +73,9 @@ import java.security.cert.CertificateException;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -129,13 +121,12 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 		if (this.signer == null) {
 			logger.log(Level.SEVERE,
 					"Signer is not set. Check the configuration.");
-			beta.add(Attributes.ERROR,
-					new StringValue("BCP-001 Internal server error."));
+			beta.add(new Attribute(Attributes.ERROR, "BCP-001 Internal server error."));
 			return beta;
 		}
 		Element messageElement = this.createMessageElement(message, alpha, beta);
 		String signatureString = this.signer.sign(messageElement).toString(10);
-		beta.add(ATTRIBUTE_NAME, new StringValue(signatureString));
+		beta.add(new Attribute(ATTRIBUTE_NAME, signatureString));
 		return beta;
 	}
 
@@ -145,8 +136,8 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 		Element messageElement = byteSpace.getElement(message);
 
 		List<Element> alphaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-			Element element = this.createValueElement(e.getValue());
+		for (Map.Entry<String, Attribute> e : alpha.getEntries()) {
+			Element element = this.createAttributeElement(e.getValue());
 			if (element != null) {
 				alphaElements.add(element);
 
@@ -156,8 +147,8 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 		Element alphaElement = Tuple.getInstance(alphaDenseElements);
 
 		List<Element> betaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : beta.getEntries()) {
-			Element element = this.createValueElement(e.getValue());
+		for (Map.Entry<String, Attribute> e : beta.getEntries()) {
+			Element element = this.createAttributeElement(e.getValue());
 			if (element != null) {
 				betaElements.add(element);
 			}
@@ -168,27 +159,9 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 		return Tuple.getInstance(messageElement, alphaElement, betaElement);
 	}
 
-	protected Element createValueElement(Value value) {
+	protected Element createAttributeElement(Attribute attribute) {
 		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
-		Z z = Z.getInstance();
-		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-		if (value instanceof ByteArrayValue) {
-			return byteSpace.getElement(((ByteArrayValue) value).getValue());
-		} else if (value instanceof DateValue) {
-			TimeZone timeZone = TimeZone.getTimeZone("UTC");
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-			dateFormat.setTimeZone(timeZone);
-			String stringDate = dateFormat.format(((DateValue) value).getValue());
-			return stringSpace.getElement(stringDate);
-
-		} else if (value instanceof IntegerValue) {
-			return z.getElement(((IntegerValue) value).getValue());
-		} else if (value instanceof StringValue) {
-			return stringSpace.getElement(((StringValue) value).getValue());
-		} else {
-			logger.log(Level.SEVERE, "Unsupported Value type.");
-			return null;
-		}
+		return stringSpace.getElement(attribute.getValue());
 	}
 
 	@PostConstruct

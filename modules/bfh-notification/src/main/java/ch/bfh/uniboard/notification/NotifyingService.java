@@ -15,7 +15,6 @@ import ch.bfh.uniboard.data.PostDTO;
 import ch.bfh.uniboard.data.TransformException;
 import ch.bfh.uniboard.data.Transformer;
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.BetaIdentifier;
 import ch.bfh.uniboard.service.configuration.Configuration;
 import ch.bfh.uniboard.service.configuration.ConfigurationManager;
 import ch.bfh.uniboard.service.data.Constraint;
@@ -23,6 +22,8 @@ import ch.bfh.uniboard.service.data.Equal;
 import ch.bfh.uniboard.service.GetService;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
+import ch.bfh.uniboard.service.data.PropertyIdentifier;
+import ch.bfh.uniboard.service.data.PropertyIdentifierType;
 import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.service.data.ResultContainer;
 import java.util.Map.Entry;
@@ -83,7 +84,8 @@ public class NotifyingService extends PostComponent implements PostService {
 			logger.log(Level.FINE, this.observerManager.getObservers().toString());
 			for (Entry<String, Observer> entry : this.observerManager.getObservers().entrySet()) {
 				Query query = entry.getValue().getQuery();
-				Constraint c = new Equal(new BetaIdentifier(uniqueAttribute), beta.getAttribute(uniqueAttribute));
+				Constraint c = new Equal(new PropertyIdentifier(PropertyIdentifierType.BETA, uniqueAttribute),
+						beta.getAttribute(uniqueAttribute).getValue());
 				query.getConstraints().add(c);
 				logger.log(Level.FINE, query.toString());
 				ResultContainer result = getService.get(query);

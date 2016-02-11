@@ -8,7 +8,7 @@ package ch.bfh.uniboard.clientlib.signaturehelper;
 import static ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper.CONVERT_METHOD;
 import static ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper.HASH_METHOD;
 import ch.bfh.uniboard.data.AttributesDTO;
-import ch.bfh.uniboard.data.StringValueDTO;
+import ch.bfh.uniboard.data.DataTypeDTO;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZModPrimePair;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
@@ -31,8 +31,8 @@ public class RSASignatureHelperTest {
 		byte[] message = new byte[1];
 		message[0] = 0x5;
 		AttributesDTO alpha = new AttributesDTO();
-		alpha.getAttribute().add(new AttributesDTO.AttributeDTO("section", new StringValueDTO("bfh-test")));
-		alpha.getAttribute().add(new AttributesDTO.AttributeDTO("group", new StringValueDTO("accessRight")));
+		alpha.getAttribute().add(new AttributesDTO.AttributeDTO("section", "bfh-test", DataTypeDTO.STRING));
+		alpha.getAttribute().add(new AttributesDTO.AttributeDTO("group", "accessRight", DataTypeDTO.STRING));
 
 		Element messageElement = rsaHelper.prepareElement(message, alpha);
 		BigInteger signature = rsaHelper.sign(message, alpha);

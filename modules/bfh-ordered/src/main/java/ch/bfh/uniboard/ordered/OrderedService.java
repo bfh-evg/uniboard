@@ -14,10 +14,9 @@ package ch.bfh.uniboard.ordered;
 
 import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.configuration.ConfigurationManager;
-import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -44,11 +43,11 @@ public class OrderedService implements PostService {
 
 	@Override
 	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
-		Value sectionValue = alpha.getAttribute(SECTIONED_NAME);
-		String section = ((StringValue) sectionValue).getValue();
+		Attribute sectionValue = alpha.getAttribute(SECTIONED_NAME);
+		String section = sectionValue.getValue();
 		Integer order = this.state.getSections().getOrDefault(section, 0);
 		order++;
-		beta.add(ATTRIBUTE_NAME, new IntegerValue(order));
+		beta.add(new Attribute(ATTRIBUTE_NAME, Integer.toString(order, 10), DataType.INTEGER));
 		Attributes newBeta = this.postSuccessor.post(message, alpha, beta);
 		//If no error happend further below safe the new head
 		if (!(newBeta.getKeys().contains(Attributes.ERROR) || newBeta.getKeys().contains(Attributes.REJECTED))) {

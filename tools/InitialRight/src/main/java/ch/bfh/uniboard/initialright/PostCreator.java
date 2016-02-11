@@ -11,12 +11,9 @@
  */
 package ch.bfh.uniboard.initialright;
 
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.ByteArrayValue;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.DataType;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
@@ -39,13 +36,10 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 /**
  *
@@ -88,27 +82,11 @@ public class PostCreator {
 		Element messageElement = byteSpace.getElement(message);
 
 		List<Element> alphaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-			Element tmp;
-			if (e.getValue() instanceof ByteArrayValue) {
-				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof DateValue) {
-				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				dateFormat.setTimeZone(timeZone);
-				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
-				tmp = stringSpace.getElement(stringDate);
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof IntegerValue) {
-				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof StringValue) {
-				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			}
-
+		for (Map.Entry<String, Attribute> e : alpha.getEntries()) {
+			Element tmp = stringSpace.getElement(e.getValue().getValue());
+			alphaElements.add(tmp);
 		}
+
 		DenseArray immuElements = DenseArray.getInstance(alphaElements);
 		Element alphaElement = Tuple.getInstance(immuElements);
 
@@ -125,50 +103,18 @@ public class PostCreator {
 		Element messageElement = byteSpace.getElement(message);
 
 		List<Element> alphaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-			Element tmp;
-			if (e.getValue() instanceof ByteArrayValue) {
-				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof DateValue) {
-				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				dateFormat.setTimeZone(timeZone);
-				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
-				tmp = stringSpace.getElement(stringDate);
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof IntegerValue) {
-				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			} else if (e.getValue() instanceof StringValue) {
-				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				alphaElements.add(tmp);
-			}
+		for (Map.Entry<String, Attribute> e : alpha.getEntries()) {
+			Element tmp = stringSpace.getElement(e.getValue().getValue());
+			alphaElements.add(tmp);
 
 		}
 		DenseArray immuElements = DenseArray.getInstance(alphaElements);
 		Element alphaElement = Tuple.getInstance(immuElements);
 
 		List<Element> betaElements = new ArrayList<>();
-		for (Map.Entry<String, Value> e : beta.getEntries()) {
-			Element tmp;
-			if (e.getValue() instanceof ByteArrayValue) {
-				tmp = byteSpace.getElement(((ByteArrayValue) e.getValue()).getValue());
-				betaElements.add(tmp);
-			} else if (e.getValue() instanceof DateValue) {
-				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				dateFormat.setTimeZone(timeZone);
-				String stringDate = dateFormat.format(((DateValue) e.getValue()).getValue());
-				tmp = stringSpace.getElement(stringDate);
-				betaElements.add(tmp);
-			} else if (e.getValue() instanceof IntegerValue) {
-				tmp = z.getElement(((IntegerValue) e.getValue()).getValue());
-				betaElements.add(tmp);
-			} else if (e.getValue() instanceof StringValue) {
-				tmp = stringSpace.getElement(((StringValue) e.getValue()).getValue());
-				betaElements.add(tmp);
-			}
+		for (Map.Entry<String, Attribute> e : beta.getEntries()) {
+			Element tmp = stringSpace.getElement(e.getValue().getValue());
+			betaElements.add(tmp);
 
 		}
 		DenseArray immuElements2 = DenseArray.getInstance(betaElements);
@@ -193,45 +139,22 @@ public class PostCreator {
 		output += new String(message);
 		output += ",";
 		output += "\"alpha\": {";
-		for (Map.Entry<String, Value> e : alpha.getEntries()) {
-			if (e.getValue() instanceof ByteArrayValue) {
-				ByteArrayValue tmpValue = (ByteArrayValue) e.getValue();
-				System.out.println("WARNING NOT SUPPORTED YET");
-			} else if (e.getValue() instanceof DateValue) {
-				DateValue tmpValue = (DateValue) e.getValue();
-				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				dateFormat.setTimeZone(timeZone);
-				String stringDate = dateFormat.format(tmpValue.getValue());
-				output += "\"" + e.getKey() + "\": ISODate(\"" + stringDate + "\"),";
-			} else if (e.getValue() instanceof IntegerValue) {
-				IntegerValue tmpValue = (IntegerValue) e.getValue();
-				output += "\"" + e.getKey() + "\": NumberInt(" + tmpValue.getValue() + "),";
-			} else if (e.getValue() instanceof StringValue) {
-				StringValue tmpValue = (StringValue) e.getValue();
-				output += "\"" + e.getKey() + "\": \"" + tmpValue.getValue() + "\",";
+		for (Map.Entry<String, Attribute> e : alpha.getEntries()) {
+			if (e.getValue().getDataType() == DataType.INTEGER) {
+				output += "\"" + e.getKey() + "\": " + e.getValue().getValue() + ",";
+			} else {
+				output += "\"" + e.getKey() + "\": \"" + e.getValue().getValue() + "\",";
 			}
 		}
+
 		output = output.substring(0, output.length() - 1);
 		output += "},";
 		output += "\"beta\": {";
-		for (Map.Entry<String, Value> e : beta.getEntries()) {
-			if (e.getValue() instanceof ByteArrayValue) {
-				ByteArrayValue tmpValue = (ByteArrayValue) e.getValue();
-				System.out.println("WARNING NOT SUPPORTED YET");
-			} else if (e.getValue() instanceof DateValue) {
-				DateValue tmpValue = (DateValue) e.getValue();
-				TimeZone timeZone = TimeZone.getTimeZone("UTC");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				dateFormat.setTimeZone(timeZone);
-				String stringDate = dateFormat.format(tmpValue.getValue());
-				output += "\"" + e.getKey() + "\": ISODate(\"" + stringDate + "\"),";
-			} else if (e.getValue() instanceof IntegerValue) {
-				IntegerValue tmpValue = (IntegerValue) e.getValue();
-				output += "\"" + e.getKey() + "\": NumberInt(" + tmpValue.getValue() + "),";
-			} else if (e.getValue() instanceof StringValue) {
-				StringValue tmpValue = (StringValue) e.getValue();
-				output += "\"" + e.getKey() + "\": \"" + tmpValue.getValue() + "\",";
+		for (Map.Entry<String, Attribute> e : beta.getEntries()) {
+			if (e.getValue().getDataType() == DataType.INTEGER) {
+				output += "\"" + e.getKey() + "\": " + e.getValue().getValue() + ",";
+			} else {
+				output += "\"" + e.getKey() + "\": \"" + e.getValue().getValue() + "\",";
 			}
 		}
 		output = output.substring(0, output.length() - 1);

@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "identifier")
 @XmlSeeAlso({
-	PropertyIdentifierType.class,
+	PropertyIdentifier.class,
 	MessageIdentifier.class
 })
 public abstract class Identifier implements Serializable {

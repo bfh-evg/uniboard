@@ -13,7 +13,7 @@ package ch.bfh.uniboard.ordered;
 
 import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attribute;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
@@ -25,26 +25,26 @@ import javax.ejb.Singleton;
 @LocalBean
 public class PostServiceTestBean implements PostService {
 
-    private ch.bfh.uniboard.service.data.Post lastPost;
+	private ch.bfh.uniboard.service.data.Post lastPost;
 
-    private boolean error = false;
+	private boolean error = false;
 
-    @Override
-    public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
-        this.lastPost = new ch.bfh.uniboard.service.data.Post();
-        this.lastPost.setAlpha(alpha);
-        this.lastPost.setMessage(message);
-        if (error) {
-            beta.add(Attributes.ERROR, new StringValue("1"));
-        }
-        return beta;
-    }
+	@Override
+	public Attributes post(byte[] message, Attributes alpha, Attributes beta) {
+		this.lastPost = new ch.bfh.uniboard.service.data.Post();
+		this.lastPost.setAlpha(alpha);
+		this.lastPost.setMessage(message);
+		if (error) {
+			beta.add(new Attribute(Attributes.ERROR, "1"));
+		}
+		return beta;
+	}
 
-    public void setError(boolean error) {
-        this.error = error;
-    }
+	public void setError(boolean error) {
+		this.error = error;
+	}
 
-    public ch.bfh.uniboard.service.data.Post getLastPost() {
-        return lastPost;
-    }
+	public ch.bfh.uniboard.service.data.Post getLastPost() {
+		return lastPost;
+	}
 }

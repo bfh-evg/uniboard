@@ -11,10 +11,9 @@
  */
 package ch.bfh.uniboard.ordered;
 
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.StringValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.DataType;
 import java.io.File;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -73,15 +72,15 @@ public class OrderedServiceTest {
 
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("section1"));
+		alpha.add(new Attribute("section", "section1"));
 		Attributes beta = new Attributes();
 		this.postServiceMock.setError(false);
 		this.postService.init();
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
-		Value tmp = resultingBeta.getAttribute("rank");
-		assertTrue(tmp instanceof IntegerValue);
-		IntegerValue order = (IntegerValue) tmp;
-		assertEquals(new Integer(2), order.getValue());
+		Attribute tmp = resultingBeta.getAttribute("rank");
+		assertTrue(tmp.getDataType() == DataType.INTEGER);
+		Integer order = Integer.parseInt(tmp.getValue());
+		assertEquals(new Integer(2), order);
 		assertEquals(new Integer("2"), this.postService.getHeads().getSections().get("section1"));
 
 	}
@@ -94,7 +93,7 @@ public class OrderedServiceTest {
 
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("section2"));
+		alpha.add(new Attribute("section", "section2"));
 		Attributes beta = new Attributes();
 		this.postServiceMock.setError(true);
 		this.postService.init();
@@ -111,16 +110,16 @@ public class OrderedServiceTest {
 
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("section3"));
+		alpha.add(new Attribute("section", "section3"));
 		Attributes beta = new Attributes();
 		this.postServiceMock.setError(false);
 		this.postService.init();
 		assertNull(this.postService.getHeads().getSections().get("section3"));
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
-		Value tmp = resultingBeta.getAttribute("rank");
-		assertTrue(tmp instanceof IntegerValue);
-		IntegerValue order = (IntegerValue) tmp;
-		assertEquals(new Integer(1), order.getValue());
+		Attribute tmp = resultingBeta.getAttribute("rank");
+		assertTrue(tmp.getDataType() == DataType.INTEGER);
+		Integer order = Integer.parseInt(tmp.getValue());
+		assertEquals(new Integer(1), order);
 		assertEquals(new Integer("1"), this.postService.getHeads().getSections().get("section1"));
 
 	}
@@ -133,16 +132,16 @@ public class OrderedServiceTest {
 
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("section4"));
+		alpha.add(new Attribute("section", "section4"));
 		Attributes beta = new Attributes();
 		this.postServiceMock.setError(true);
 		this.postService.init();
 		assertNull(this.postService.getHeads().getSections().get("section4"));
 		Attributes resultingBeta = this.postService.post(message, alpha, beta);
-		Value tmp = resultingBeta.getAttribute("rank");
-		assertTrue(tmp instanceof IntegerValue);
-		IntegerValue order = (IntegerValue) tmp;
-		assertEquals(new Integer(1), order.getValue());
+		Attribute tmp = resultingBeta.getAttribute("rank");
+		assertTrue(tmp.getDataType() == DataType.INTEGER);
+		Integer order = Integer.parseInt(tmp.getValue());
+		assertEquals(new Integer(1), order);
 		assertNull(this.postService.getHeads().getSections().get("section4"));
 
 	}

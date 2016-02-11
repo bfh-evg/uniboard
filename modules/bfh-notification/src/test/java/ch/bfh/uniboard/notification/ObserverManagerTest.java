@@ -11,11 +11,11 @@
  */
 package ch.bfh.uniboard.notification;
 
-import ch.bfh.uniboard.service.AlphaIdentifier;
 import ch.bfh.uniboard.service.data.Constraint;
 import ch.bfh.uniboard.service.data.Equal;
+import ch.bfh.uniboard.service.data.PropertyIdentifier;
+import ch.bfh.uniboard.service.data.PropertyIdentifierType;
 import ch.bfh.uniboard.service.data.Query;
-import ch.bfh.uniboard.service.StringValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +69,7 @@ public class ObserverManagerTest {
 	public void testNotEmpty() throws Exception {
 		NotificationState state = new NotificationState();
 		List<Constraint> constraints = new ArrayList<>();
-		Constraint c = new Equal(new AlphaIdentifier("test"), new StringValue("test2"));
+		Constraint c = new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "test"), "test2");
 		constraints.add(c);
 		Query q = new Query(constraints);
 		Observer obs = new Observer("URL", q);
@@ -85,7 +85,7 @@ public class ObserverManagerTest {
 	public void testShutdown() throws Exception {
 		observerManager.init();
 		List<Constraint> constraints = new ArrayList<>();
-		Constraint c = new Equal(new AlphaIdentifier("test"), new StringValue("test2"));
+		Constraint c = new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "test"), "test2");
 		constraints.add(c);
 		Query q = new Query(constraints);
 		Observer obs = new Observer("URL", q);

@@ -16,7 +16,8 @@ import ch.bfh.uniboard.service.configuration.Configuration;
 import ch.bfh.uniboard.service.configuration.ConfigurationManager;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -49,25 +50,26 @@ public class GroupedService extends PostComponent implements PostService {
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
 
 		if (!alpha.containsKey(ATTRIBUTE_NAME)) {
-			beta.add(Attributes.REJECTED, new StringValue("BGT-001 Missing required attribute: " + ATTRIBUTE_NAME));
+			beta.add(new Attribute(Attributes.REJECTED, "BGT-001 Missing required attribute: " + ATTRIBUTE_NAME));
 			return beta;
 		}
-		if (!(alpha.getAttribute(ATTRIBUTE_NAME) instanceof StringValue)) {
-			beta.add(Attributes.REJECTED, new StringValue("BGT-002 Required attribute: " + ATTRIBUTE_NAME
+		if (alpha.getAttribute(ATTRIBUTE_NAME).getDataType() != null
+				&& alpha.getAttribute(ATTRIBUTE_NAME).getDataType() != DataType.STRING) {
+			beta.add(new Attribute(Attributes.REJECTED, "BGT-002 Required attribute: " + ATTRIBUTE_NAME
 					+ " is not of type string."));
 			return beta;
 		}
-		StringValue group = (StringValue) alpha.getAttribute(ATTRIBUTE_NAME);
+		String group = alpha.getAttribute(ATTRIBUTE_NAME).getValue();
 		Configuration p = this.configurationManager.getConfiguration(CONFIG_NAME);
 		if (p == null) {
 			logger.log(Level.SEVERE, "Configuration for component " + CONFIG_NAME + " is missing.");
-			beta.add(Attributes.ERROR,
-					new StringValue("BGT-003 This UniBoard instance is down due to a configuration error."));
+			beta.add(new Attribute(Attributes.ERROR,
+					"BGT-003 This UniBoard instance is down due to a configuration error."));
 			return beta;
 		}
-		if (!p.getEntries().containsKey(group.getValue())) {
-			beta.add(Attributes.REJECTED,
-					new StringValue("BGT-004 Unknown " + ATTRIBUTE_NAME + ": " + group.getValue()));
+		if (!p.getEntries().containsKey(group)) {
+			beta.add(new Attribute(Attributes.REJECTED,
+					"BGT-004 Unknown " + ATTRIBUTE_NAME + ": " + group));
 			return beta;
 		}
 		return beta;

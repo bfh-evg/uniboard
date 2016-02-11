@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.initialright;
 
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,9 +25,10 @@ import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.DSAPublicKey;
 import java.util.Date;
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.DataType;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
  *
@@ -87,17 +89,21 @@ public class MainUVRight {
 
 		//Create alphas and betas
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue(section));
-		alpha.add("group", new StringValue("accessRight"));
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", "accessRight"));
 		Element ubMsgSig = PostCreator.createAlphaSignatureWithDL(message1, alpha, dsaPrivKey);
-		alpha.add("signature", new StringValue(ubMsgSig.convertToBigInteger().toString(10)));
-		alpha.add("publickey", new StringValue(uniboardPublicKey.toString(10)));
+		alpha.add(new Attribute("signature", ubMsgSig.convertToBigInteger().toString(10)));
+		alpha.add(new Attribute("publickey", uniboardPublicKey.toString(10)));
 
 		Attributes beta = new Attributes();
-		beta.add("timestamp", new DateValue(new Date()));
-		beta.add("rank", new IntegerValue(0));
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		dateFormat.setTimeZone(timeZone);
+		String dateTime = dateFormat.format(new Date());
+		beta.add(new Attribute("timestamp", dateTime, DataType.DATE));
+		beta.add(new Attribute("rank", "0", DataType.INTEGER));
 		Element initMsgBetaSig = PostCreator.createBetaSignature(message1, alpha, beta, dsaPrivKey);
-		beta.add("boardSignature", new StringValue(initMsgBetaSig.convertToBigInteger().toString(10)));
+		beta.add(new Attribute("boardSignature", initMsgBetaSig.convertToBigInteger().toString(10)));
 
 		//output post as json
 		String post = PostCreator.createMessage(message1, alpha, beta);
@@ -114,17 +120,18 @@ public class MainUVRight {
 
 		//Create alphas and betas
 		Attributes alpha2 = new Attributes();
-		alpha2.add("section", new StringValue(section));
-		alpha2.add("group", new StringValue("accessRight"));
+		alpha2.add(new Attribute("section", section));
+		alpha2.add(new Attribute("group", "accessRight"));
 		Element ucMsgSig = PostCreator.createAlphaSignatureWithDL(message2, alpha2, dsaPrivKey);
-		alpha2.add("signature", new StringValue(ucMsgSig.convertToBigInteger().toString(10)));
-		alpha2.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
+		alpha2.add(new Attribute("signature", ucMsgSig.convertToBigInteger().toString(10)));
+		alpha2.add(new Attribute("publickey", electionCoordinatorPublicKey.toString(10)));
 
 		Attributes beta2 = new Attributes();
-		beta2.add("timestamp", new DateValue(new Date()));
-		beta2.add("rank", new IntegerValue(1));
+		String dateTime2 = dateFormat.format(new Date());
+		beta2.add(new Attribute("timestamp", dateTime2, DataType.DATE));
+		beta2.add(new Attribute("rank", "1", DataType.INTEGER));
 		Element acMsgSig = PostCreator.createBetaSignature(message1, alpha2, beta2, dsaPrivKey);
-		beta2.add("boardSignature", new StringValue(acMsgSig.convertToBigInteger().toString(10)));
+		beta2.add(new Attribute("boardSignature", acMsgSig.convertToBigInteger().toString(10)));
 
 		String post2 = PostCreator.createMessage(message2, alpha2, beta2);
 		System.out.println(post2);

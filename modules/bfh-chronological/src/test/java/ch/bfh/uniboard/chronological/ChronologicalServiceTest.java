@@ -12,9 +12,13 @@
 package ch.bfh.uniboard.chronological;
 
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.Value;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -29,7 +33,7 @@ public class ChronologicalServiceTest {
 	}
 
 	@Test
-	public void testbeforePost() throws InterruptedException {
+	public void testbeforePost() throws InterruptedException, ParseException {
 		ChronologicalService service = new ChronologicalService();
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
@@ -38,13 +42,16 @@ public class ChronologicalServiceTest {
 		service.beforePost(message, alpha, beta);
 		Date after = new Date(1000 * (new Date().getTime() / 1000));
 
-		Value tmp = beta.getAttribute("timestamp");
-		if (!(tmp instanceof DateValue)) {
+		Attribute tmp = beta.getAttribute("timestamp");
+		if (tmp.getDataType() != DataType.DATE) {
 			fail();
 		}
-		DateValue date = (DateValue) tmp;
-		assertTrue(before.before(date.getValue()) || before.equals(date.getValue()));
-		assertTrue(after.after(date.getValue()) || after.equals(date.getValue()));
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		dateFormat.setTimeZone(timeZone);
+		Date date = dateFormat.parse(tmp.getValue());
+		assertTrue(before.before(date) || before.equals(date));
+		assertTrue(after.after(date) || after.equals(date));
 	}
 
 }

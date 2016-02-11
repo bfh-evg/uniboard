@@ -21,7 +21,6 @@ import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
 import ch.bfh.uniboard.data.PostDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
-import ch.bfh.uniboard.data.StringValueDTO;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.PublicKey;
@@ -94,7 +93,7 @@ public class GetHelper {
 			throw new SignatureException("No board signature found.");
 		}
 
-		String boardSig = ((StringValueDTO) attr.getValue()).getValue();
+		String boardSig = attr.getValue();
 		if (!this.signatureVerificatorHelper.verify(query, rc, new BigInteger(boardSig, 10))) {
 			throw new SignatureException("UniBoard signature is invalid.");
 		} else {
@@ -105,7 +104,7 @@ public class GetHelper {
 					throw new SignatureException("No board signature found.");
 				}
 
-				boardSig = ((StringValueDTO) attr.getValue()).getValue();
+				boardSig = attr.getValue();
 				if (!this.signatureVerificatorHelper.verify(p.getMessage(), p.getAlpha(), p.getBeta(), new BigInteger(
 						boardSig, 10))) {
 					throw new SignatureException("UniBoard signature is invalid for post.");
@@ -135,12 +134,13 @@ public class GetHelper {
 			throw new SignatureException("Unsupported key type.");
 		}
 
-		AttributeDTO attr = AttributeHelper.searchAttribute(post.getAlpha(), UniBoardAttributesName.SIGNATURE.getName());
+		AttributeDTO attr
+				= AttributeHelper.searchAttribute(post.getAlpha(), UniBoardAttributesName.SIGNATURE.getName());
 		if (attr == null) {
 			throw new SignatureException("No poster signature found.");
 		}
 
-		String posterSig = ((StringValueDTO) attr.getValue()).getValue();
+		String posterSig = attr.getValue();
 		return sigHelper.verify(post.getMessage(), post.getAlpha(), new BigInteger(posterSig, 10));
 	}
 

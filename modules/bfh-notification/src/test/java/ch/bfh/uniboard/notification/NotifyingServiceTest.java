@@ -12,14 +12,15 @@
 package ch.bfh.uniboard.notification;
 
 import ch.bfh.uniboard.data.PostDTO;
-import ch.bfh.uniboard.service.AlphaIdentifier;
 import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.configuration.Configuration;
 import ch.bfh.uniboard.service.data.Constraint;
 import ch.bfh.uniboard.service.data.Equal;
 import ch.bfh.uniboard.service.PostService;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.PropertyIdentifier;
+import ch.bfh.uniboard.service.data.PropertyIdentifierType;
 import ch.bfh.uniboard.service.data.Query;
-import ch.bfh.uniboard.service.StringValue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class NotifyingServiceTest {
 
 	public void setContraint() {
 		List<Constraint> constraints = new ArrayList<>();
-		Constraint c1 = new Equal(new AlphaIdentifier("alpha1"), new StringValue("test"));
+		Constraint c1 = new Equal(new PropertyIdentifier(PropertyIdentifierType.ALPHA, "alpha1"), "test");
 		constraints.add(c1);
 		Query q = new Query(constraints);
 		Observer obs = new Observer("http://test1", q);
@@ -95,7 +96,7 @@ public class NotifyingServiceTest {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
 		Attributes beta = new Attributes();
-		beta.add("section", new StringValue("test"));
+		beta.add(new Attribute("section", "test"));
 		notificationService.post(message, alpha, beta);
 		assertNull(this.observerClient.getPost());
 	}
@@ -110,9 +111,9 @@ public class NotifyingServiceTest {
 		this.postGetService.correctRunning(true);
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("alpha1", new StringValue("test"));
+		alpha.add(new Attribute("alpha1", "test"));
 		Attributes beta = new Attributes();
-		beta.add("section", new StringValue("test"));
+		beta.add(new Attribute("section", "test"));
 		notificationService.post(message, alpha, beta);
 		assertNotNull(this.observerClient.getPost());
 		PostDTO result = this.observerClient.getPost();

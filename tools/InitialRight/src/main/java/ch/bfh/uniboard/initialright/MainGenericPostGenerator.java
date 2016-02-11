@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.initialright;
 
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,11 +23,12 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.DSAPublicKey;
-import java.util.Date;
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.DateValue;
-import ch.bfh.uniboard.service.IntegerValue;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.DataType;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  *
@@ -79,25 +81,29 @@ public class MainGenericPostGenerator {
 
 		//Create alphas and betas
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue(section));
-		alpha.add("group", new StringValue(group));
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
 		Element msgSig = null;
 		try {
 			msgSig = PostCreator.createAlphaSignatureWithDL(message1, alpha, signerPrivKey);
-			alpha.add("signature", new StringValue(msgSig.convertToBigInteger().toString(10)));
-			alpha.add("publickey", new StringValue(signerPublicKey.toString(10)));
+			alpha.add(new Attribute("signature", msgSig.convertToBigInteger().toString(10)));
+			alpha.add(new Attribute("publickey", signerPublicKey.toString(10)));
 		} catch (Exception e) {
 			//dummy signature if exception (for example no private key)
 			System.err.println("Exception occured while signing: " + e.getClass() + " - " + e.getMessage());
-			alpha.add("signature", new StringValue(""));
-			alpha.add("publickey", new StringValue(signerPublicKey.toString(10)));
+			alpha.add(new Attribute("signature", ""));
+			alpha.add(new Attribute("publickey", signerPublicKey.toString(10)));
 		}
 
 		Attributes beta = new Attributes();
-		beta.add("timestamp", new DateValue(new Date()));
-		beta.add("rank", new IntegerValue(rank));
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		dateFormat.setTimeZone(timeZone);
+		String dateTime = dateFormat.format(new Date());
+		beta.add(new Attribute("timestamp", dateTime, DataType.DATE));
+		beta.add(new Attribute("rank", Integer.toString(rank, 10), DataType.INTEGER));
 		Element initMsgBetaSig = PostCreator.createBetaSignature(message1, alpha, beta, boardPrivKey);
-		beta.add("boardSignature", new StringValue(initMsgBetaSig.convertToBigInteger().toString(10)));
+		beta.add(new Attribute("boardSignature", initMsgBetaSig.convertToBigInteger().toString(10)));
 
 		//output post as json
 		String post = PostCreator.createMessage(message1, alpha, beta);

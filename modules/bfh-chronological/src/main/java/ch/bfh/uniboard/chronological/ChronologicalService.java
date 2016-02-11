@@ -12,10 +12,14 @@
 package ch.bfh.uniboard.chronological;
 
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -38,9 +42,11 @@ public class ChronologicalService extends PostComponent implements PostService {
 
 	@Override
 	protected Attributes beforePost(byte[] message, Attributes alpha, Attributes beta) {
-		long time = new Date().getTime();
-		time = 1000 * (time / 1000);
-		beta.add(ATTRIBUTE_NAME, new DateValue(new Date(time)));
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		dateFormat.setTimeZone(timeZone);
+		String dateTime = dateFormat.format(new Date());
+		beta.add(new Attribute(ATTRIBUTE_NAME, dateTime, DataType.DATE));
 		return beta;
 	}
 

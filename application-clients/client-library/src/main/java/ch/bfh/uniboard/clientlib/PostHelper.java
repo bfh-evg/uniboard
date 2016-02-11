@@ -19,7 +19,7 @@ import ch.bfh.uniboard.clientlib.signaturehelper.SignatureException;
 import ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper;
 import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
-import ch.bfh.uniboard.data.StringValueDTO;
+import ch.bfh.uniboard.data.DataTypeDTO;
 import ch.bfh.unicrypt.helper.math.MathUtil;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -131,26 +131,27 @@ public class PostHelper {
 	 * @throws PostException exception throw when error occured during posting
 	 * @throws SignatureException exception throw when error occured during generating of poster signature or verifying
 	 * board signature
+	 * @throws ch.bfh.uniboard.clientlib.BoardErrorException
 	 */
 	public AttributesDTO post(byte[] message, String section, String group) throws PostException, SignatureException,
 			BoardErrorException {
 		AttributesDTO alpha = new AttributesDTO();
-		alpha.getAttribute().
-				add(new AttributeDTO(UniBoardAttributesName.SECTION.getName(), new StringValueDTO(section)));
-		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.GROUP.getName(), new StringValueDTO(group)));
+		alpha.getAttribute().add(
+				new AttributeDTO(UniBoardAttributesName.SECTION.getName(), section, DataTypeDTO.STRING));
+		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.GROUP.getName(), group, DataTypeDTO.STRING));
 
 		BigInteger signature = this.signatureCreatorHelper.sign(message, alpha);
 
-		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.SIGNATURE.getName(), new StringValueDTO(
-				signature.toString(10))));
-		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.PUBLIC_KEY.getName(), new StringValueDTO(
-				posterPublicKey)));
+		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.SIGNATURE.getName(),
+				signature.toString(10), DataTypeDTO.STRING));
+		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.PUBLIC_KEY.getName(),
+				posterPublicKey, DataTypeDTO.STRING));
 
 		AttributesDTO beta = board.post(message, alpha);
 		if (beta.getAttribute().get(0).getKey().contains("rejected") || beta.getAttribute().get(0).getKey().contains(
 				"error")) {
 			String errorKey = beta.getAttribute().get(0).getKey();
-			String error = ((StringValueDTO) beta.getAttribute().get(0).getValue()).getValue();
+			String error = beta.getAttribute().get(0).getValue();
 			logger.log(Level.SEVERE, "UniBoard response was {0}, description: {1}", new Object[]{
 				errorKey, error});
 			throw new BoardErrorException(error);
@@ -160,7 +161,7 @@ public class PostHelper {
 				logger.log(Level.SEVERE, "No board signature found");
 				throw new PostException("No board signature found");
 			} else {
-				String boardSig = ((StringValueDTO) attr.getValue()).getValue();
+				String boardSig = attr.getValue();
 				if (!this.signatureVerificatorHelper.verify(message, alpha, beta, new BigInteger(boardSig, 10))) {
 					logger.log(Level.SEVERE, "UniBoard signature is invalid");
 					throw new PostException("UniBoard signature is invalid");

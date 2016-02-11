@@ -11,12 +11,16 @@
  */
 package ch.bfh.uniboard.timedget;
 
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.DateValue;
+import ch.bfh.uniboard.service.data.DataType;
 import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.service.data.ResultContainer;
-import ch.bfh.uniboard.service.Value;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -26,12 +30,12 @@ import org.junit.Test;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 public class TimedGetServiceTest {
-	
+
 	public TimedGetServiceTest() {
 	}
-	
+
 	@Test
-	public void testbeforePost() throws InterruptedException {
+	public void testbeforePost() throws InterruptedException, ParseException {
 		TimedGetService service = new TimedGetService();
 		Query q = new Query(null);
 		Attributes gamma = new Attributes();
@@ -40,13 +44,16 @@ public class TimedGetServiceTest {
 		gamma = service.afterGet(q, rc);
 		Date after = new Date(1000 * (new Date().getTime() / 1000));
 
-		Value tmp = gamma.getAttribute("timestamp");
-		if (!(tmp instanceof DateValue)) {
+		Attribute tmp = gamma.getAttribute("timestamp");
+		if (tmp.getDataType() != DataType.DATE) {
 			fail();
 		}
-		DateValue date = (DateValue) tmp;
-		assertTrue(before.before(date.getValue()) || before.equals(date.getValue()));
-		assertTrue(after.after(date.getValue()) || after.equals(date.getValue()));
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		dateFormat.setTimeZone(timeZone);
+		Date date = dateFormat.parse(tmp.getValue());
+		assertTrue(before.before(date) || before.equals(date));
+		assertTrue(after.after(date) || after.equals(date));
 	}
-	
+
 }

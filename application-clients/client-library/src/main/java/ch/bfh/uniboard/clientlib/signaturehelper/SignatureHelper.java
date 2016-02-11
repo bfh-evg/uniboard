@@ -12,27 +12,8 @@
 package ch.bfh.uniboard.clientlib.signaturehelper;
 
 import ch.bfh.uniboard.clientlib.UniBoardAttributesName;
-import ch.bfh.uniboard.data.AttributesDTO;
+import ch.bfh.uniboard.data.*;
 import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
-import ch.bfh.uniboard.data.BetweenDTO;
-import ch.bfh.uniboard.data.ByteArrayValueDTO;
-import ch.bfh.uniboard.data.ConstraintDTO;
-import ch.bfh.uniboard.data.DateValueDTO;
-import ch.bfh.uniboard.data.EqualDTO;
-import ch.bfh.uniboard.data.GreaterDTO;
-import ch.bfh.uniboard.data.GreaterEqualDTO;
-import ch.bfh.uniboard.data.IdentifierDTO;
-import ch.bfh.uniboard.data.InDTO;
-import ch.bfh.uniboard.data.IntegerValueDTO;
-import ch.bfh.uniboard.data.LessDTO;
-import ch.bfh.uniboard.data.LessEqualDTO;
-import ch.bfh.uniboard.data.NotEqualDTO;
-import ch.bfh.uniboard.data.OrderDTO;
-import ch.bfh.uniboard.data.PostDTO;
-import ch.bfh.uniboard.data.QueryDTO;
-import ch.bfh.uniboard.data.ResultContainerDTO;
-import ch.bfh.uniboard.data.StringValueDTO;
-import ch.bfh.uniboard.data.ValueDTO;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
@@ -49,11 +30,8 @@ import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlType;
@@ -250,7 +228,7 @@ public abstract class SignatureHelper {
 			if (lastAttributeName != null && attr.getKey().equals(lastAttributeName)) {
 				break;
 			}
-			Element element = this.prepareValueElement(attr.getValue());
+			Element element = STRING_SPACE.getElement(attr.getValue());
 			if (element != null) {
 				attributesElements.add(element);
 			}
@@ -262,28 +240,12 @@ public abstract class SignatureHelper {
 	/**
 	 * Helper method generating an UniCrypt element for each type of Value
 	 *
-	 * @param value Value object to convert to UniCrypt element
+	 * @param attribute Value object to convert to UniCrypt element
 	 * @return the element representing the Value object
 	 */
-	private Element prepareValueElement(ValueDTO value) {
-		Z z = Z.getInstance();
-		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
-		if (value instanceof ByteArrayValueDTO) {
-			return byteSpace.getElement(((ByteArrayValueDTO) value).getValue());
-		} else if (value instanceof DateValueDTO) {
-			TimeZone timeZone = TimeZone.getTimeZone("UTC");
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-			dateFormat.setTimeZone(timeZone);
-			String stringDate = dateFormat.format(((DateValueDTO) value).getValue().toGregorianCalendar().getTime());
-			return STRING_SPACE.getElement(stringDate);
-		} else if (value instanceof IntegerValueDTO) {
-			return z.getElement(((IntegerValueDTO) value).getValue());
-		} else if (value instanceof StringValueDTO) {
-			return STRING_SPACE.getElement(((StringValueDTO) value).getValue());
-		} else {
-			logger.log(Level.SEVERE, "Unsupported Value type.");
-			return null;
-		}
+	private Element prepareAttributeElement(AttributeDTO attribute) {
+
+		return STRING_SPACE.getElement(attribute.getValue());
 	}
 
 	/**
@@ -310,8 +272,13 @@ public abstract class SignatureHelper {
 
 		identifierElements.add(STRING_SPACE.getElement(identifier.getClass().getAnnotation(XmlType.class).name()));
 
-		for (String part : identifier.getPart()) {
-			identifierElements.add(STRING_SPACE.getElement(part));
+		if (identifier instanceof PropertyIdentifierDTO) {
+			PropertyIdentifierDTO pIdent = (PropertyIdentifierDTO) identifier;
+			identifierElements.add(STRING_SPACE.getElement(pIdent.getType().value()));
+			identifierElements.add(STRING_SPACE.getElement(pIdent.getKey()));
+		} else if (identifier instanceof MessageIdentifierDTO) {
+			MessageIdentifierDTO mIdent = (MessageIdentifierDTO) identifier;
+			identifierElements.add(STRING_SPACE.getElement(mIdent.getKeyPath()));
 		}
 		DenseArray identifierDenseElements = DenseArray.getInstance(identifierElements);
 		return Tuple.getInstance(identifierDenseElements);
@@ -329,30 +296,30 @@ public abstract class SignatureHelper {
 			constraintElements.add(STRING_SPACE.getElement("between"));
 			BetweenDTO between = (BetweenDTO) constraint;
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
-			constraintElements.add(this.prepareValueElement(between.getLowerBound()));
-			constraintElements.add(this.prepareValueElement(between.getUpperBound()));
+			constraintElements.add(STRING_SPACE.getElement(between.getLowerBound()));
+			constraintElements.add(STRING_SPACE.getElement(between.getUpperBound()));
 		} else if (constraint instanceof EqualDTO) {
 			constraintElements.add(STRING_SPACE.getElement("equal"));
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			EqualDTO equal = (EqualDTO) constraint;
-			constraintElements.add(this.prepareValueElement(equal.getValue()));
+			constraintElements.add(STRING_SPACE.getElement(equal.getValue()));
 		} else if (constraint instanceof GreaterDTO) {
 			constraintElements.add(STRING_SPACE.getElement("greater"));
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			GreaterDTO greater = (GreaterDTO) constraint;
-			constraintElements.add(this.prepareValueElement(greater.getValue()));
+			constraintElements.add(STRING_SPACE.getElement(greater.getValue()));
 		} else if (constraint instanceof GreaterEqualDTO) {
 			constraintElements.add(STRING_SPACE.getElement("greaterEqual"));
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			GreaterEqualDTO greaterEqual = (GreaterEqualDTO) constraint;
-			constraintElements.add(this.prepareValueElement(greaterEqual.getValue()));
+			constraintElements.add(STRING_SPACE.getElement(greaterEqual.getValue()));
 		} else if (constraint instanceof InDTO) {
 			constraintElements.add(STRING_SPACE.getElement("in"));
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			InDTO in = (InDTO) constraint;
 			List<Element> inELements = new ArrayList<>();
-			for (ValueDTO v : in.getElement()) {
-				inELements.add(this.prepareValueElement(v));
+			for (String v : in.getElement()) {
+				inELements.add(STRING_SPACE.getElement(v));
 			}
 			DenseArray inDenseElements = DenseArray.getInstance(inELements);
 			constraintElements.add(Tuple.getInstance(inDenseElements));
@@ -360,17 +327,17 @@ public abstract class SignatureHelper {
 			constraintElements.add(STRING_SPACE.getElement("less"));
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			LessDTO less = (LessDTO) constraint;
-			constraintElements.add(this.prepareValueElement(less.getValue()));
+			constraintElements.add(STRING_SPACE.getElement(less.getValue()));
 		} else if (constraint instanceof LessEqualDTO) {
 			constraintElements.add(STRING_SPACE.getElement("lessEqual"));
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			LessEqualDTO lessEqual = (LessEqualDTO) constraint;
-			constraintElements.add(this.prepareValueElement(lessEqual.getValue()));
+			constraintElements.add(STRING_SPACE.getElement(lessEqual.getValue()));
 		} else if (constraint instanceof NotEqualDTO) {
 			constraintElements.add(STRING_SPACE.getElement("notEqual"));
 			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			NotEqualDTO notEqual = (NotEqualDTO) constraint;
-			constraintElements.add(this.prepareValueElement(notEqual.getValue()));
+			constraintElements.add(STRING_SPACE.getElement(notEqual.getValue()));
 		} else {
 			logger.log(Level.SEVERE, "Unsupported constraint type.");
 		}

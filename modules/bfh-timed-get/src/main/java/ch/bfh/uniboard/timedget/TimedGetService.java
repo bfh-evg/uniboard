@@ -12,12 +12,16 @@
 package ch.bfh.uniboard.timedget;
 
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.DateValue;
 import ch.bfh.uniboard.service.GetComponent;
 import ch.bfh.uniboard.service.GetService;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
 import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.service.data.ResultContainer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -41,9 +45,11 @@ public class TimedGetService extends GetComponent implements GetService {
 	@Override
 	protected Attributes afterGet(Query query, ResultContainer resultContainer) {
 		Attributes gamma = resultContainer.getGamma();
-		long time = new Date().getTime();
-		time = 1000 * (time / 1000);
-		gamma.add(ATTRIBUTE_NAME, new DateValue(new Date(time)));
+		TimeZone timeZone = TimeZone.getTimeZone("UTC");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		dateFormat.setTimeZone(timeZone);
+		String dateTime = dateFormat.format(new Date());
+		gamma.add(new Attribute(ATTRIBUTE_NAME, dateTime, DataType.DATE));
 		return gamma;
 	}
 

@@ -16,7 +16,8 @@ import ch.bfh.uniboard.service.configuration.Configuration;
 import ch.bfh.uniboard.service.configuration.ConfigurationManager;
 import ch.bfh.uniboard.service.PostComponent;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -60,8 +61,8 @@ public class TypedService extends PostComponent implements PostService {
 		Configuration p = this.configurationManager.getConfiguration(CONFIG_NAME);
 		if (p == null) {
 			logger.log(Level.SEVERE, "Configuration for component " + CONFIG_NAME + " is missing.");
-			beta.add(Attributes.ERROR,
-					new StringValue("BGT-003 This UniBoard instance is down due to a configuration error."));
+			beta.add(new Attribute(Attributes.ERROR,
+					"BGT-003 This UniBoard instance is down due to a configuration error."));
 			return beta;
 		}
 
@@ -71,32 +72,33 @@ public class TypedService extends PostComponent implements PostService {
 			if (this.validate(new String(message, Charset.forName("UTF-8")), schemaPath)) {
 				return beta;
 			} else {
-				beta.add(Attributes.REJECTED, new StringValue("BGT-005 Message does not match the schema."));
+				beta.add(new Attribute(Attributes.REJECTED, "BGT-005 Message does not match the schema."));
 				return beta;
 			}
 		} else {
 
 			if (!alpha.containsKey(ATTRIBUTE_NAME)) {
-				beta.add(Attributes.REJECTED, new StringValue("BGT-001 Missing required attribute: " + ATTRIBUTE_NAME));
+				beta.add(new Attribute(Attributes.REJECTED, "BGT-001 Missing required attribute: " + ATTRIBUTE_NAME));
 				return beta;
 			}
-			if (!(alpha.getAttribute(ATTRIBUTE_NAME) instanceof StringValue)) {
-				beta.add(Attributes.REJECTED, new StringValue("BGT-002 Required attribute: " + ATTRIBUTE_NAME
+			if (alpha.getAttribute(ATTRIBUTE_NAME).getDataType() != null
+					&& alpha.getAttribute(ATTRIBUTE_NAME).getDataType() != DataType.STRING) {
+				beta.add(new Attribute(Attributes.REJECTED, "BGT-002 Required attribute: " + ATTRIBUTE_NAME
 						+ " is not of type string."));
 				return beta;
 			}
-			StringValue group = (StringValue) alpha.getAttribute(ATTRIBUTE_NAME);
-			if (!p.getEntries().containsKey(group.getValue())) {
-				beta.add(Attributes.REJECTED,
-						new StringValue("BGT-004 Unknown " + ATTRIBUTE_NAME + ": " + group.getValue()));
+			String group = alpha.getAttribute(ATTRIBUTE_NAME).getValue();
+			if (!p.getEntries().containsKey(group)) {
+				beta.add(new Attribute(Attributes.REJECTED,
+						"BGT-004 Unknown " + ATTRIBUTE_NAME + ": " + group));
 				return beta;
 			}
-			String schemaPath = p.getEntries().get(group.getValue());
+			String schemaPath = p.getEntries().get(group);
 
 			if (this.validate(new String(message, Charset.forName("UTF-8")), schemaPath)) {
 				return beta;
 			} else {
-				beta.add(Attributes.REJECTED, new StringValue("BGT-006 Message is not of type " + group.getValue()));
+				beta.add(new Attribute(Attributes.REJECTED, "BGT-006 Message is not of type " + group));
 				return beta;
 			}
 		}

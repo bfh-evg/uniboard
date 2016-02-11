@@ -12,9 +12,9 @@
 package ch.bfh.uniboard.sectioned;
 
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
 import java.io.File;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -67,7 +67,7 @@ public class SectionedServiceTest {
 	public void testCorrectRequest() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test"));
+		alpha.add(new Attribute("section", "test"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
@@ -80,14 +80,14 @@ public class SectionedServiceTest {
 	public void testPostAlphaAttributeMissing() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("test", new StringValue("test"));
+		alpha.add(new Attribute("test", "test"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-001", tmp2);
 	}
@@ -96,14 +96,14 @@ public class SectionedServiceTest {
 	public void testPostAlphaAttributeValueInvalid() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new IntegerValue(1));
+		alpha.add(new Attribute("section", "1", DataType.INTEGER));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-002", tmp2);
 	}
@@ -112,14 +112,14 @@ public class SectionedServiceTest {
 	public void testPostConfigurationMissing() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test"));
+		alpha.add(new Attribute("section", "test"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(false);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.ERROR)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.ERROR);
+		Attribute tmp = beta.getAttribute(Attributes.ERROR);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-003", tmp2);
 	}
@@ -128,14 +128,14 @@ public class SectionedServiceTest {
 	public void testPostUnkownSection() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("section", new StringValue("test3"));
+		alpha.add(new Attribute("section", "test3"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		beta = this.postService.post(message, alpha, beta);
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BSE-004", tmp2);
 	}

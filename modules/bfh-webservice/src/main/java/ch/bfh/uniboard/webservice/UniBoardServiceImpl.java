@@ -57,7 +57,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 			AttributesDTO exAttributes = new AttributesDTO();
 			AttributeDTO e = new AttributeDTO();
 			e.setKey(Attributes.ERROR);
-			e.setValue(new StringValueDTO(ex.getMessage()));
+			e.setValue(ex.getMessage());
 			exAttributes.getAttribute().add(e);
 			ResultDTO exResult = new ResultDTO();
 			ResultContainerDTO exResultContainer = new ResultContainerDTO(exResult, exAttributes);
@@ -81,7 +81,7 @@ public class UniBoardServiceImpl implements UniBoardService {
 			AttributesDTO exAttributes = new AttributesDTO();
 			AttributeDTO e = new AttributeDTO();
 			e.setKey(Attributes.ERROR);
-			e.setValue(new StringValueDTO(ex.getMessage()));
+			e.setValue(ex.getMessage());
 			exAttributes.getAttribute().add(e);
 			return exAttributes;
 		}

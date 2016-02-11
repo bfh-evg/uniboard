@@ -13,9 +13,9 @@ package ch.bfh.uniboard.typed;
 
 import ch.bfh.uniboard.PostServiceTestBean;
 import ch.bfh.uniboard.service.data.Attributes;
-import ch.bfh.uniboard.service.IntegerValue;
 import ch.bfh.uniboard.service.PostService;
-import ch.bfh.uniboard.service.StringValue;
+import ch.bfh.uniboard.service.data.Attribute;
+import ch.bfh.uniboard.service.data.DataType;
 import java.io.File;
 import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -68,7 +68,7 @@ public class TypedServiceTest {
 	public void testCorrectRequestGrouped() {
 		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("group", new StringValue("number"));
+		alpha.add(new Attribute("group", "number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		this.configurationManager.setGroupded(true);
@@ -82,7 +82,7 @@ public class TypedServiceTest {
 	public void testAttributeMissingGrouped() {
 		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("group2", new StringValue("number"));
+		alpha.add(new Attribute("group2", "number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		this.configurationManager.setGroupded(true);
@@ -90,7 +90,7 @@ public class TypedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-001", tmp2);
 	}
@@ -99,7 +99,7 @@ public class TypedServiceTest {
 	public void testPostAlphaAttributeValueInvalidGrouped() {
 		byte[] message = "1".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("group", new IntegerValue(1));
+		alpha.add(new Attribute("group", "1", DataType.INTEGER));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		this.configurationManager.setGroupded(true);
@@ -107,7 +107,7 @@ public class TypedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-002", tmp2);
 	}
@@ -116,7 +116,7 @@ public class TypedServiceTest {
 	public void testPostConfigurationMissingGrouped() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("group", new StringValue("number"));
+		alpha.add(new Attribute("group", "number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(false);
 		this.configurationManager.setGroupded(true);
@@ -124,7 +124,7 @@ public class TypedServiceTest {
 		if (!beta.containsKey(Attributes.ERROR)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.ERROR);
+		Attribute tmp = beta.getAttribute(Attributes.ERROR);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-003", tmp2);
 	}
@@ -133,7 +133,7 @@ public class TypedServiceTest {
 	public void testPostUnkownGroupGrouped() {
 		byte[] message = new byte[1];
 		Attributes alpha = new Attributes();
-		alpha.add("group", new StringValue("invalid"));
+		alpha.add(new Attribute("group", "invalid"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		this.configurationManager.setGroupded(true);
@@ -141,7 +141,7 @@ public class TypedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-004", tmp2);
 	}
@@ -150,7 +150,7 @@ public class TypedServiceTest {
 	public void testInvalidMessageGrouped() {
 		byte[] message = "\"1.1.1.1\"".getBytes();
 		Attributes alpha = new Attributes();
-		alpha.add("group", new StringValue("number"));
+		alpha.add(new Attribute("group", "number"));
 		Attributes beta = new Attributes();
 		this.configurationManager.setCorrect(true);
 		this.configurationManager.setGroupded(true);
@@ -158,7 +158,7 @@ public class TypedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-006", tmp2);
 	}
@@ -187,7 +187,7 @@ public class TypedServiceTest {
 		if (!beta.containsKey(Attributes.REJECTED)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.REJECTED);
+		Attribute tmp = beta.getAttribute(Attributes.REJECTED);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-005", tmp2);
 	}
@@ -203,7 +203,7 @@ public class TypedServiceTest {
 		if (!beta.containsKey(Attributes.ERROR)) {
 			fail();
 		}
-		StringValue tmp = (StringValue) beta.getAttribute(Attributes.ERROR);
+		Attribute tmp = beta.getAttribute(Attributes.ERROR);
 		String tmp2 = tmp.getValue().substring(0, 7);
 		assertEquals("BGT-003", tmp2);
 	}

@@ -17,10 +17,9 @@ import ch.bfh.uniboard.data.LessEqualDTO;
 import ch.bfh.uniboard.data.MessageIdentifierDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
-import ch.bfh.uniboard.data.StringValueDTO;
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.data.ResultContainer;
-import ch.bfh.uniboard.service.StringValue;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -79,15 +78,11 @@ public class UniBoardServiceImplTest {
 		AttributesDTO adto = new AttributesDTO();
 		AttributesDTO.AttributeDTO attribute1 = new AttributesDTO.AttributeDTO();
 		attribute1.setKey("test");
-		StringValueDTO string1 = new StringValueDTO();
-		string1.setValue("test");
-		attribute1.setValue(string1);
+		attribute1.setValue("test");
 		adto.getAttribute().add(attribute1);
 		AttributesDTO.AttributeDTO attribute2 = new AttributesDTO.AttributeDTO();
 		attribute2.setKey("test2");
-		StringValueDTO string2 = new StringValueDTO();
-		string2.setValue("test2");
-		attribute2.setValue(string2);
+		attribute2.setValue("test2");
 		adto.getAttribute().add(attribute2);
 
 		service.post(message, adto);
@@ -95,8 +90,8 @@ public class UniBoardServiceImplTest {
 		ch.bfh.uniboard.service.data.Post p = postService.getLastPost();
 
 		assertEquals(2, p.getAlpha().getEntries().size());
-		assertEquals(new StringValue("test"), p.getAlpha().getAttribute("test"));
-		assertEquals(new StringValue("test2"), p.getAlpha().getAttribute("test2"));
+		assertEquals("test", p.getAlpha().getAttribute("test"));
+		assertEquals("test2", p.getAlpha().getAttribute("test2"));
 		Assert.assertArrayEquals(message, p.getMessage());
 
 	}
@@ -110,26 +105,25 @@ public class UniBoardServiceImplTest {
 		QueryDTO query = new QueryDTO();
 		LessEqualDTO constraint = new LessEqualDTO();
 		MessageIdentifierDTO identifier = new MessageIdentifierDTO();
-		identifier.getPart().add("test");
+		identifier.setKeyPath("test");
 		constraint.setIdentifier(identifier);
-		StringValueDTO string = new StringValueDTO("test2");
-		constraint.setValue(string);
+		constraint.setValue("test2");
 		query.getConstraint().add(constraint);
 
 		//Setup the expected result
 		List<ch.bfh.uniboard.service.data.Post> posts = new ArrayList<>();
 		ch.bfh.uniboard.service.data.Post post = new ch.bfh.uniboard.service.data.Post();
 		post.setAlpha(new Attributes());
-		post.getAlpha().add("alpha", new StringValue("alpha"));
+		post.getAlpha().add(new Attribute("alpha", "alpha"));
 		post.setBeta(new Attributes());
-		post.getBeta().add("beta", new StringValue("beta"));
+		post.getBeta().add(new Attribute("beta", "beta"));
 		byte[] message = new byte[1];
 		message[0] = 0x16;
 		post.setMessage(message);
 		posts.add(post);
 
 		Attributes attributes = new Attributes();
-		attributes.add("gamma", new StringValue("gamma"));
+		attributes.add(new Attribute("gamma", "gamma"));
 
 		ResultContainer expectedResult = new ResultContainer(posts, attributes);
 		getService.setFeedback(expectedResult);
@@ -138,12 +132,12 @@ public class UniBoardServiceImplTest {
 
 		assertEquals(result.getGamma().getAttribute().size(), 1);
 		assertEquals(result.getGamma().getAttribute().get(0).getKey(), "gamma");
-		assertEquals(((StringValueDTO) result.getGamma().getAttribute().get(0).getValue()).getValue(), "gamma");
+		assertEquals((result.getGamma().getAttribute().get(0).getValue()), "gamma");
 		assertEquals(result.getResult().getPost().size(), 1);
 		Assert.assertArrayEquals(result.getResult().getPost().get(0).getMessage(), message);
 		assertEquals(result.getResult().getPost().get(0).getAlpha().getAttribute().get(0).getKey(), "alpha");
-		assertEquals(((StringValueDTO) result.getResult().getPost().get(0).getAlpha().getAttribute().get(0).getValue()).getValue(), "alpha");
+		assertEquals((result.getResult().getPost().get(0).getAlpha().getAttribute().get(0).getValue()), "alpha");
 		assertEquals(result.getResult().getPost().get(0).getBeta().getAttribute().get(0).getKey(), "beta");
-		assertEquals(((StringValueDTO) result.getResult().getPost().get(0).getBeta().getAttribute().get(0).getValue()).getValue(), "beta");
+		assertEquals((result.getResult().getPost().get(0).getBeta().getAttribute().get(0).getValue()), "beta");
 	}
 }
