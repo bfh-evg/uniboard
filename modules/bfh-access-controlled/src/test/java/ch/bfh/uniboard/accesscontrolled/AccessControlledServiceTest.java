@@ -14,6 +14,7 @@ package ch.bfh.uniboard.accesscontrolled;
 import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.data.Post;
 import ch.bfh.uniboard.service.PostService;
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.ResultContainer;
 import java.io.File;
 import java.nio.charset.Charset;
@@ -79,19 +80,20 @@ public class AccessControlledServiceTest {
 		byte[] message = new byte[1];
 		message[0] = 0x1;
 		Attributes alpha = new Attributes();
-		alpha.add("section", section);
-		alpha.add("group", group);
-		alpha.add("signature", "xxx");
-		alpha.add("publickey", key);
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
+		alpha.add(new Attribute("signature", "xxx"));
+		alpha.add(new Attribute("publickey", key));
 
 		//Set resultContainer for auth query
 		List<Post> posts = new ArrayList<>();
 		Post p = new Post();
-		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\"" + key + "\"}}").getBytes(Charset.forName("UTF-8"));
+		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\""
+				+ key + "\"}}").getBytes(Charset.forName("UTF-8"));
 		p.setMessage(authorization);
 		Attributes authAlpha = new Attributes();
-		authAlpha.add("section", section);
-		authAlpha.add("group", group);
+		authAlpha.add(new Attribute("section", section));
+		authAlpha.add(new Attribute("group", group));
 		p.setAlpha(authAlpha);
 		Attributes authBeta = new Attributes();
 		p.setBeta(authBeta);
@@ -113,19 +115,20 @@ public class AccessControlledServiceTest {
 		byte[] message = new byte[1];
 		message[0] = 0x1;
 		Attributes alpha = new Attributes();
-		alpha.add("section", section);
-		alpha.add("group", group);
-		alpha.add("signature", "xxx");
-		alpha.add("publickey", key);
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
+		alpha.add(new Attribute("signature", "xxx"));
+		alpha.add(new Attribute("publickey", key));
 
 		//Set resultContainer for auth query
 		List<Post> posts = new ArrayList<>();
 		Post p = new Post();
-		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\"" + key + "\"},\"amount\":2}").getBytes(Charset.forName("UTF-8"));
+		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\""
+				+ key + "\"},\"amount\":2}").getBytes(Charset.forName("UTF-8"));
 		p.setMessage(authorization);
 		Attributes authAlpha = new Attributes();
-		authAlpha.add("section", section);
-		authAlpha.add("group", "accessRight");
+		authAlpha.add(new Attribute("section", section));
+		authAlpha.add(new Attribute("group", "accessRight"));
 		p.setAlpha(authAlpha);
 		Attributes authBeta = new Attributes();
 		p.setBeta(authBeta);
@@ -138,8 +141,8 @@ public class AccessControlledServiceTest {
 		byte[] blub = ("{}").getBytes(Charset.forName("UTF-8"));
 		p2.setMessage(blub);
 		Attributes alpha2 = new Attributes();
-		alpha2.add("section", section);
-		alpha2.add("group", group);
+		alpha2.add(new Attribute("section", section));
+		alpha2.add(new Attribute("group", group));
 		p2.setAlpha(alpha2);
 		Attributes beta2 = new Attributes();
 		p2.setBeta(beta2);
@@ -162,19 +165,20 @@ public class AccessControlledServiceTest {
 		byte[] message = new byte[1];
 		message[0] = 0x1;
 		Attributes alpha = new Attributes();
-		alpha.add("section", section);
-		alpha.add("group", group);
-		alpha.add("signature", "xxx");
-		alpha.add("publickey", key);
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
+		alpha.add(new Attribute("signature", "xxx"));
+		alpha.add(new Attribute("publickey", key));
 
 		//Set resultContainer for auth query
 		List<Post> posts = new ArrayList<>();
 		Post p = new Post();
-		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\"" + key + "\"},\"amount\":1}").getBytes(Charset.forName("UTF-8"));
+		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\""
+				+ key + "\"},\"amount\":1}").getBytes(Charset.forName("UTF-8"));
 		p.setMessage(authorization);
 		Attributes authAlpha = new Attributes();
-		authAlpha.add("section", section);
-		authAlpha.add("group", "accessRight");
+		authAlpha.add(new Attribute("section", section));
+		authAlpha.add(new Attribute("group", "accessRight"));
 		p.setAlpha(authAlpha);
 		Attributes authBeta = new Attributes();
 		p.setBeta(authBeta);
@@ -187,8 +191,8 @@ public class AccessControlledServiceTest {
 		byte[] blub = ("{}").getBytes(Charset.forName("UTF-8"));
 		p2.setMessage(blub);
 		Attributes alpha2 = new Attributes();
-		alpha2.add("section", section);
-		alpha2.add("group", group);
+		alpha2.add(new Attribute("section", section));
+		alpha2.add(new Attribute("group", group));
 		p2.setAlpha(alpha2);
 		Attributes beta2 = new Attributes();
 		p2.setBeta(beta2);
@@ -199,7 +203,7 @@ public class AccessControlledServiceTest {
 		Attributes beta = new Attributes();
 		Attributes result = postService.post(message, alpha, beta);
 		assertEquals(1, result.getEntries().size());
-		assertEquals("BAC-007", result.getAttribute(Attributes.REJECTED).subSequence(0, 7));
+		assertEquals("BAC-007", result.getAttribute(Attributes.REJECTED).getValue().subSequence(0, 7));
 		assertNull(this.postServiceTestBean.getLastPost());
 	}
 
@@ -212,22 +216,23 @@ public class AccessControlledServiceTest {
 		byte[] message = new byte[1];
 		message[0] = 0x1;
 		Attributes alpha = new Attributes();
-		alpha.add("section", section);
-		alpha.add("group", group);
-		alpha.add("signature", "xxx");
-		alpha.add("publickey", key);
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
+		alpha.add(new Attribute("signature", "xxx"));
+		alpha.add(new Attribute("publickey", key));
 		Attributes beta = new Attributes();
-		beta.add("timestamp", "2014-10-15T12:00Z");
+		beta.add(new Attribute("timestamp", "2014-10-15T12:00:00Z"));
 
 		//Set resultContainer for auth query
 		List<Post> posts = new ArrayList<>();
 		Post p = new Post();
-		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\"" + key + "\"},\"startTime\":\"2014-10-15T11:00:00Z\"}")
+		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\""
+				+ key + "\"},\"startTime\":\"2014-10-15T11:00:00Z\"}")
 				.getBytes(Charset.forName("UTF-8"));
 		p.setMessage(authorization);
 		Attributes authAlpha = new Attributes();
-		authAlpha.add("section", section);
-		authAlpha.add("group", group);
+		authAlpha.add(new Attribute("section", section));
+		authAlpha.add(new Attribute("group", group));
 		p.setAlpha(authAlpha);
 		Attributes authBeta = new Attributes();
 		p.setBeta(authBeta);
@@ -248,22 +253,23 @@ public class AccessControlledServiceTest {
 		byte[] message = new byte[1];
 		message[0] = 0x1;
 		Attributes alpha = new Attributes();
-		alpha.add("section", section);
-		alpha.add("group", group);
-		alpha.add("signature", "xxx");
-		alpha.add("publickey", key);
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
+		alpha.add(new Attribute("signature", "xxx"));
+		alpha.add(new Attribute("publickey", key));
 		Attributes beta = new Attributes();
-		beta.add("timestamp", "2014-10-15T12:00Z");
+		beta.add(new Attribute("timestamp", "2014-10-15T12:00:00Z"));
 
 		//Set resultContainer for auth query
 		List<Post> posts = new ArrayList<>();
 		Post p = new Post();
-		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\"" + key + "\"},\"startTime\":\"2014-10-15T13:00:00Z\"}")
+		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\""
+				+ key + "\"},\"startTime\":\"2014-10-15T13:00:00Z\"}")
 				.getBytes(Charset.forName("UTF-8"));
 		p.setMessage(authorization);
 		Attributes authAlpha = new Attributes();
-		authAlpha.add("section", section);
-		authAlpha.add("group", group);
+		authAlpha.add(new Attribute("section", section));
+		authAlpha.add(new Attribute("group", group));
 		p.setAlpha(authAlpha);
 		Attributes authBeta = new Attributes();
 		p.setBeta(authBeta);
@@ -272,7 +278,7 @@ public class AccessControlledServiceTest {
 		getServiceTestBean.addFeedback(rc);
 		Attributes result = postService.post(message, alpha, beta);
 		assertTrue(result.containsKey(Attributes.REJECTED));
-		assertEquals("BAC-004", result.getAttribute(Attributes.REJECTED).subSequence(0, 7));
+		assertEquals("BAC-004", result.getAttribute(Attributes.REJECTED).getValue().subSequence(0, 7));
 		assertNull(this.postServiceTestBean.getLastPost());
 	}
 
@@ -285,22 +291,23 @@ public class AccessControlledServiceTest {
 		byte[] message = new byte[1];
 		message[0] = 0x1;
 		Attributes alpha = new Attributes();
-		alpha.add("section", section);
-		alpha.add("group", group);
-		alpha.add("signature", "xxx");
-		alpha.add("publickey", key);
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
+		alpha.add(new Attribute("signature", "xxx"));
+		alpha.add(new Attribute("publickey", key));
 		Attributes beta = new Attributes();
-		beta.add("timestamp", "2014-10-15T12:00Z");
+		beta.add(new Attribute("timestamp", "2014-10-15T12:00:00Z"));
 
 		//Set resultContainer for auth query
 		List<Post> posts = new ArrayList<>();
 		Post p = new Post();
-		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\"" + key + "\"},\"endTime\":\"2014-10-15T13:00:00Z\"}")
+		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\""
+				+ key + "\"},\"endTime\":\"2014-10-15T13:00:00Z\"}")
 				.getBytes(Charset.forName("UTF-8"));
 		p.setMessage(authorization);
 		Attributes authAlpha = new Attributes();
-		authAlpha.add("section", section);
-		authAlpha.add("group", group);
+		authAlpha.add(new Attribute("section", section));
+		authAlpha.add(new Attribute("group", group));
 		p.setAlpha(authAlpha);
 		Attributes authBeta = new Attributes();
 		p.setBeta(authBeta);
@@ -321,22 +328,23 @@ public class AccessControlledServiceTest {
 		byte[] message = new byte[1];
 		message[0] = 0x1;
 		Attributes alpha = new Attributes();
-		alpha.add("section", section);
-		alpha.add("group", group);
-		alpha.add("signature", "xxx");
-		alpha.add("publickey", key);
+		alpha.add(new Attribute("section", section));
+		alpha.add(new Attribute("group", group));
+		alpha.add(new Attribute("signature", "xxx"));
+		alpha.add(new Attribute("publickey", key));
 		Attributes beta = new Attributes();
-		beta.add("timestamp", "2014-10-15T12:00Z");
+		beta.add(new Attribute("timestamp", "2014-10-15T12:00:00Z"));
 
 		//Set resultContainer for auth query
 		List<Post> posts = new ArrayList<>();
 		Post p = new Post();
-		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\"" + key + "\"},\"endTime\":\"2014-10-15T11:00:00Z\"}")
+		byte[] authorization = ("{\"group\":\"group1\",\"crypto\":{\"type\":\"RSA\",\"publickey\":\""
+				+ key + "\"},\"endTime\":\"2014-10-15T11:00:00Z\"}")
 				.getBytes(Charset.forName("UTF-8"));
 		p.setMessage(authorization);
 		Attributes authAlpha = new Attributes();
-		authAlpha.add("section", section);
-		authAlpha.add("group", group);
+		authAlpha.add(new Attribute("section", section));
+		authAlpha.add(new Attribute("group", group));
 		p.setAlpha(authAlpha);
 		Attributes authBeta = new Attributes();
 		p.setBeta(authBeta);
@@ -345,7 +353,7 @@ public class AccessControlledServiceTest {
 		getServiceTestBean.addFeedback(rc);
 		Attributes result = postService.post(message, alpha, beta);
 		assertTrue(result.containsKey(Attributes.REJECTED));
-		assertEquals("BAC-005", result.getAttribute(Attributes.REJECTED).subSequence(0, 7));
+		assertEquals("BAC-005", result.getAttribute(Attributes.REJECTED).getValue().subSequence(0, 7));
 		assertNull(this.postServiceTestBean.getLastPost());
 	}
 }

@@ -12,6 +12,7 @@
 package ch.bfh.uniboard.accesscontrolled;
 
 import static ch.bfh.uniboard.accesscontrolled.AccessControlledService.HASH_METHOD;
+import ch.bfh.uniboard.service.data.Attribute;
 import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.SchnorrSignatureScheme;
@@ -51,7 +52,7 @@ public class AccessControlledServiceProtectedTest {
 		message[0] = 0x6;
 		String string = "test";
 		Attributes alpha = new Attributes();
-		alpha.add("a1", string);
+		alpha.add(new Attribute("a1", string));
 		Element result = service.createMessageElement(message, alpha);
 		assertTrue(result instanceof Pair);
 		Pair resultPair = (Pair) result;
@@ -72,8 +73,8 @@ public class AccessControlledServiceProtectedTest {
 		byte[] message = new byte[1];
 		message[0] = 0x5;
 		Attributes alpha = new Attributes();
-		alpha.add("section", "bfh-test");
-		alpha.add("group", "accessRight");
+		alpha.add(new Attribute("section", "bfh-test"));
+		alpha.add(new Attribute("group", "accessRight"));
 
 		BigInteger modulus = new BigInteger("1907");
 		BigInteger orderFactor = new BigInteger("953");
@@ -92,7 +93,7 @@ public class AccessControlledServiceProtectedTest {
 		String sigString = MathUtil.pair(signature.getFirst().convertToBigInteger(),
 				signature.getSecond().convertToBigInteger()).toString(10);
 
-		alpha.add("signature", sigString);
+		alpha.add(new Attribute("signature", sigString));
 
 		assertTrue(service.checkDLSignature(key, message, alpha));
 
@@ -107,8 +108,8 @@ public class AccessControlledServiceProtectedTest {
 		byte[] message = new byte[1];
 		message[0] = 0x5;
 		Attributes alpha = new Attributes();
-		alpha.add("section", "bfh-test");
-		alpha.add("group", "accessRight");
+		alpha.add(new Attribute("section", "bfh-test"));
+		alpha.add(new Attribute("group", "accessRight"));
 
 		Element messageElement = service.createMessageElement(message, alpha);
 
@@ -126,7 +127,7 @@ public class AccessControlledServiceProtectedTest {
 		System.out.println(MathUtil.pair(new BigInteger("2753"), p.multiply(q)).toString(10));
 
 		String sigString = signature.convertToBigInteger().toString(10);
-		alpha.add("signature", sigString);
+		alpha.add(new Attribute("signature", sigString));
 
 		assertTrue(service.checkRSASignature(key, message, alpha));
 	}
