@@ -1,0 +1,14 @@
+{
+  "name": "UniBoard-JSClient",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "Severin Hauser &lt;severin.hauser@bfh.ch&gt;",
+  "contributors": [],
+  "dependencies": {}
+}

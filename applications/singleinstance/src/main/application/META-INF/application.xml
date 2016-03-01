@@ -5,62 +5,62 @@
 	<display-name>UniBoard Single Instance</display-name>
 	<initialize-in-order>true</initialize-in-order>
 	<module>
-		<ejb>bfh-mongodb-connector-1.0.jar</ejb>
+		<ejb>bfh-mongodb-connector-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/mongodb-connector-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-configuration-1.0.jar</ejb>
+		<ejb>bfh-configuration-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/configuration-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-webservice-1.0.jar</ejb>
+		<ejb>bfh-webservice-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/webservice-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-persistence-mongodb-1.0.jar</ejb>
+		<ejb>bfh-persistence-mongodb-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/persistence-mongodb-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-sectioned-1.0.jar</ejb>
+		<ejb>bfh-sectioned-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/sectioned-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-grouped-typed-1.0.jar</ejb>
+		<ejb>bfh-grouped-typed-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/grouped-typed-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-chronological-1.0.jar</ejb>
+		<ejb>bfh-chronological-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/chronological-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-ordered-1.0.jar</ejb>
+		<ejb>bfh-ordered-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/ordered-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-certified-posting-1.0.jar</ejb>
+		<ejb>bfh-certified-posting-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/certified-posting-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-access-controlled-1.0.jar</ejb>
+		<ejb>bfh-access-controlled-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/access-controlled-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-notification-1.0.jar</ejb>
+		<ejb>bfh-notification-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/notification-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-timed-get-1.0.jar</ejb>
+		<ejb>bfh-timed-get-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/timed-get-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
-		<ejb>bfh-certified-get-1.0.jar</ejb>
+		<ejb>bfh-certified-get-1.1-SNAPSHOT.jar</ejb>
 		<alt-dd>META-INF/certified-get-service-descriptor.xml</alt-dd>
 	</module>
 	<module>
 		<!--For this module the injection is configured in the ejb-jar.xml inside the project.
 		This is because it is not possible to provide an ejb-jar.xml for a web module here		-->
 		<web>
-			<web-uri>bfh-restservice-1.0.war</web-uri>
+			<web-uri>bfh-restservice-1.1-SNAPSHOT.war</web-uri>
 			<context-root>/uniboard</context-root>
 		</web>
 	</module>

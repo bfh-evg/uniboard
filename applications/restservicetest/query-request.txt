@@ -2,28 +2,4 @@ POST /uniboard/messages/query HTTP/1.1
 Content-Type: application/json
 Accept: application/json
 
-{
-	"constraint": [
-		{
-			"type": "equal",
-			"identifier": {
-				"type": "alphaIdentifier",
-				"part": [ "age" ]
-			},
-			"value": {
-				"type": "integerValue",
-				"value": 35
-			}
-		}
-	],
-	"order": [
-		{
-			"identifier": {
-				"type": "alphaIdentifier",
-				"part": [ "name" ]
-			},
-			"ascDesc": true
-		}
-	],
-	"limit": 0
-}
+{"constraints":[{"type":"equal","identifier":{"type":"simpleIdentifier","type":"alpha","keyPath":"test"},"value":"test"}],"order":[],"limit":0}

@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "constraint", propOrder = {
-	"identifier"
+	"identifier", "dataType"
 })
 @XmlSeeAlso({
 	In.class,

@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "simpleIdentifier", propOrder = {
 	"type",
-	"key"
+	"keyPath"
 })
 public class PropertyIdentifier
 		extends Identifier {

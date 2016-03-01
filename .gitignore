@@ -24,3 +24,4 @@
 /modules/bfh-webservice/target/
 /applications/singleinstance/target/
 /application-clients/client-library/target/
+/application-clients/UniBoard-JSClient/nbproject/private/

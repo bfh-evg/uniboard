@@ -39,6 +39,8 @@ public class Query implements Serializable {
 	private int limit;
 
 	public Query() {
+		constraints = new ArrayList<>();
+		order = new ArrayList<>();
 	}
 
 	public Query(List<Constraint> constraints, List<Order> order, int limit) {

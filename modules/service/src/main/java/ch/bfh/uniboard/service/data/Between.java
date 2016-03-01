@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "between", propOrder = {
-	"start",
-	"end"
+	"lowerBound",
+	"upperBound"
 })
 public class Between extends Constraint implements Serializable {
 

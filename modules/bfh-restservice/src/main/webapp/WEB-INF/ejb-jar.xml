@@ -8,16 +8,7 @@
 	<enterprise-beans>
 		<session>
 			<ejb-name>UniBoardRestService</ejb-name>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.restservice.UniBoardRestServiceImpl/postSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.PostService</local>
-				<ejb-link>SectionedService</ejb-link>
-			</ejb-local-ref>
-			<ejb-local-ref>
-				<ejb-ref-name>ch.bfh.uniboard.restservice.UniBoardRestServiceImpl/getSuccessor</ejb-ref-name>
-				<local>ch.bfh.uniboard.service.GetService</local>
-				<ejb-link>CertifiedGetService</ejb-link>
-			</ejb-local-ref>
+
 		</session>
 	</enterprise-beans>
 
