@@ -39,14 +39,14 @@ public class MainUVRight {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String keyStorePath = "/home/phil/UniVote.jks";
-		String keyStorePass = "123456";
-		String boardAlias = "uniboardvote";
-		String boardPKPass = "123456";
-		String ecAlias = "ec-demo";
-		String ecPKPass = "123456";
-		String eaAlias = "ea-demo";
-		String section = "test-2015";
+		String keyStorePath = "Univote.jks";
+		String keyStorePass = "131231231231313123";
+		String boardAlias = "univote";
+		String boardPKPass = "1234566789989";
+		String ecAlias = "severin.hauser@bfh.ch";
+//		String ecPKPass = "123456";
+//		String eaAlias = "ea-demo";
+		String section = "test-2016";
 
 		KeyStore caKs = KeyStore.getInstance(System.getProperty("javax.net.ssl.keyStoreType", "jks"));
 
@@ -65,17 +65,15 @@ public class MainUVRight {
 		BigInteger uniboardPublicKey = boardPubKey.getY();
 
 		//Load keypair from ec
-		Key ecKey = caKs.getKey(ecAlias, ecPKPass.toCharArray());
-		DSAPrivateKey ecPrivKey = (DSAPrivateKey) ecKey;
-
+//		Key ecKey = caKs.getKey(ecAlias, ecPKPass.toCharArray());
+//		DSAPrivateKey ecPrivKey = (DSAPrivateKey) ecKey;
 		Certificate ecCert = caKs.getCertificate(ecAlias);
 		DSAPublicKey ecPubKey = (DSAPublicKey) ecCert.getPublicKey();
 		BigInteger electionCoordinatorPublicKey = ecPubKey.getY();
-
-		//Load publickey of ea
-		Certificate eaCert = caKs.getCertificate(eaAlias);
-		DSAPublicKey eaPubKey = (DSAPublicKey) eaCert.getPublicKey();
-		BigInteger electionAdministrationPublicKey = eaPubKey.getY();
+//		//Load publickey of ea
+//		Certificate eaCert = caKs.getCertificate(eaAlias);
+//		DSAPublicKey eaPubKey = (DSAPublicKey) eaCert.getPublicKey();
+//		BigInteger electionAdministrationPublicKey = eaPubKey.getY();
 
 		//Create correct json message
 		byte[] message1 = ("{\"group\":\"accessRight\",\"crypto\":{\"type\":\"DL\", \"p\":\""
@@ -103,31 +101,31 @@ public class MainUVRight {
 		String post = PostCreator.createMessage(message1, alpha, beta);
 
 		System.out.println(post);
-
-		//create accessRight message
-		byte[] message2 = ("{\"group\":\"electionDefinition\",\"crypto\":{\"type\":\"DL\", \"p\":\""
-				+ eaPubKey.getParams().getP().toString(10)
-				+ "\",\"q\":\"" + eaPubKey.getParams().getQ().toString(10)
-				+ "\",\"g\":\"" + eaPubKey.getParams().getG().toString(10)
-				+ "\",\"publickey\":\""
-				+ electionAdministrationPublicKey.toString(10) + "\"}}").getBytes(Charset.forName("UTF-8"));
-
-		//Create alphas and betas
-		Attributes alpha2 = new Attributes();
-		alpha2.add("section", new StringValue(section));
-		alpha2.add("group", new StringValue("accessRight"));
-		Element ucMsgSig = PostCreator.createAlphaSignatureWithDL(message2, alpha2, dsaPrivKey);
-		alpha2.add("signature", new StringValue(ucMsgSig.convertToBigInteger().toString(10)));
-		alpha2.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
-
-		Attributes beta2 = new Attributes();
-		beta2.add("timestamp", new DateValue(new Date()));
-		beta2.add("rank", new IntegerValue(1));
-		Element acMsgSig = PostCreator.createBetaSignature(message1, alpha2, beta2, dsaPrivKey);
-		beta2.add("boardSignature", new StringValue(acMsgSig.convertToBigInteger().toString(10)));
-
-		String post2 = PostCreator.createMessage(message2, alpha2, beta2);
-		System.out.println(post2);
+//
+//		//create accessRight message
+//		byte[] message2 = ("{\"group\":\"electionDefinition\",\"crypto\":{\"type\":\"DL\", \"p\":\""
+//				+ eaPubKey.getParams().getP().toString(10)
+//				+ "\",\"q\":\"" + eaPubKey.getParams().getQ().toString(10)
+//				+ "\",\"g\":\"" + eaPubKey.getParams().getG().toString(10)
+//				+ "\",\"publickey\":\""
+//				+ electionAdministrationPublicKey.toString(10) + "\"}}").getBytes(Charset.forName("UTF-8"));
+//
+//		//Create alphas and betas
+//		Attributes alpha2 = new Attributes();
+//		alpha2.add("section", new StringValue(section));
+//		alpha2.add("group", new StringValue("accessRight"));
+//		Element ucMsgSig = PostCreator.createAlphaSignatureWithDL(message2, alpha2, dsaPrivKey);
+//		alpha2.add("signature", new StringValue(ucMsgSig.convertToBigInteger().toString(10)));
+//		alpha2.add("publickey", new StringValue(electionCoordinatorPublicKey.toString(10)));
+//
+//		Attributes beta2 = new Attributes();
+//		beta2.add("timestamp", new DateValue(new Date()));
+//		beta2.add("rank", new IntegerValue(1));
+//		Element acMsgSig = PostCreator.createBetaSignature(message1, alpha2, beta2, dsaPrivKey);
+//		beta2.add("boardSignature", new StringValue(acMsgSig.convertToBigInteger().toString(10)));
+//
+//		String post2 = PostCreator.createMessage(message2, alpha2, beta2);
+//		System.out.println(post2);
 
 	}
 
