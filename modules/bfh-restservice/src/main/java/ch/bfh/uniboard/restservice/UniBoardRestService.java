@@ -11,9 +11,10 @@
  */
 package ch.bfh.uniboard.restservice;
 
-import ch.bfh.uniboard.data.AttributesDTO;
+import ch.bfh.uniboard.data.AttributeDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,5 +39,5 @@ public interface UniBoardRestService {
 	@Path("post")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public AttributesDTO post(PostContainerDTO postContainer);
+	public List<AttributeDTO> post(PostContainerDTO postContainer);
 }

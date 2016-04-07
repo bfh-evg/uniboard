@@ -16,8 +16,9 @@ import ch.bfh.uniboard.service.data.ResultContainer;
 import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.data.*;
-import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
 import ch.bfh.uniboard.service.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -54,13 +55,12 @@ public class UniBoardServiceImpl implements UniBoardService {
 
 			return Transformer.convertResultContainertoResultContainerDTO(rContainer);
 		} catch (TransformException ex) {
-			AttributesDTO exAttributes = new AttributesDTO();
+			List<AttributeDTO> exAttributes = new ArrayList<>();
 			AttributeDTO e = new AttributeDTO();
 			e.setKey(Attributes.ERROR);
 			e.setValue(ex.getMessage());
-			exAttributes.getAttribute().add(e);
-			ResultDTO exResult = new ResultDTO();
-			ResultContainerDTO exResultContainer = new ResultContainerDTO(exResult, exAttributes);
+			exAttributes.add(e);
+			ResultContainerDTO exResultContainer = new ResultContainerDTO(new ArrayList<PostDTO>(), exAttributes);
 			return exResultContainer;
 		}
 	}

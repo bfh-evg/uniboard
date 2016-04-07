@@ -79,8 +79,8 @@ public class NotifyingService extends PostComponent implements PostService {
 			return;
 		}
 		try {
-			PostDTO post = new PostDTO(message, Transformer.convertAttributesToDTO(alpha),
-					Transformer.convertAttributesToDTO(beta));
+			PostDTO post = new PostDTO(message, Transformer.convertAttributesToList(alpha),
+					Transformer.convertAttributesToList(beta));
 			logger.log(Level.FINE, this.observerManager.getObservers().toString());
 			for (Entry<String, Observer> entry : this.observerManager.getObservers().entrySet()) {
 				Query query = entry.getValue().getQuery();

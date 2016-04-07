@@ -12,6 +12,7 @@
 package ch.bfh.uniboard.webservice;
 
 import ch.bfh.uniboard.UniBoardService;
+import ch.bfh.uniboard.data.AttributeDTO;
 import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.LessEqualDTO;
 import ch.bfh.uniboard.data.MessageIdentifierDTO;
@@ -76,11 +77,11 @@ public class UniBoardServiceImplTest {
 		message[0] = 0x16;
 
 		AttributesDTO adto = new AttributesDTO();
-		AttributesDTO.AttributeDTO attribute1 = new AttributesDTO.AttributeDTO();
+		AttributeDTO attribute1 = new AttributeDTO();
 		attribute1.setKey("test");
 		attribute1.setValue("test");
 		adto.getAttribute().add(attribute1);
-		AttributesDTO.AttributeDTO attribute2 = new AttributesDTO.AttributeDTO();
+		AttributeDTO attribute2 = new AttributeDTO();
 		attribute2.setKey("test2");
 		attribute2.setValue("test2");
 		adto.getAttribute().add(attribute2);
@@ -90,8 +91,8 @@ public class UniBoardServiceImplTest {
 		ch.bfh.uniboard.service.data.Post p = postService.getLastPost();
 
 		assertEquals(2, p.getAlpha().getEntries().size());
-		assertEquals("test", p.getAlpha().getAttribute("test"));
-		assertEquals("test2", p.getAlpha().getAttribute("test2"));
+		assertEquals("test", p.getAlpha().getAttribute("test").getKey());
+		assertEquals("test2", p.getAlpha().getAttribute("test2").getKey());
 		Assert.assertArrayEquals(message, p.getMessage());
 
 	}
@@ -130,14 +131,14 @@ public class UniBoardServiceImplTest {
 
 		ResultContainerDTO result = service.get(query);
 
-		assertEquals(result.getGamma().getAttribute().size(), 1);
-		assertEquals(result.getGamma().getAttribute().get(0).getKey(), "gamma");
-		assertEquals((result.getGamma().getAttribute().get(0).getValue()), "gamma");
-		assertEquals(result.getResult().getPost().size(), 1);
-		Assert.assertArrayEquals(result.getResult().getPost().get(0).getMessage(), message);
-		assertEquals(result.getResult().getPost().get(0).getAlpha().getAttribute().get(0).getKey(), "alpha");
-		assertEquals((result.getResult().getPost().get(0).getAlpha().getAttribute().get(0).getValue()), "alpha");
-		assertEquals(result.getResult().getPost().get(0).getBeta().getAttribute().get(0).getKey(), "beta");
-		assertEquals((result.getResult().getPost().get(0).getBeta().getAttribute().get(0).getValue()), "beta");
+		assertEquals(result.getGamma().size(), 1);
+		assertEquals(result.getGamma().get(0).getKey(), "gamma");
+		assertEquals((result.getGamma().get(0).getValue()), "gamma");
+		assertEquals(result.getResult().size(), 1);
+		Assert.assertArrayEquals(result.getResult().get(0).getMessage(), message);
+		assertEquals(result.getResult().get(0).getAlpha().get(0).getKey(), "alpha");
+		assertEquals((result.getResult().get(0).getAlpha().get(0).getValue()), "alpha");
+		assertEquals(result.getResult().get(0).getBeta().get(0).getKey(), "beta");
+		assertEquals((result.getResult().get(0).getBeta().get(0).getValue()), "beta");
 	}
 }

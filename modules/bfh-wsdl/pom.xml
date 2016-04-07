@@ -46,6 +46,9 @@
 						</goals>
 						<configuration>
 							<xjcArgs>
+								<xjcArg>-Xxew</xjcArg>
+								<xjcArg>-Xxew:instantiate lazy</xjcArg>
+								<xjcArg>-Xxew:control src/wsdl/classes-control.txt</xjcArg>
 								<xjcArg>-Xvalue-constructor</xjcArg>
 							</xjcArgs>
 							<bindingFiles>
@@ -79,6 +82,11 @@
 						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>jaxb2-value-constructor</artifactId>
 						<version>3.0</version>
+					</dependency>
+					<dependency>
+						<groupId>com.github.jaxb-xew-plugin</groupId>
+						<artifactId>jaxb-xew-plugin</artifactId>
+						<version>1.7</version>
 					</dependency>
 				</dependencies>
 				<configuration>

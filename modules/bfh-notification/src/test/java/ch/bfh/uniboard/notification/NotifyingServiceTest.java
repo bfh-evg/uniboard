@@ -117,7 +117,7 @@ public class NotifyingServiceTest {
 		notificationService.post(message, alpha, beta);
 		assertNotNull(this.observerClient.getPost());
 		PostDTO result = this.observerClient.getPost();
-		assertEquals(1, result.getAlpha().getAttribute().size());
+		assertEquals(1, result.getAlpha().size());
 	}
 
 }

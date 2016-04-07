@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema version="1.0" targetNamespace="http://uniboard.bfh.ch/data" xmlns:tns="http://uniboard.bfh.ch/data" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<xs:simpleType name="attributeType">
-		<xs:union memberTypes="xs:string xs:integer"/>
-	</xs:simpleType>
-
 	<xs:complexType name="attributes">
 		<xs:sequence>
-			<xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="key" type="xs:string"/>
-						<xs:element name="value" type="xs:string"/>
-						<xs:element name="dataType" type="tns:dataType" minOccurs="0" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
+			<xs:element name="attribute" type="tns:attribute" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="attribute">
+		<xs:sequence>
+			<xs:element name="key" type="xs:string"/>
+			<xs:element name="value" type="xs:string"/>
+			<xs:element name="dataType" type="tns:dataType" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 

@@ -11,7 +11,7 @@
  */
 package ch.bfh.uniboard.restservice;
 
-import ch.bfh.uniboard.data.AttributesDTO;
+import ch.bfh.uniboard.data.AttributeDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
 import ch.bfh.uniboard.data.TransformException;
@@ -22,6 +22,7 @@ import ch.bfh.uniboard.service.PostService;
 import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.service.data.ResultContainer;
 import java.util.Base64;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -59,7 +60,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	}
 
 	@Override
-	public AttributesDTO post(PostContainerDTO postContainer) {
+	public List<AttributeDTO> post(PostContainerDTO postContainer) {
 		try {
 			byte[] message = Base64.getDecoder().decode(postContainer.getMessage());
 			Attributes alpha = Transformer.convertAttributesDTOtoAttributes(postContainer.getAlpha());
@@ -67,7 +68,7 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 			logger.log(Level.INFO, "Post message={0}, alpha={1}, beta={2}",
 					new Object[]{postContainer.getMessage(), alpha, beta});
 			beta = postSuccessor.post(message, alpha, beta);
-			return Transformer.convertAttributesToDTO(beta);
+			return Transformer.convertAttributesToList(beta);
 		} catch (TransformException ex) {
 			logger.log(Level.SEVERE, null, ex);
 			throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

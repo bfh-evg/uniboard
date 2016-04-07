@@ -18,7 +18,7 @@ import ch.bfh.uniboard.clientlib.signaturehelper.SchnorrSignatureHelper;
 import ch.bfh.uniboard.clientlib.signaturehelper.SignatureException;
 import ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper;
 import ch.bfh.uniboard.data.AttributesDTO;
-import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
+import ch.bfh.uniboard.data.AttributeDTO;
 import ch.bfh.uniboard.data.DataTypeDTO;
 import ch.bfh.unicrypt.helper.math.MathUtil;
 import java.io.UnsupportedEncodingException;
@@ -30,6 +30,8 @@ import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -101,7 +103,8 @@ public class PostHelper {
 			BindingProvider bp = (BindingProvider) board;
 			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, boardEndpointURL);
 		} catch (Exception ex) {
-			throw new PostException("Unable to connect to UniBoard service: " + boardEndpointURL + ", exception: " + ex);
+			throw new PostException("Unable to connect to UniBoard service: " + boardEndpointURL + ", exception: "
+					+ ex);
 		}
 	}
 
@@ -116,8 +119,8 @@ public class PostHelper {
 	 * @throws SignatureException exception throw when error occured during generating of poster signature or verifying
 	 * board signature
 	 */
-	public AttributesDTO post(String message, String section, String group) throws PostException, SignatureException,
-			UnsupportedEncodingException, BoardErrorException {
+	public List<AttributeDTO> post(String message, String section, String group) throws PostException,
+			SignatureException, UnsupportedEncodingException, BoardErrorException {
 		return this.post(message.getBytes("UTF-8"), section, group);
 	}
 
@@ -133,25 +136,27 @@ public class PostHelper {
 	 * board signature
 	 * @throws ch.bfh.uniboard.clientlib.BoardErrorException
 	 */
-	public AttributesDTO post(byte[] message, String section, String group) throws PostException, SignatureException,
-			BoardErrorException {
-		AttributesDTO alpha = new AttributesDTO();
-		alpha.getAttribute().add(
+	public List<AttributeDTO> post(byte[] message, String section, String group) throws PostException,
+			SignatureException, BoardErrorException {
+		List<AttributeDTO> alpha = new ArrayList();
+		alpha.add(
 				new AttributeDTO(UniBoardAttributesName.SECTION.getName(), section, DataTypeDTO.STRING));
-		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.GROUP.getName(), group, DataTypeDTO.STRING));
+		alpha.add(new AttributeDTO(UniBoardAttributesName.GROUP.getName(), group, DataTypeDTO.STRING));
 
 		BigInteger signature = this.signatureCreatorHelper.sign(message, alpha);
 
-		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.SIGNATURE.getName(),
+		alpha.add(new AttributeDTO(UniBoardAttributesName.SIGNATURE.getName(),
 				signature.toString(10), DataTypeDTO.STRING));
-		alpha.getAttribute().add(new AttributeDTO(UniBoardAttributesName.PUBLIC_KEY.getName(),
+		alpha.add(new AttributeDTO(UniBoardAttributesName.PUBLIC_KEY.getName(),
 				posterPublicKey, DataTypeDTO.STRING));
 
-		AttributesDTO beta = board.post(message, alpha);
-		if (beta.getAttribute().get(0).getKey().contains("rejected") || beta.getAttribute().get(0).getKey().contains(
+		AttributesDTO alphaTmp = new AttributesDTO(alpha);
+		AttributesDTO betaTmp = board.post(message, alphaTmp);
+		List<AttributeDTO> beta = betaTmp.getAttribute();
+		if (beta.get(0).getKey().contains("rejected") || beta.get(0).getKey().contains(
 				"error")) {
-			String errorKey = beta.getAttribute().get(0).getKey();
-			String error = beta.getAttribute().get(0).getValue();
+			String errorKey = beta.get(0).getKey();
+			String error = beta.get(0).getValue();
 			logger.log(Level.SEVERE, "UniBoard response was {0}, description: {1}", new Object[]{
 				errorKey, error});
 			throw new BoardErrorException(error);

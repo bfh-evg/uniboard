@@ -64,6 +64,9 @@ public class Attribute {
 	protected String value;
 	protected DataType dataType;
 
+	public Attribute() {
+	}
+
 	/**
 	 * Fully-initialising value constructor
 	 *
@@ -137,6 +140,11 @@ public class Attribute {
 			return false;
 		}
 		return this.dataType == other.dataType;
+	}
+
+	@Override
+	public String toString() {
+		return "Attribute{" + "key=" + key + ", value=" + value + ", dataType=" + dataType + '}';
 	}
 
 }

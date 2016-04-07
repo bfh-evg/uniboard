@@ -13,7 +13,6 @@ package ch.bfh.uniboard.clientlib.signaturehelper;
 
 import ch.bfh.uniboard.clientlib.UniBoardAttributesName;
 import ch.bfh.uniboard.data.*;
-import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
 import ch.bfh.unicrypt.helper.array.classes.DenseArray;
 import ch.bfh.unicrypt.helper.converter.classes.ConvertMethod;
 import ch.bfh.unicrypt.helper.converter.classes.bytearray.BigIntegerToByteArray;
@@ -90,7 +89,7 @@ public abstract class SignatureHelper {
 	 * @return the signature as big integer
 	 * @throws SignatureException when error occured during signing
 	 */
-	public BigInteger sign(byte[] message, AttributesDTO alpha) throws SignatureException {
+	public BigInteger sign(byte[] message, List<AttributeDTO> alpha) throws SignatureException {
 		Element messageElement = prepareElement(message, alpha);
 		return sign(messageElement);
 	}
@@ -104,7 +103,7 @@ public abstract class SignatureHelper {
 	 * @return true if signature is valid, false otherwise
 	 * @throws SignatureException when error occured during signature verification
 	 */
-	public boolean verify(byte[] message, AttributesDTO alpha, BigInteger signature) throws
+	public boolean verify(byte[] message, List<AttributeDTO> alpha, BigInteger signature) throws
 			SignatureException {
 		Element messageElement = prepareElement(message, alpha);
 		return verify(messageElement, signature);
@@ -120,8 +119,8 @@ public abstract class SignatureHelper {
 	 * @return true if signature is correct, false otherwise
 	 * @throws SignatureException when error occurs during verifying
 	 */
-	public boolean verify(byte[] message, AttributesDTO alpha, AttributesDTO beta, BigInteger signature) throws
-			SignatureException {
+	public boolean verify(byte[] message, List<AttributeDTO> alpha, List<AttributeDTO> beta, BigInteger signature)
+			throws SignatureException {
 		Element messageElement = prepareElement(message, alpha, beta);
 		logger.log(Level.FINE, "Element Hash: {0}",
 				bytesToHex(messageElement.getHashValue(CONVERT_METHOD, HASH_METHOD).getBytes()));
@@ -152,7 +151,7 @@ public abstract class SignatureHelper {
 	 * @return the element representing the message and alpha attributes (Poster signature and following attributes
 	 * excluded)
 	 */
-	protected Element prepareElement(byte[] message, AttributesDTO alpha) {
+	protected Element prepareElement(byte[] message, List<AttributeDTO> alpha) {
 		return this.prepareElement(message, alpha, UniBoardAttributesName.SIGNATURE.getName());
 	}
 
@@ -166,7 +165,7 @@ public abstract class SignatureHelper {
 	 * @return the element representing the message and alpha and beta attributes (Board signature and following
 	 * attributes excluded)
 	 */
-	private Element prepareElement(byte[] message, AttributesDTO alpha, AttributesDTO beta) {
+	private Element prepareElement(byte[] message, List<AttributeDTO> alpha, List<AttributeDTO> beta) {
 		return this.prepareElement(message, alpha, beta, UniBoardAttributesName.BOARD_SIGNATURE.getName());
 	}
 
@@ -182,7 +181,7 @@ public abstract class SignatureHelper {
 	 * (attribute with name "lastAttributeName" is also ignored)
 	 * @return the element representing the message and alpha attributes minus the excluded attributes
 	 */
-	private Element prepareElement(byte[] message, AttributesDTO alpha, String lastAttributeName) {
+	private Element prepareElement(byte[] message, List<AttributeDTO> alpha, String lastAttributeName) {
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 		Element messageElement = byteSpace.getElement(message);
 
@@ -203,7 +202,8 @@ public abstract class SignatureHelper {
 	 * (attribute with name "lastAttributeName" is also ignored)
 	 * @return the element representing the message and alpha and beta attributes minus the excluded attributes
 	 */
-	private Element prepareElement(byte[] message, AttributesDTO alpha, AttributesDTO beta, String lastAttributeName) {
+	private Element prepareElement(byte[] message, List<AttributeDTO> alpha, List<AttributeDTO> beta,
+			String lastAttributeName) {
 
 		Pair pair = (Pair) this.prepareElement(message, alpha, (String) null);
 
@@ -220,11 +220,11 @@ public abstract class SignatureHelper {
 	 * (attribute with name "lastAttributeName" is also ignored)
 	 * @return the element representing attributes minus the excluded attributes
 	 */
-	private Element prepareAttributesElement(AttributesDTO attributes, String lastAttributeName) {
+	private Element prepareAttributesElement(List<AttributeDTO> attributes, String lastAttributeName) {
 
 		List<Element> attributesElements = new ArrayList<>();
 		//iterate over alpha until one reaches the property = signature
-		for (AttributeDTO attr : attributes.getAttribute()) {
+		for (AttributeDTO attr : attributes) {
 			if (lastAttributeName != null && attr.getKey().equals(lastAttributeName)) {
 				break;
 			}
@@ -397,7 +397,7 @@ public abstract class SignatureHelper {
 	private Element prepareResultContainerElement(ResultContainerDTO resultContainer) {
 
 		List<Element> postElements = new ArrayList<>();
-		for (PostDTO p : resultContainer.getResult().getPost()) {
+		for (PostDTO p : resultContainer.getResult()) {
 			postElements.add(this.prepareElement(p.getMessage(), p.getAlpha(), p.getBeta(), null));
 		}
 		DenseArray postDenseElements = DenseArray.getInstance(postElements);

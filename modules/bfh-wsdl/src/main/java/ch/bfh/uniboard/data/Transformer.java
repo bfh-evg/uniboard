@@ -11,7 +11,6 @@
  */
 package ch.bfh.uniboard.data;
 
-import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
 import ch.bfh.uniboard.service.data.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +26,28 @@ public class Transformer {
 
 	protected static final Logger logger = Logger.getLogger(Transformer.class.getName());
 
+	static public List<AttributeDTO> convertAttributesToList(Attributes attributes) throws TransformException {
+
+		List<AttributeDTO> aDTO = new ArrayList<>();
+		for (Map.Entry<String, Attribute> e : attributes.getEntries()) {
+			Attribute a = e.getValue();
+			AttributeDTO attributeDTO = new AttributeDTO();
+			attributeDTO.setKey(a.getKey());
+			attributeDTO.setValue(a.getValue());
+			if (a.getDataType() != null) {
+				attributeDTO.setDataType(DataTypeDTO.fromValue(a.getDataType().value()));
+			}
+			aDTO.add(attributeDTO);
+		}
+		return aDTO;
+	}
+
 	static public AttributesDTO convertAttributesToDTO(Attributes attributes) throws TransformException {
 
 		AttributesDTO aDTO = new AttributesDTO();
 		for (Map.Entry<String, Attribute> e : attributes.getEntries()) {
 			Attribute a = e.getValue();
-			AttributeDTO attributeDTO = new AttributesDTO.AttributeDTO();
+			AttributeDTO attributeDTO = new AttributeDTO();
 			attributeDTO.setKey(a.getKey());
 			attributeDTO.setValue(a.getValue());
 			if (a.getDataType() != null) {
@@ -46,7 +61,7 @@ public class Transformer {
 	static public Attributes convertAttributesDTOtoAttributes(AttributesDTO attributesDTO) throws TransformException {
 
 		Attributes attributes = new Attributes();
-		for (AttributesDTO.AttributeDTO attr : attributesDTO.getAttribute()) {
+		for (AttributeDTO attr : attributesDTO.getAttribute()) {
 			Attribute attribute;
 			if (attr.getDataType() != null) {
 				attribute = new Attribute(attr.getKey(), attr.getValue(),
@@ -124,16 +139,15 @@ public class Transformer {
 		return new Query(constraints, orders, queryDTO.getLimit());
 	}
 
-	static public ResultDTO convertResulttoResultDTO(List<Post> result) throws TransformException {
-		ResultDTO result2 = new ResultDTO();
+	static public List<PostDTO> convertResulttoResultDTO(List<Post> result) throws TransformException {
+		List<PostDTO> result2 = new ArrayList();
 		// create empty list of posts
-		List<PostDTO> posts = result2.getPost();
 		for (ch.bfh.uniboard.service.data.Post p : result) {
 			PostDTO pNew = new PostDTO();
-			pNew.setAlpha(Transformer.convertAttributesToDTO(p.getAlpha()));
-			pNew.setBeta(Transformer.convertAttributesToDTO(p.getBeta()));
+			pNew.setAlpha(Transformer.convertAttributesToList(p.getAlpha()));
+			pNew.setBeta(Transformer.convertAttributesToList(p.getBeta()));
 			pNew.setMessage(p.getMessage());
-			posts.add(pNew);
+			result2.add(pNew);
 		}
 		return result2;
 	}
@@ -143,7 +157,7 @@ public class Transformer {
 
 		ResultContainerDTO result = new ResultContainerDTO(
 				Transformer.convertResulttoResultDTO(resultContainer.getResult()),
-				Transformer.convertAttributesToDTO(resultContainer.getGamma()));
+				Transformer.convertAttributesToList(resultContainer.getGamma()));
 		return result;
 	}
 }

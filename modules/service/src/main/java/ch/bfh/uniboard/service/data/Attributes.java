@@ -28,9 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Severin Hauser &lt;severin.hauser@bfh.ch&gt;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "attributes", propOrder = {
-	"attribute"
-})
+@XmlType(name = "attributes")
 public class Attributes implements Serializable {
 
 	private static final long serialVersionUID = 1L;

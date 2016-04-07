@@ -17,7 +17,7 @@ import ch.bfh.uniboard.clientlib.signaturehelper.RSASignatureHelper;
 import ch.bfh.uniboard.clientlib.signaturehelper.SchnorrSignatureHelper;
 import ch.bfh.uniboard.clientlib.signaturehelper.SignatureException;
 import ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper;
-import ch.bfh.uniboard.data.AttributesDTO.AttributeDTO;
+import ch.bfh.uniboard.data.AttributeDTO;
 import ch.bfh.uniboard.data.PostDTO;
 import ch.bfh.uniboard.data.QueryDTO;
 import ch.bfh.uniboard.data.ResultContainerDTO;
@@ -97,7 +97,7 @@ public class GetHelper {
 		if (!this.signatureVerificatorHelper.verify(query, rc, new BigInteger(boardSig, 10))) {
 			throw new SignatureException("UniBoard signature is invalid.");
 		} else {
-			for (PostDTO p : rc.getResult().getPost()) {
+			for (PostDTO p : rc.getResult()) {
 				attr = AttributeHelper.searchAttribute(p.getBeta(), UniBoardAttributesName.BOARD_SIGNATURE.getName());
 
 				if (attr == null) {

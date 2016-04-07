@@ -11,8 +11,9 @@
  */
 package ch.bfh.uniboard.clientlib;
 
-import ch.bfh.uniboard.data.AttributesDTO;
+import ch.bfh.uniboard.data.AttributeDTO;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class containing helper methods for getting attributes
@@ -21,21 +22,22 @@ import java.util.Iterator;
  */
 public class AttributeHelper {
 
-    /**
-     * Search an attribute with key "key" in the list of given attributes
-     * @param attributes the attributes in which to search
-     * @param key the key of the attributes to search
-     * @return the attribute if one was found, null otherwise
-     */
-    public static AttributesDTO.AttributeDTO searchAttribute(AttributesDTO attributes, String key) {
-        Iterator<AttributesDTO.AttributeDTO> it = attributes.getAttribute().iterator();
-        AttributesDTO.AttributeDTO attr;
-        while (it.hasNext()) {
-            attr = it.next();
-            if (attr.getKey().equals(key)) {
-                return attr;
-            }
-        }
-        return null;
-    }
+	/**
+	 * Search an attribute with key "key" in the list of given attributes
+	 *
+	 * @param attributes the attributes in which to search
+	 * @param key the key of the attributes to search
+	 * @return the attribute if one was found, null otherwise
+	 */
+	public static AttributeDTO searchAttribute(List<AttributeDTO> attributes, String key) {
+		Iterator<AttributeDTO> it = attributes.iterator();
+		AttributeDTO attr;
+		while (it.hasNext()) {
+			attr = it.next();
+			if (attr.getKey().equals(key)) {
+				return attr;
+			}
+		}
+		return null;
+	}
 }

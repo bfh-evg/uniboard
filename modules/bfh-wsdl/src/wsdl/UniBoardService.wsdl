@@ -21,6 +21,9 @@
 		<part name="parameters" element="tns:postResponse"/>
 	</message>
 	<portType name="UniBoardService">
+		<jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
+			<jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
+		</jaxws:bindings>
 		<operation name="get">
 			<input message="tns:get"/>
 			<output message="tns:getResponse"/>
