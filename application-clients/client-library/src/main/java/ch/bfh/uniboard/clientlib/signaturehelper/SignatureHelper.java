@@ -228,7 +228,7 @@ public abstract class SignatureHelper {
 			if (lastAttributeName != null && attr.getKey().equals(lastAttributeName)) {
 				break;
 			}
-			Element element = STRING_SPACE.getElement(attr.getValue());
+			Element element = this.prepareAttributeElement(attr);
 			if (element != null) {
 				attributesElements.add(element);
 			}
@@ -244,8 +244,15 @@ public abstract class SignatureHelper {
 	 * @return the element representing the Value object
 	 */
 	private Element prepareAttributeElement(AttributeDTO attribute) {
+		List<Element> attributeElements = new ArrayList<>();
+		attributeElements.add(STRING_SPACE.getElement(attribute.getKey()));
+		attributeElements.add(STRING_SPACE.getElement(attribute.getValue()));
+		if (attribute.getDataType() != null) {
+			attributeElements.add(STRING_SPACE.getElement(attribute.getDataType().value()));
+		}
 
-		return STRING_SPACE.getElement(attribute.getValue());
+		DenseArray attributeDenseElements = DenseArray.getInstance(attributeElements);
+		return Tuple.getInstance(attributeDenseElements);
 	}
 
 	/**
@@ -265,7 +272,7 @@ public abstract class SignatureHelper {
 	 * Helper method generating an UniCrypt element for an Identifier
 	 *
 	 * @param identifier the identifier object to represent
-	 * @return the UniCrypt element reprensenting the identifier
+	 * @return the UniCrypt element representing the identifier
 	 */
 	private Element prepareIdentifierElement(IdentifierDTO identifier) {
 		List<Element> identifierElements = new ArrayList<>();
@@ -274,7 +281,7 @@ public abstract class SignatureHelper {
 
 		if (identifier instanceof PropertyIdentifierDTO) {
 			PropertyIdentifierDTO pIdent = (PropertyIdentifierDTO) identifier;
-			identifierElements.add(STRING_SPACE.getElement(pIdent.getType().value()));
+			identifierElements.add(STRING_SPACE.getElement(pIdent.getPropertyType().value()));
 			identifierElements.add(STRING_SPACE.getElement(pIdent.getKey()));
 		} else if (identifier instanceof MessageIdentifierDTO) {
 			MessageIdentifierDTO mIdent = (MessageIdentifierDTO) identifier;
@@ -288,34 +295,34 @@ public abstract class SignatureHelper {
 	 * Helper method generating an UniCrypt element for all types of Constraints
 	 *
 	 * @param constraint the constraint to represent
-	 * @return the UniCrypt element reprensenting the constraint
+	 * @return the UniCrypt element representing the constraint
 	 */
 	private Element prepareConstraintElement(ConstraintDTO constraint) {
 		List<Element> constraintElements = new ArrayList<>();
+		//Type
+		XmlType type = constraint.getClass().getAnnotation(XmlType.class);
+		constraintElements.add(STRING_SPACE.getElement(type.name()));
+		//Identifier
+		constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
+		//DataType
+		if (constraint.getDataType() != null) {
+			constraintElements.add(STRING_SPACE.getElement(constraint.getDataType().value()));
+		}
+		//Values
 		if (constraint instanceof BetweenDTO) {
-			constraintElements.add(STRING_SPACE.getElement("between"));
 			BetweenDTO between = (BetweenDTO) constraint;
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			constraintElements.add(STRING_SPACE.getElement(between.getLowerBound()));
 			constraintElements.add(STRING_SPACE.getElement(between.getUpperBound()));
 		} else if (constraint instanceof EqualDTO) {
-			constraintElements.add(STRING_SPACE.getElement("equal"));
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			EqualDTO equal = (EqualDTO) constraint;
 			constraintElements.add(STRING_SPACE.getElement(equal.getValue()));
 		} else if (constraint instanceof GreaterDTO) {
-			constraintElements.add(STRING_SPACE.getElement("greater"));
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			GreaterDTO greater = (GreaterDTO) constraint;
 			constraintElements.add(STRING_SPACE.getElement(greater.getValue()));
 		} else if (constraint instanceof GreaterEqualDTO) {
-			constraintElements.add(STRING_SPACE.getElement("greaterEqual"));
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			GreaterEqualDTO greaterEqual = (GreaterEqualDTO) constraint;
 			constraintElements.add(STRING_SPACE.getElement(greaterEqual.getValue()));
 		} else if (constraint instanceof InDTO) {
-			constraintElements.add(STRING_SPACE.getElement("in"));
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			InDTO in = (InDTO) constraint;
 			List<Element> inELements = new ArrayList<>();
 			for (String v : in.getElement()) {
@@ -324,18 +331,12 @@ public abstract class SignatureHelper {
 			DenseArray inDenseElements = DenseArray.getInstance(inELements);
 			constraintElements.add(Tuple.getInstance(inDenseElements));
 		} else if (constraint instanceof LessDTO) {
-			constraintElements.add(STRING_SPACE.getElement("less"));
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			LessDTO less = (LessDTO) constraint;
 			constraintElements.add(STRING_SPACE.getElement(less.getValue()));
 		} else if (constraint instanceof LessEqualDTO) {
-			constraintElements.add(STRING_SPACE.getElement("lessEqual"));
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			LessEqualDTO lessEqual = (LessEqualDTO) constraint;
 			constraintElements.add(STRING_SPACE.getElement(lessEqual.getValue()));
 		} else if (constraint instanceof NotEqualDTO) {
-			constraintElements.add(STRING_SPACE.getElement("notEqual"));
-			constraintElements.add(this.prepareIdentifierElement(constraint.getIdentifier()));
 			NotEqualDTO notEqual = (NotEqualDTO) constraint;
 			constraintElements.add(STRING_SPACE.getElement(notEqual.getValue()));
 		} else {

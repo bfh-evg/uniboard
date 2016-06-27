@@ -10,15 +10,15 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "simpleIdentifier", propOrder = {
-	"type",
+@XmlType(name = "propertyIdentifier", propOrder = {
+	"propertyType",
 	"keyPath"
 })
 public class PropertyIdentifier
 		extends Identifier {
 
 	@XmlElement(required = true)
-	protected PropertyIdentifierType type;
+	protected PropertyIdentifierType propertyType;
 	@XmlElement(required = true)
 	protected String keyPath;
 
@@ -36,7 +36,7 @@ public class PropertyIdentifier
 	 */
 	public PropertyIdentifier(final PropertyIdentifierType type, final String keyPath) {
 		super();
-		this.type = type;
+		this.propertyType = type;
 		this.keyPath = keyPath;
 	}
 
@@ -47,7 +47,7 @@ public class PropertyIdentifier
 	 *
 	 */
 	public PropertyIdentifierType getType() {
-		return type;
+		return propertyType;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class PropertyIdentifier
 	 *
 	 */
 	public void setType(PropertyIdentifierType value) {
-		this.type = value;
+		this.propertyType = value;
 	}
 
 	/**

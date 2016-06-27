@@ -68,6 +68,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
@@ -148,10 +149,15 @@ public class CertifiedGetService extends GetComponent implements GetService {
 	}
 
 	protected Element createAttributeElement(Attribute attribute) {
-		Z z = Z.getInstance();
+		List<Element> attributeElements = new ArrayList<>();
+		attributeElements.add(stringSpace.getElement(attribute.getKey()));
+		attributeElements.add(stringSpace.getElement(attribute.getValue()));
+		if (attribute.getDataType() != null) {
+			attributeElements.add(stringSpace.getElement(attribute.getDataType().value()));
+		}
 
-		return stringSpace.getElement(attribute.getValue());
-
+		DenseArray attributeDenseElements = DenseArray.getInstance(attributeElements);
+		return Tuple.getInstance(attributeDenseElements);
 	}
 
 	protected Element createIdentifierElement(Identifier identifier) {
@@ -178,30 +184,30 @@ public class CertifiedGetService extends GetComponent implements GetService {
 
 	protected Element createConstraintElement(Constraint constraint) {
 		List<Element> constraintElements = new ArrayList<>();
+		//Type
+		XmlType type = constraint.getClass().getAnnotation(XmlType.class);
+		constraintElements.add(stringSpace.getElement(type.name()));
+		//Identifier
+		constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
+		//DataType
+		if (constraint.getDataType() != null) {
+			constraintElements.add(stringSpace.getElement(constraint.getDataType().value()));
+		}
+		//Values
 		if (constraint instanceof Between) {
-			constraintElements.add(stringSpace.getElement("between"));
 			Between between = (Between) constraint;
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			constraintElements.add(stringSpace.getElement(between.getLowerBound()));
 			constraintElements.add(stringSpace.getElement(between.getUpperBound()));
 		} else if (constraint instanceof Equal) {
-			constraintElements.add(stringSpace.getElement("equal"));
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			Equal equal = (Equal) constraint;
 			constraintElements.add(stringSpace.getElement(equal.getValue()));
 		} else if (constraint instanceof Greater) {
-			constraintElements.add(stringSpace.getElement("greater"));
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			Greater greater = (Greater) constraint;
 			constraintElements.add(stringSpace.getElement(greater.getValue()));
 		} else if (constraint instanceof GreaterEqual) {
-			constraintElements.add(stringSpace.getElement("greaterEqual"));
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			GreaterEqual greaterEqual = (GreaterEqual) constraint;
 			constraintElements.add(stringSpace.getElement(greaterEqual.getValue()));
 		} else if (constraint instanceof In) {
-			constraintElements.add(stringSpace.getElement("in"));
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			In in = (In) constraint;
 			List<Element> inELements = new ArrayList<>();
 			for (String v : in.getSet()) {
@@ -210,18 +216,12 @@ public class CertifiedGetService extends GetComponent implements GetService {
 			DenseArray inDenseElements = DenseArray.getInstance(inELements);
 			constraintElements.add(Tuple.getInstance(inDenseElements));
 		} else if (constraint instanceof Less) {
-			constraintElements.add(stringSpace.getElement("less"));
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			Less less = (Less) constraint;
 			constraintElements.add(stringSpace.getElement(less.getValue()));
 		} else if (constraint instanceof LessEqual) {
-			constraintElements.add(stringSpace.getElement("lessEqual"));
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			LessEqual lessEqual = (LessEqual) constraint;
 			constraintElements.add(stringSpace.getElement(lessEqual.getValue()));
 		} else if (constraint instanceof NotEqual) {
-			constraintElements.add(stringSpace.getElement("notEqual"));
-			constraintElements.add(this.createIdentifierElement(constraint.getIdentifier()));
 			NotEqual notEqual = (NotEqual) constraint;
 			constraintElements.add(stringSpace.getElement(notEqual.getValue()));
 		} else {

@@ -53,7 +53,7 @@
 		<xs:complexContent>
 			<xs:extension base="tns:identifier">
 				<xs:sequence>
-					<xs:element name="type" type="tns:propertyIdentifierType"/>
+					<xs:element name="propertyType" type="tns:propertyIdentifierType"/>
 					<xs:element name="key" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>

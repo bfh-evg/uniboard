@@ -78,7 +78,7 @@ public class Transformer {
 
 		if (identifierDTO instanceof PropertyIdentifierDTO) {
 			PropertyIdentifierDTO tmp = (PropertyIdentifierDTO) identifierDTO;
-			return new PropertyIdentifier(PropertyIdentifierType.fromValue(tmp.type.value()), tmp.key);
+			return new PropertyIdentifier(PropertyIdentifierType.fromValue(tmp.propertyType.value()), tmp.key);
 		} else if (identifierDTO instanceof MessageIdentifierDTO) {
 			MessageIdentifierDTO tmp = (MessageIdentifierDTO) identifierDTO;
 			return new MessageIdentifier(tmp.keyPath);

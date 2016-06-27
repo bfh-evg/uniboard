@@ -101,6 +101,8 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 			BigIntegerToByteArray.getInstance(ByteOrder.BIG_ENDIAN),
 			StringToByteArray.getInstance(Charset.forName("UTF-8")));
 
+	private static final StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
+
 	private static final Logger logger = Logger.getLogger(CertifiedPostingService.class.getName());
 
 	private SigningHelper signer = null;
@@ -160,8 +162,15 @@ public class CertifiedPostingService extends PostComponent implements PostServic
 	}
 
 	protected Element createAttributeElement(Attribute attribute) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
-		return stringSpace.getElement(attribute.getValue());
+		List<Element> attributeElements = new ArrayList<>();
+		attributeElements.add(stringSpace.getElement(attribute.getKey()));
+		attributeElements.add(stringSpace.getElement(attribute.getValue()));
+		if (attribute.getDataType() != null) {
+			attributeElements.add(stringSpace.getElement(attribute.getDataType().value()));
+		}
+
+		DenseArray attributeDenseElements = DenseArray.getInstance(attributeElements);
+		return Tuple.getInstance(attributeDenseElements);
 	}
 
 	@PostConstruct

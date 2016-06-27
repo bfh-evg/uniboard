@@ -1,51 +1,92 @@
-/* global leemon, CryptoJS, ubConfig */
+/* global leemon, CryptoJS, ubConfig, B64 */
 
 ////////////////////////////////////////////////////////////////////////
 // Post signatures crypto
 ////////////////////////////////////////////////////////////////////////
 
+/*
+ * Error codes for the client
+ *
+ * "UBC-001", "Unexpected state of the client"
+ * "UBC-002", "Invalid signature of the board in beta"
+ * "UBC-003", "Invalid signature of the resultcontainer."
+ * "UBC-004", "Invalid signature of the board for post: " + i
+ * "UBC-005", "Invalid signature of the poster for post:" + i
+ * "UBC-006", "Error: unknown identifier type! ('" + hashIdentifierType + "')."
+ * "UBC-007", "Error: values can not be negative."
+ * Note that there are more error codes that come from the http connection or the board.
+ *
+ */
+function UBCLientError(code, message) {
+	this.code = code;
+	this.message = message;
+}
+
+UBCLientError.prototype = new Error();
+
+
 (function (window) {
 
-	var UBClient = new function () {
+	var UBClient = function () {
 
-		this.post = function (message, sk, p, q, g, successCB, errorCB) {
+		function ErrorResponse(code, message, type) {
+			this.code = code;
+			this.message = message;
+			this.type = type;
+		}
 
-			//TODO Create post
-			var post = {
-				message: message,
-				alpha: {}
-			};
 
-			//For IE
-			$.support.cors = true;
-			//Ajax request
-			$.ajax({
-				url: ubConfig.URL_UNIBOARD_POST,
-				type: 'POST',
-				contentType: "application/json",
-				accept: "application/json",
-				cache: false,
-				dataType: 'json',
-				data: JSON.stringify(post),
-				timeout: 10000,
-				crossDomain: true,
-				success: function (data) {
-					UBClient.processPost(data, successCB, errorCB);
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					var errorObj = {
-						message: textStatus,
-						code: errorThrown,
-						type: "serverError"
-					};
-					errorCB(errorObj);
-				}
-			});
-			;
 
+		var ErrorType = {
+			HTTP: "http",
+			BOARD: "board",
+			CRYPTO: "crypto"
 		};
 
-		this.get = function (query, successCB, errorCB) {
+
+		this.post = function (message, section, group, sk, p, q, g, successCB, errorCB) {
+
+			//Create post
+			var post = {
+				message: message,
+				alpha: [{"key": "section", "value": section}, {"key": "group", "value": group}],
+				beta: []
+			};
+			//Sign post
+			try {
+				var sig = this.signPost(post, sk, p, q, g);
+
+				post.alpha.push({"key": "signature", "value": sig});
+				post.alpha.push({"key": "publickey", "value": sk});
+
+				//For IE
+				$.support.cors = true;
+				//Ajax request
+				$.ajax({
+					url: ubConfig.URL_UNIBOARD_POST,
+					type: 'POST',
+					contentType: "application/json",
+					accept: "application/json",
+					cache: false,
+					dataType: 'json',
+					data: JSON.stringify(post),
+					timeout: 10000,
+					crossDomain: true,
+					success: function (beta) {
+						UBClient.processPost(beta, post, successCB, errorCB);
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						var errorObj = new ErrorResponse(errorThrown, textStatus, ErrorType.HTTP);
+						errorCB(errorObj);
+					}
+				});
+			} catch (ex) {
+				var errorObj = new ErrorResponse(ex.code, ex.message, ErrorType.CRYPTO);
+				errorCB(errorObj);
+			}
+		};
+
+		this.get = function (query, successCB, errorCB, checkPosterSignature) {
 			//For IE
 			$.support.cors = true;
 			//Ajax request
@@ -59,50 +100,94 @@
 				data: JSON.stringify(query),
 				timeout: 10000,
 				crossDomain: true,
-				success: function (data) {
-					UBClient.processGet(data, successCB, errorCB);
+				success: function (resultContainer) {
+					UBClient.processGet(query, resultContainer, successCB, errorCB, checkPosterSignature);
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
-					var errorObj = {
-						message: textStatus,
-						code: errorThrown,
-						type: "serverError"
-					};
+					var errorObj = new ErrorResponse(errorThrown, textStatus, ErrorType.HTTP);
 					errorCB(errorObj);
 				}
 
 			});
-		}
+		};
 
-		this.procsessGet = function (data, successCB, errorCB) {
-			//TODO Validate gamma signature
-			//TODO Check gamma timestamp
-
-			//TODO for each post
-			//TODO Check beta signature
-			//TODO Check signature of poster if available
-
+		this.procsessGet = function (query, resultContainer, successCB, errorCB, checkPosterSignature) {
+			//Check if the board returned an error
+			var error = $.grep(resultContainer.gamma, function (e) {
+				return e.key === "error" || e.key === "rejected";
+			});
+			if (error > 0) {
+				var code = error[0].value.substr(0, 7);
+				var text = error[0].value.substr(8);
+				var errorObj = new ErrorResponse(code, text, ErrorType.BOARD);
+				errorCB(errorObj);
+				return;
+			}
+			try {
+				var check = this.verifyResultSignature(query, resultContainer, checkPosterSignature);
+				if (check === true) {
+					successCB(resultContainer);
+				} else {
+					var errorObj = new ErrorResponse("UBC-001", "Unexpected state of the client", ErrorType.CRYPTO);
+					errorCB(errorObj);
+				}
+			} catch (ex) {
+				var errorObj = new ErrorResponse(ex.code, ex.message, ErrorType.CRYPTO);
+				errorCB(errorObj);
+			}
 		};
 
 
-		this.processPost = function (data, successCB, errorCB) {
-			//TODO Validate beta signature
+		this.processPost = function (beta, post, successCB, errorCB) {
+			//Check if the board returned an error
+			var error = $.grep(beta, function (e) {
+				return e.key === "error" || e.key === "rejected";
+			});
+			if (error > 0) {
+				var code = error[0].value.substr(0, 7);
+				var text = error[0].value.substr(8);
+				var errorObj = new ErrorResponse(code, text, ErrorType.BOARD);
+				errorCB(errorObj);
+				return;
+			}
+			//Validate beta signature
+			post.beta = beta;
+			try {
+				var postHash = this.hashPost(post, true, false);
+
+				if (this.verifySchnorrSignature(post.beta[2].value, postHash, leemon.str2bigInt(ubConfig.BOARD_SETTING.PK, ubConfig.BASE),
+						leemon.str2bigInt(ubConfig.BOARD_SETTING.P, ubConfig.BASE),
+						leemon.str2bigInt(ubConfig.BOARD_SETTING.Q, ubConfig.BASE),
+						leemon.str2bigInt(ubConfig.BOARD_SETTING.G, ubConfig.BASE))) {
+					//Return beta
+					successCB(beta);
+				} else {
+					var errorObj = new ErrorResponse("UBC-002", "Invalid signature of the board in beta", ErrorType.CRYPTO);
+					errorCB(errorObj);
+				}
+			} catch (ex) {
+				var errorObj = new ErrorResponse(ex.code, ex.message, ErrorType.CRYPTO);
+				errorCB(errorObj);
+			}
 
 		};
 
 		/**
 		 * Signs the post that will be posted on UniBoard using the given generator (Schnorr signature)
 		 * @param post Message to be signed
-		 * @param generator Generator to be used in the signature
 		 * @param sk Private key used for signature
+		 * @param p Prime p setting the group
+		 * @param q Prime q setting the sub group
+		 * @param generator Generator to be used in the signature
 		 * @returns Signature as object containing the paired value as
 		 * bigInt (sig) and its base {base} string representation (sigString)
 		 */
-		this.signPost = function (post, generator, sk) {
+		this.signPost = function (post, sk, p, q, generator) {
 
 			//Hash post
 			var postHash = this.hashPost(post, false, false);
-			var paired = this.createSchnorrSignature(postHash, sk, this.signatureSetting.p, this.signatureSetting.q, generator);
+
+			var paired = this.createSchnorrSignature(postHash, sk, p, q, generator);
 
 			return {sig: paired, sigString: leemon.bigInt2str(paired, ubConfig.BASE)};
 		};
@@ -111,11 +196,11 @@
 		 * Verify the (Schnorr) signature of a result received from the board
 		 * @param query The query sent to the board
 		 * @param resultContainer The result received from the board
-		 * @param posterSetting Crypto setting of the poster
-		 * @param verifyPosterSignature True if signature of poster of the posts contained in the result, fals if not
+		 * @param verifyPosterSignature If true tries to also validate the signature of the autor of the post if
+		 * his key is available in the config
 		 * @returns True if signature is correct, error message otherwise
 		 */
-		this.verifyResultSignature = function (query, resultContainer, posterSetting, verifyPosterSignature) {
+		this.verifyResultSignature = function (query, resultContainer, verifyPosterSignature) {
 			var posts = resultContainer.result.post;
 
 			// 1. Verify ResultContainer signature
@@ -131,51 +216,59 @@
 			for (var i = 0; i < posts.length; i++) {
 				resultHash += this.hashPost(posts[i], true, true);
 			}
-			var gamma = Hash.doDate(new Date(resultContainer.gamma.attribute[0].value.value));
+			var gamma = Hash.doDate(new Date(resultContainer.gamma[0].value));
 			var resultContainerHash = Hash.doHexStr(Hash.doHexStr(resultHash) + Hash.doHexStr(gamma));
 			var hash = Hash.doHexStr(queryHash + resultContainerHash);
 			if (!this.verifySchnorrSignature(
-					leemon.str2bigInt(resultContainer.gamma.attribute[1].value.value, ubConfig.BASE),
+					leemon.str2bigInt(resultContainer.gamma[1].value, ubConfig.BASE),
 					hash,
-					leemon.str2bigInt(sk, ubConfig.BASE),
-					leemon.str2bigInt(p, ubConfig.BASE),
-					leemon.str2bigInt(q, ubConfig.BASE),
-					leemon.str2bigInt(g, ubConfig.BASE))) {
-				return "Wrong board signature for GET";
+					leemon.str2bigInt(ubConfig.BOARD_SETTING.PK, ubConfig.BASE),
+					leemon.str2bigInt(ubConfig.BOARD_SETTING.P, ubConfig.BASE),
+					leemon.str2bigInt(ubConfig.BOARD_SETTING.Q, ubConfig.BASE),
+					leemon.str2bigInt(ubConfig.BOARD_SETTING.G, ubConfig.BASE))) {
+				//Return error
+				throw new UBCLientError("UBC-003", "Invalid signature of the resultcontainer.");
 			}
 
 			// 2. Verify board signature of each Post
-			var posts = resultContainer.result.post;
+			var searchFunction = function (e) {
+				return e.PK === posterPK;
+			};
 			for (var i = 0; i < posts.length; i++) {
 				var post = posts[i];
 				var postHash = this.hashPost(post, true, false);
 				if (!this.verifySchnorrSignature(
-						leemon.str2bigInt(post.beta.attribute[2].value.value, ubConfig.BASE),
+						leemon.str2bigInt(post.beta[2].value, ubConfig.BASE),
 						postHash,
-						leemon.str2bigInt(sk, ubConfig.BASE),
-						leemon.str2bigInt(p, ubConfig.BASE),
-						leemon.str2bigInt(q, ubConfig.BASE),
-						leemon.str2bigInt(g, ubConfig.BASE))) {
-					return "Wrong board signature in post " + i;
+						leemon.str2bigInt(ubConfig.BOARD_SETTING.PK, ubConfig.BASE),
+						leemon.str2bigInt(ubConfig.BOARD_SETTING.P, ubConfig.BASE),
+						leemon.str2bigInt(ubConfig.BOARD_SETTING.Q, ubConfig.BASE),
+						leemon.str2bigInt(ubConfig.BOARD_SETTING.G, ubConfig.BASE))) {
+					//Return error
+					throw new UBCLientError("UBC-004", "Invalid signature of the board for post: " + i);
 				}
-			}
+				if (verifyPosterSignature === true) {
+					var postHash2 = this.hashPost(post, false, false);
+					var posterPK = post.alpha[3];
+					//3. Check if PosterPK in known authors? if yes check signature
+					var result = $.grep(ubConfig.KNOWN_AUTHORS, searchFunction);
 
-			// 3. Verify poster signature of each Post contained in the result
-			if (verifyPosterSignature == true) {
-				for (var i = 0; i < posts.length; i++) {
-					var post = posts[i];
-					var postHash = this.hashPost(post, false, false);
-					if (!this.verifySchnorrSignature(
-							leemon.str2bigInt(post.alpha.attribute[2].value.value, ubConfig.BASE),
-							postHash,
-							leemon.str2bigInt(posterSetting.PK, ubConfig.BASE),
-							leemon.str2bigInt(posterSetting.P, ubConfig.BASE),
-							leemon.str2bigInt(posterSetting.Q, ubConfig.BASE),
-							leemon.str2bigInt(posterSetting.G, ubConfig.BASE))) {
-						return "Wrong poster signature in post " + i;
+					if (result.length === 1) {
+						var posterSetting = result[0];
+						if (!this.verifySchnorrSignature(
+								leemon.str2bigInt(post.alpha[2].value, ubConfig.BASE),
+								postHash2,
+								leemon.str2bigInt(posterSetting.PK, ubConfig.BASE),
+								leemon.str2bigInt(posterSetting.P, ubConfig.BASE),
+								leemon.str2bigInt(posterSetting.Q, ubConfig.BASE),
+								leemon.str2bigInt(posterSetting.G, ubConfig.BASE))) {
+							//Return error
+							throw new UBCLientError("UBC-005", "Invalid signature of the poster for post:" + i);
+						}
 					}
 				}
 			}
+
 			return true;
 		};
 
@@ -230,25 +323,26 @@
 			return this.pair(a, b);
 		};
 
+
+
 		/**
-		 * Hashes a typed value.
-		 * @param {type} Typed value
-		 * @returns Hash of the typed value
+		 * Hashes an identifier.
+		 * @param {identifier} Identifier
+		 * @returns Hash of the identifier
 		 */
-		var hashTypedValue = function (typed) {
-			var aHash = '';
-			var type = typed.type;
-			var value = typed.value;
-			if (type === "stringValue") {
-				aHash = Hash.doString(value);
-			} else if (type === "integerValue") {
-				aHash = Hash.doInt(value);
-			} else if (type === "dateValue") {
-				aHash = Hash.doDate(new Date(value));
-			} else {
-				throw "Error: unknown type of typed value! ('" + type + "').";
+		var hashIdentifier = function (identifier) {
+			var hashIdentifierType = identifier.type;
+			var hashIdentifier = Hash.doString(hashIdentifierType);
+			if (hashIdentifierType === "propertyIdentifier") {
+				hashIdentifier += Hash.doString(identifier.propertyType);
+				hashIdentifier += Hash.doString(identifier.key);
+			} else if (hashIdentifierType === "messageIdentifier") {
+				hashIdentifier += Hash.doString(identifier.keyPath);
+			} else
+			{
+				throw new UBCLientError("UBC-006", "Error: unknown identifier type! ('" + hashIdentifierType + "').");
 			}
-			return aHash;
+			return hashIdentifier;
 		};
 
 		/**
@@ -259,26 +353,63 @@
 		 */
 		this.hashQuery = function (query) {
 			// query=[contraints,order,limit]
-			//          constraint=[type,identifier,value.value]
-			//              identifier=[type,s1,s2,s3,...]
+			//          constraint=[type,identifier,value]
 			//          order=[identifier,ascDesc]
 
 			var hashConstraints = '';
 			for (var i = 0; i < query.constraint.length; i++) {
-				var constraint = query.constraint[i];
-				var hashConstraint = Hash.doString(constraint.type);
-				var hashIdentifier = Hash.doString(constraint.identifier.type);
-				for (var j = 0; j < constraint.identifier.part.length; j++) {
-					hashIdentifier += Hash.doString(constraint.identifier.part[j]);
-				}
-				hashConstraint += Hash.doHexStr(hashIdentifier);
-				hashConstraint += hashTypedValue(constraint.value);
-				hashConstraints += Hash.doHexStr(hashConstraint);
+				hashConstraints += Hash.doHexStr(this.hashConstraint(query.constraint[i]));
 			}
-			// @TODO hash order and limit properly!
-			var hashOrder = Hash.doString("");
+			//Hash oders
+			var hashOrders = '';
+			for (var i = 0; i < query.order.length; i++) {
+				var order = query.order[i];
+				var hashOrder = Hash.doHexStr(hashIdentifier(order.identifier));
+				hashOrder += Hash.doBoolean(order.ascDesc);
+				hashOrders += Hash.doHexStr(hashOrder);
+			}
+			//Hash Limit
 			var hashLimit = Hash.doInt(0);
-			return Hash.doHexStr(Hash.doHexStr(hashConstraints) + hashOrder + hashLimit);
+			return Hash.doHexStr(Hash.doHexStr(hashConstraints) + Hash.doHexStr(hashOrders) + hashLimit);
+		};
+
+		/**
+		 * Helper to comupte the hash of a constraint.
+		 *
+		 * @param {type} constraint
+		 * @returns The hash of the constraint
+		 */
+		this.hashConstraint = function (constraint) {
+			var hashConstraint = Hash.doString(constraint.type);
+			//Hash identifier
+			hashConstraint += Hash.doHexStr(hashIdentifier(constraint.identifier));
+			//Check if a dataType is set. If yes add it to the hash
+			if (typeof constraint.dataType !== 'undefined') {
+				hashConstraint += Hash.doString(constraint.dataType);
+			}
+			//Hash value based on type
+			if (constraint.type === 'between') {
+				hashConstraint += Hash.doString(constraint.value);
+			} else if (constraint.type === 'equal') {
+				hashConstraint += Hash.doString(constraint.value);
+			} else if (constraint.type === 'greater') {
+				hashConstraint += Hash.doString(constraint.value);
+			} else if (constraint.type === 'greaterEqual') {
+				hashConstraint += Hash.doString(constraint.value);
+			} else if (constraint.type === 'in') {
+				var hashInValues = '';
+				for (var i = 0; i < constraint.element; i++) {
+					hashInValues += hashInValues.doString(constraint.element[i]);
+				}
+				hashConstraint += Hash.doHexStr(hashInValues);
+			} else if (constraint.type === 'less') {
+				hashConstraint += Hash.doString(constraint.value);
+			} else if (constraint.type === 'lessEqual') {
+				hashConstraint += Hash.doString(constraint.value);
+			} else if (constraint.type === 'notEqual') {
+				hashConstraint += Hash.doString(constraint.value);
+			}
+			return hashConstraint;
 		};
 
 		/**
@@ -294,40 +425,59 @@
 		this.hashPost = function (post, includeBeta, includeBetaSignature) {
 			//Get message and alpha attributes
 			var message = post.message;
-			var alpha = post.alpha.attribute;
+			var alpha = post.alpha;
 			var messageHash = this.hashPostMessage(message);
 			var concatenatedAlphaHashes = "";
 
 			for (var i = 0; i < alpha.length; i++) {
-				var attribute = alpha[i];
-				if ((attribute.key === "signature" || attribute.key === "publickey") && includeBeta == false) {
+				var alphaAttribute = alpha[i];
+				if ((alphaAttribute.key === "signature" || alphaAttribute.key === "publickey") && includeBeta === false) {
 					//If includeBeta==false, we are checking or generating signature of poster (AccessControlled),
 					//thus signature and key of post itself must not be included
 					//If includeBeta==true, then we are checking signature of board (CertifiedPosting or CertifiedReading),
 					//thus signature and key must be included
 					continue;
 				}
-				concatenatedAlphaHashes += hashTypedValue(attribute.value);
+				concatenatedAlphaHashes += hashAttribute(alphaAttribute);
 			}
 			var alphaHash = Hash.doHexStr(concatenatedAlphaHashes);
 			var betaHash = '';
 			if (includeBeta) {
-				var beta = JSON.parse(JSON.stringify(post.beta.attribute).replace(/@/g, ""));
-				var concatenatedBetaHashes = ""
+				//var beta = JSON.parse(JSON.stringify(post.beta.attribute).replace(/@/g, ""));
+				var beta = post.beta;
+				var concatenatedBetaHashes = "";
 				for (var i = 0; i < beta.length; i++) {
-					var attribute = beta[i];
-					if (attribute.key === "boardSignature" && includeBetaSignature == false) {
+					var betaAttribute = beta[i];
+					if (betaAttribute.key === "boardSignature" && includeBetaSignature === false) {
 						//If includeBetaSignature==false, we are checking signature of board (CertifiedPosting),
 						//thus signature of post itself must not be included
 						//If includeBeta==true, then we are checking signature whole board result (CertifiedReading),
 						//thus signature must be included
 						continue;
 					}
-					concatenatedBetaHashes += hashTypedValue(attribute.value);
+					concatenatedBetaHashes += hashAttribute(betaAttribute);
 				}
 				betaHash = Hash.doHexStr(concatenatedBetaHashes);
 			}
 			return Hash.doHexStr(messageHash + alphaHash + betaHash);
+		};
+
+		/**
+		 * Hashes a typed value.
+		 * @param {type} Typed value
+		 * @returns Hash of the typed value
+		 */
+		var hashAttribute = function (attribute) {
+			var aHash = '';
+			aHash += Hash.doString(attribute.key);
+			aHash += Hash.doString(attribute.value);
+
+			//Check if a dataType is set. If yes add it to the hash
+			if (typeof attribute.dataType !== 'undefined') {
+				aHash += Hash.doString(attribute.dataType);
+			}
+
+			return Hash.doHexStr(aHash);
 		};
 
 		/**
@@ -348,7 +498,7 @@
 		 */
 		this.pair = function (bigInt1, bigInt2) {
 			if (leemon.negative(bigInt1) || leemon.negative(bigInt2)) {
-				throw Error("Cannot be negative");
+				throw new UBCLientError("UBC-007", "Error: values can not be negative.");
 			}
 			if (leemon.greater(bigInt2, bigInt1) || leemon.equals(bigInt2, bigInt1)) {
 				return leemon.add(leemon.mult(bigInt2, bigInt2), bigInt1);
@@ -373,12 +523,12 @@
 				return [x1, leemon.sub(x2, x1)];
 			}
 		};
-	}
-	window.UBClient = UBClient;
+	};
+	window.UBClient = UBClient();
 })(window);
 (function (window) {
 
-	var Hash = new function () {
+	var Hash = function () {
 
 		// Default hash method
 		var hashMethod = CryptoJS.SHA256;
@@ -443,6 +593,17 @@
 		};
 
 		/*
+		 * Hashes a boolean
+		 * returns a hex representation of the hash
+		 */
+		this.doBoolean = function (boolean) {
+			if (boolean) {
+				return this.doString("true");
+			}
+			return this.doString("false");
+		};
+
+		/*
 		 * Hashes a date
 		 * Computes the hash of the ISO format without milliseconds
 		 * returns a hex representation of the hash
@@ -476,7 +637,7 @@
 			// If the length of the string is not a multiple of 2, "0" is added at the
 			// beginning of the string.
 			// Reason: CryptoJS.enc.Hex.parse('ABC').toString() results in 'AB0C'!
-			if (hexStr.length % 2 != 0) {
+			if (hexStr.length % 2 !== 0) {
 				hexStr = "0" + hexStr;
 			}
 			var hash = hashMethod(CryptoJS.enc.Hex.parse(hexStr));
@@ -484,6 +645,6 @@
 		};
 	};
 
-	window.Hash = Hash;
+	window.Hash = Hash();
 
 })(window);

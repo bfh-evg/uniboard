@@ -39,7 +39,6 @@ import ch.bfh.unicrypt.helper.math.Alphabet;
 import ch.bfh.unicrypt.helper.math.MathUtil;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.ByteArrayMonoid;
 import ch.bfh.unicrypt.math.algebra.concatenative.classes.StringMonoid;
-import ch.bfh.unicrypt.math.algebra.dualistic.classes.Z;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZMod;
 import ch.bfh.unicrypt.math.algebra.general.classes.Pair;
 import ch.bfh.unicrypt.math.algebra.general.classes.Tuple;
@@ -326,8 +325,6 @@ public class AccessControlledService extends PostComponent implements PostServic
 	}
 
 	protected Element createMessageElement(byte[] message, Attributes alpha) {
-		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
-		Z z = Z.getInstance();
 		ByteArrayMonoid byteSpace = ByteArrayMonoid.getInstance();
 
 		Element messageElement = byteSpace.getElement(message);
@@ -339,8 +336,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 			if (e.getKey().equals(ATTRIBUTE_NAME_SIG)) {
 				break;
 			}
-			Element tmp;
-			tmp = stringSpace.getElement(e.getValue().getValue());
+			Element tmp = this.createAttributeElement(e.getValue());
 			alphaElements.add(tmp);
 
 		}
@@ -348,5 +344,18 @@ public class AccessControlledService extends PostComponent implements PostServic
 		Element alphaElement = Tuple.getInstance(immuElements);
 		logger.log(Level.FINE, "Alpha Hash: {0}", alphaElement.getHashValue(CONVERT_METHOD, HASH_METHOD));
 		return Pair.getInstance(messageElement, alphaElement);
+	}
+
+	protected Element createAttributeElement(Attribute attribute) {
+		StringMonoid stringSpace = StringMonoid.getInstance(Alphabet.UNICODE_BMP);
+		List<Element> attributeElements = new ArrayList<>();
+		attributeElements.add(stringSpace.getElement(attribute.getKey()));
+		attributeElements.add(stringSpace.getElement(attribute.getValue()));
+		if (attribute.getDataType() != null) {
+			attributeElements.add(stringSpace.getElement(attribute.getDataType().value()));
+		}
+
+		DenseArray attributeDenseElements = DenseArray.getInstance(attributeElements);
+		return Tuple.getInstance(attributeDenseElements);
 	}
 }
