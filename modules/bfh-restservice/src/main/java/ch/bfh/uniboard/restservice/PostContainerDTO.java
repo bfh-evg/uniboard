@@ -11,7 +11,8 @@
  */
 package ch.bfh.uniboard.restservice;
 
-import ch.bfh.uniboard.data.AttributesDTO;
+import ch.bfh.uniboard.data.AttributeDTO;
+import java.util.List;
 
 /**
  * The class PostContainerDTO implements a container of a post request.
@@ -21,12 +22,12 @@ import ch.bfh.uniboard.data.AttributesDTO;
 public class PostContainerDTO {
 
 	private String message; // Base64 encoded
-	private AttributesDTO alpha;
+	private List<AttributeDTO> alpha;
 
 	public PostContainerDTO() {
 	}
 
-	public PostContainerDTO(String message, AttributesDTO alpha) {
+	public PostContainerDTO(String message, List<AttributeDTO> alpha) {
 		this.message = message;
 		this.alpha = alpha;
 	}
@@ -39,11 +40,11 @@ public class PostContainerDTO {
 		this.message = message;
 	}
 
-	public AttributesDTO getAlpha() {
+	public List<AttributeDTO> getAlpha() {
 		return alpha;
 	}
 
-	public void setAlpha(AttributesDTO alpha) {
+	public void setAlpha(List<AttributeDTO> alpha) {
 		this.alpha = alpha;
 	}
 }

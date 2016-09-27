@@ -8,12 +8,13 @@ package ch.bfh.uniboard.clientlib.signaturehelper;
 import static ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper.CONVERT_METHOD;
 import static ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper.HASH_METHOD;
 import ch.bfh.uniboard.data.AttributeDTO;
-import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.DataTypeDTO;
 import ch.bfh.unicrypt.crypto.schemes.signature.classes.RSASignatureScheme;
 import ch.bfh.unicrypt.math.algebra.dualistic.classes.ZModPrimePair;
 import ch.bfh.unicrypt.math.algebra.general.interfaces.Element;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -31,12 +32,12 @@ public class RSASignatureHelperTest {
 		RSASignatureHelper rsaHelper = new RSASignatureHelper(new BigInteger("3233"), new BigInteger("17"));
 		byte[] message = new byte[1];
 		message[0] = 0x5;
-		AttributesDTO alpha = new AttributesDTO();
-		alpha.getAttribute().add(new AttributeDTO("section", "bfh-test", DataTypeDTO.STRING));
-		alpha.getAttribute().add(new AttributeDTO("group", "accessRight", DataTypeDTO.STRING));
+		List<AttributeDTO> alpha = new ArrayList();
+		alpha.add(new AttributeDTO("section", "bfh-test", DataTypeDTO.STRING));
+		alpha.add(new AttributeDTO("group", "accessRight", DataTypeDTO.STRING));
 
-		Element messageElement = rsaHelper.prepareElement(message, alpha.getAttribute());
-		BigInteger signature = rsaHelper.sign(message, alpha.getAttribute());
+		Element messageElement = rsaHelper.prepareElement(message, alpha);
+		BigInteger signature = rsaHelper.sign(message, alpha);
 
 		BigInteger p = new BigInteger("61");
 		BigInteger q = new BigInteger("53");

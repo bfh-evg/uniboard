@@ -5,6 +5,7 @@
 	version="2.1">
 
 	<jxb:bindings schemaLocation="../wsdl/common.xsd">
+		<jxb:globalBindings generateElementProperty="false"/>
 		<jxb:schemaBindings>
 			<jxb:nameXmlTransform>
 				<jxb:typeName suffix="DTO"/>

@@ -115,7 +115,7 @@ public class AccessControlledService extends PostComponent implements PostServic
 		//Contraint for the publickey
 		List<Constraint> constraints = new ArrayList<>();
 		String pathKey = ATTRIBUTE_NAME_CRYPTO + "." + ATTRIBUTE_NAME_PUBLICKEY;
-		Constraint cKey = new Equal(new PropertyIdentifier(ALPHA, pathKey),
+		Constraint cKey = new Equal(new MessageIdentifier(pathKey),
 				alpha.getAttribute(ATTRIBUTE_NAME_PUBLICKEY).getValue());
 		constraints.add(cKey);
 

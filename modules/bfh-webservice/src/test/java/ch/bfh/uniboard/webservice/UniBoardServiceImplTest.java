@@ -11,9 +11,10 @@
  */
 package ch.bfh.uniboard.webservice;
 
+import ch.bfh.uniboard.Get;
+import ch.bfh.uniboard.Post;
 import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.data.AttributeDTO;
-import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.LessEqualDTO;
 import ch.bfh.uniboard.data.MessageIdentifierDTO;
 import ch.bfh.uniboard.data.QueryDTO;
@@ -76,17 +77,17 @@ public class UniBoardServiceImplTest {
 		byte[] message = new byte[1];
 		message[0] = 0x16;
 
-		AttributesDTO adto = new AttributesDTO();
+		List<AttributeDTO> adto = new ArrayList();
 		AttributeDTO attribute1 = new AttributeDTO();
 		attribute1.setKey("test");
 		attribute1.setValue("test");
-		adto.getAttribute().add(attribute1);
+		adto.add(attribute1);
 		AttributeDTO attribute2 = new AttributeDTO();
 		attribute2.setKey("test2");
 		attribute2.setValue("test2");
-		adto.getAttribute().add(attribute2);
+		adto.add(attribute2);
 
-		service.post(message, adto);
+		service.post(new Post(message, adto));
 
 		ch.bfh.uniboard.service.data.Post p = postService.getLastPost();
 
@@ -129,7 +130,7 @@ public class UniBoardServiceImplTest {
 		ResultContainer expectedResult = new ResultContainer(posts, attributes);
 		getService.setFeedback(expectedResult);
 
-		ResultContainerDTO result = service.get(query);
+		ResultContainerDTO result = service.get(new Get(query)).getResultContainer();
 
 		assertEquals(result.getGamma().size(), 1);
 		assertEquals(result.getGamma().get(0).getKey(), "gamma");

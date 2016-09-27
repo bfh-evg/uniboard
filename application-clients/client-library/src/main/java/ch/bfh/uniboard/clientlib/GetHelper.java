@@ -11,6 +11,7 @@
  */
 package ch.bfh.uniboard.clientlib;
 
+import ch.bfh.uniboard.Get;
 import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.UniBoardService_Service;
 import ch.bfh.uniboard.clientlib.signaturehelper.RSASignatureHelper;
@@ -83,7 +84,7 @@ public class GetHelper {
 	 * @throws SignatureException thrown when an error occurred during signature validation
 	 */
 	public ResultContainerDTO get(QueryDTO query) throws SignatureException {
-		ResultContainerDTO rc = board.get(query);
+		ResultContainerDTO rc = board.get(new Get(query)).getResultContainer();
 
 		AttributeDTO attr = AttributeHelper.searchAttribute(rc.getGamma(), UniBoardAttributesName.BOARD_SIGNATURE.
 				getName());

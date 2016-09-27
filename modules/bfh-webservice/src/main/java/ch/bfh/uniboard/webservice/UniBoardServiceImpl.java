@@ -11,12 +11,16 @@
  */
 package ch.bfh.uniboard.webservice;
 
+import ch.bfh.uniboard.Get;
+import ch.bfh.uniboard.GetResponse;
+import ch.bfh.uniboard.PostResponse;
 import ch.bfh.uniboard.service.data.Attributes;
 import ch.bfh.uniboard.service.data.ResultContainer;
 import ch.bfh.uniboard.service.data.Query;
 import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.data.*;
 import ch.bfh.uniboard.service.*;
+import ch.bfh.uniboard.Post;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,14 +50,14 @@ public class UniBoardServiceImpl implements UniBoardService {
 	private GetService getSuccessor;
 
 	@Override
-	public ResultContainerDTO get(QueryDTO query) {
+	public GetResponse get(Get parameters) {
 
 		try {
-			Query q = Transformer.convertQueryDTOtoQuery(query);
+			Query q = Transformer.convertQueryDTOtoQuery(parameters.getQuery());
 
 			ResultContainer rContainer = this.getSuccessor.get(q);
 
-			return Transformer.convertResultContainertoResultContainerDTO(rContainer);
+			return new GetResponse(Transformer.convertResultContainertoResultContainerDTO(rContainer));
 		} catch (TransformException ex) {
 			List<AttributeDTO> exAttributes = new ArrayList<>();
 			AttributeDTO e = new AttributeDTO();
@@ -61,29 +65,28 @@ public class UniBoardServiceImpl implements UniBoardService {
 			e.setValue(ex.getMessage());
 			exAttributes.add(e);
 			ResultContainerDTO exResultContainer = new ResultContainerDTO(new ArrayList<PostDTO>(), exAttributes);
-			return exResultContainer;
+			return new GetResponse(exResultContainer);
 		}
 	}
 
 	@Override
-	public AttributesDTO post(byte[] message, AttributesDTO alpha
-	) {
+	public PostResponse post(Post post) {
 
 		try {
-			Attributes alphaIntern = Transformer.convertAttributesDTOtoAttributes(alpha);
+			Attributes alphaIntern = Transformer.convertDTOListtoAttributes(post.getAlpha());
 			Attributes betaIntern = new Attributes();
 
-			betaIntern = this.postSuccessor.post(message, alphaIntern, betaIntern);
-			AttributesDTO response = Transformer.convertAttributesToDTO(betaIntern);
-			return response;
+			betaIntern = this.postSuccessor.post(post.getMessage(), alphaIntern, betaIntern);
+			List<AttributeDTO> response = Transformer.convertAttributesToDTOList(betaIntern);
+			return new PostResponse(response);
 
 		} catch (TransformException ex) {
-			AttributesDTO exAttributes = new AttributesDTO();
+			List<AttributeDTO> exAttributes = new ArrayList<>();
 			AttributeDTO e = new AttributeDTO();
 			e.setKey(Attributes.ERROR);
 			e.setValue(ex.getMessage());
-			exAttributes.getAttribute().add(e);
-			return exAttributes;
+			exAttributes.add(e);
+			return new PostResponse(exAttributes);
 		}
 	}
 

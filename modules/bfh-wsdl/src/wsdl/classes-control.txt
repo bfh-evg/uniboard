@@ -1,1 +1,1 @@
-ch.bfh.uniboard.data.AttributesDTO=keep
+ch.bfh.uniboard.data.AttributesDTO=include

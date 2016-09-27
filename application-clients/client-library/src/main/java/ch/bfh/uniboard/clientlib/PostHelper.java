@@ -11,13 +11,14 @@
  */
 package ch.bfh.uniboard.clientlib;
 
+import ch.bfh.uniboard.Post;
+import ch.bfh.uniboard.PostResponse;
 import ch.bfh.uniboard.UniBoardService;
 import ch.bfh.uniboard.UniBoardService_Service;
 import ch.bfh.uniboard.clientlib.signaturehelper.RSASignatureHelper;
 import ch.bfh.uniboard.clientlib.signaturehelper.SchnorrSignatureHelper;
 import ch.bfh.uniboard.clientlib.signaturehelper.SignatureException;
 import ch.bfh.uniboard.clientlib.signaturehelper.SignatureHelper;
-import ch.bfh.uniboard.data.AttributesDTO;
 import ch.bfh.uniboard.data.AttributeDTO;
 import ch.bfh.uniboard.data.DataTypeDTO;
 import ch.bfh.unicrypt.helper.math.MathUtil;
@@ -150,9 +151,8 @@ public class PostHelper {
 		alpha.add(new AttributeDTO(UniBoardAttributesName.PUBLIC_KEY.getName(),
 				posterPublicKey, DataTypeDTO.STRING));
 
-		AttributesDTO alphaTmp = new AttributesDTO(alpha);
-		AttributesDTO betaTmp = board.post(message, alphaTmp);
-		List<AttributeDTO> beta = betaTmp.getAttribute();
+		PostResponse betaTmp = board.post(new Post(message, alpha));
+		List<AttributeDTO> beta = betaTmp.getBeta();
 		if (beta.get(0).getKey().contains("rejected") || beta.get(0).getKey().contains(
 				"error")) {
 			String errorKey = beta.get(0).getKey();

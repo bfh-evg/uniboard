@@ -61,7 +61,10 @@ public class AccessControlledServiceProtectedTest {
 
 		assertTrue(resultPair.getSecond().isTuple());
 		Tuple alphaResult = (Tuple) resultPair.getSecond();
-		assertEquals(string, ((StringElement) alphaResult.getAt(0)).getValue());
+		assertTrue(alphaResult.getAt(0).isTuple());
+		Tuple alpha1 = (Tuple) alphaResult.getAt(0);
+		assertEquals("a1", ((StringElement) alpha1.getAt(0)).getValue());
+		assertEquals(string, ((StringElement) alpha1.getAt(1)).getValue());
 	}
 
 	@Test

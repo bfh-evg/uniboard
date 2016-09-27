@@ -26,7 +26,7 @@ public class Transformer {
 
 	protected static final Logger logger = Logger.getLogger(Transformer.class.getName());
 
-	static public List<AttributeDTO> convertAttributesToList(Attributes attributes) throws TransformException {
+	static public List<AttributeDTO> convertAttributesToDTOList(Attributes attributes) throws TransformException {
 
 		List<AttributeDTO> aDTO = new ArrayList<>();
 		for (Map.Entry<String, Attribute> e : attributes.getEntries()) {
@@ -42,26 +42,10 @@ public class Transformer {
 		return aDTO;
 	}
 
-	static public AttributesDTO convertAttributesToDTO(Attributes attributes) throws TransformException {
-
-		AttributesDTO aDTO = new AttributesDTO();
-		for (Map.Entry<String, Attribute> e : attributes.getEntries()) {
-			Attribute a = e.getValue();
-			AttributeDTO attributeDTO = new AttributeDTO();
-			attributeDTO.setKey(a.getKey());
-			attributeDTO.setValue(a.getValue());
-			if (a.getDataType() != null) {
-				attributeDTO.setDataType(DataTypeDTO.fromValue(a.getDataType().value()));
-			}
-			aDTO.getAttribute().add(attributeDTO);
-		}
-		return aDTO;
-	}
-
-	static public Attributes convertAttributesDTOtoAttributes(AttributesDTO attributesDTO) throws TransformException {
+	static public Attributes convertDTOListtoAttributes(List<AttributeDTO> attributesDTO) throws TransformException {
 
 		Attributes attributes = new Attributes();
-		for (AttributeDTO attr : attributesDTO.getAttribute()) {
+		for (AttributeDTO attr : attributesDTO) {
 			Attribute attribute;
 			if (attr.getDataType() != null) {
 				attribute = new Attribute(attr.getKey(), attr.getValue(),
@@ -144,8 +128,8 @@ public class Transformer {
 		// create empty list of posts
 		for (ch.bfh.uniboard.service.data.Post p : result) {
 			PostDTO pNew = new PostDTO();
-			pNew.setAlpha(Transformer.convertAttributesToList(p.getAlpha()));
-			pNew.setBeta(Transformer.convertAttributesToList(p.getBeta()));
+			pNew.setAlpha(Transformer.convertAttributesToDTOList(p.getAlpha()));
+			pNew.setBeta(Transformer.convertAttributesToDTOList(p.getBeta()));
 			pNew.setMessage(p.getMessage());
 			result2.add(pNew);
 		}
@@ -157,7 +141,7 @@ public class Transformer {
 
 		ResultContainerDTO result = new ResultContainerDTO(
 				Transformer.convertResulttoResultDTO(resultContainer.getResult()),
-				Transformer.convertAttributesToList(resultContainer.getGamma()));
+				Transformer.convertAttributesToDTOList(resultContainer.getGamma()));
 		return result;
 	}
 }

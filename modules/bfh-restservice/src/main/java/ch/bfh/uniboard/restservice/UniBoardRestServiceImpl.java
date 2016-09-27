@@ -63,12 +63,12 @@ public class UniBoardRestServiceImpl implements UniBoardRestService {
 	public List<AttributeDTO> post(PostContainerDTO postContainer) {
 		try {
 			byte[] message = Base64.getDecoder().decode(postContainer.getMessage());
-			Attributes alpha = Transformer.convertAttributesDTOtoAttributes(postContainer.getAlpha());
+			Attributes alpha = Transformer.convertDTOListtoAttributes(postContainer.getAlpha());
 			Attributes beta = new Attributes();
 			logger.log(Level.INFO, "Post message={0}, alpha={1}, beta={2}",
 					new Object[]{postContainer.getMessage(), alpha, beta});
 			beta = postSuccessor.post(message, alpha, beta);
-			return Transformer.convertAttributesToList(beta);
+			return Transformer.convertAttributesToDTOList(beta);
 		} catch (TransformException ex) {
 			logger.log(Level.SEVERE, null, ex);
 			throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
