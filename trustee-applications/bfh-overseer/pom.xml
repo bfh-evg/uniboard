@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>ch.bfh.uniboard</groupId>
+		<artifactId>maven-ejb-config</artifactId>
+		<version>1.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>ch.bfh.uniboard</groupId>
+	<artifactId>bfh-overseer</artifactId>
+	<version>1.1-SNAPSHOT</version>
+	<packaging>ejb</packaging>
+
+	<name>bfh-overseer</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.bfh.unicrypt</groupId>
+			<artifactId>unicrypt</artifactId>
+			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bfh-wsdl</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>
